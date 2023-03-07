@@ -28,7 +28,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="keyWord">Điều kiện lọc dữ liệu/param>
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
-        /// Created by: PTTAM (09/09/2022)
+        /// Created by: PTTAM (07/03/2023)
         public Object GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
 
@@ -75,7 +75,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="listUsers">Danh sách người dùng</param>
         /// <returns></returns>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         public override string InsertMulti(List<User> listUsers)
         {
             // Mở connection
@@ -126,7 +126,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listUserRole">Mảng danh sách vai trò của người dùng</param>
         /// <param name="countUserRole"> biến đếm khi thực hiện thêm vai trò của người dùng</param>
         /// <param name="transaction">Transaction</param>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         private int InsertUserRole(List<User_Role> listUserRole, ref int countUserRole, MySqlTransaction transaction)
         {
             DynamicParameters parametersInsertUserRole = new DynamicParameters();
@@ -149,7 +149,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="userId">Khóa chính người dùng</param>
         /// <param name="roleList">Danh sách vai trò của người dùng</param>
-        /// CretedBy: PTTAM (15/09/2022)
+        /// CretedBy: PTTAM (07/03/2023)
         public string UpdateUserRole(Guid userId, List<User_Role> roleList)
         {
             //Mở connection
@@ -214,7 +214,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleName">Tên vai trò</param>
         /// <param name="listUnChange">Danh sách vai trò không thay đổi</param>
         /// <param name="countUnchange">Biến đếm khi cập nhật</param>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         private int UpdateRoleName(Guid userId, MySqlTransaction transaction, string sqlUpdateUserRole, DynamicParameters paramUpdate, ref string roleName, List<User_Role> listUnChange, ref int countUnchange)
         {
             // Nếu danh sách vai trò có state = unchange mà không trống
@@ -244,7 +244,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="transaction">transaction</param>
         /// <param name="listDelete">Danh sách cần xóa</param>
         /// <param name="countDelete">Biến đếm khi xóa</param>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         private int DeleteRole(Guid userId, MySqlTransaction transaction, List<User_Role> listDelete, ref int countDelete)
         {
             var sqlDeleteUserRole = "DELETE FROM UserRole WHERE RoleId IN (";
@@ -271,7 +271,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleName">Tên vai trò</param>
         /// <param name="listInsert">Danh sách cần thêm</param>
         /// <param name="countInsert">Biến đếm khi thêm</param>
-        /// CretedBy: PTTAM (15/09/2022)
+        /// CretedBy: PTTAM (07/03/2023)
         private int InsertRole(Guid userId, MySqlTransaction transaction, ref string roleName, List<User_Role> listInsert, ref int countInsert)
         {
             var sqlInsertUserRole = "INSERT INTO UserRole(UserId,RoleId) Values";
@@ -293,7 +293,7 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy mã người dùng mới
         /// </summary>
         /// <returns>Mã người dùng mới</returns>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         public string GetNewUserCode()
         {
             var storeName = "Proc_GetNewCode";
@@ -310,7 +310,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="userId">Khóa chính người dùng</param>
         /// <returns>THông tin người dùng</returns>
-        ///  CretedBy: PTTAM (15/09/2022)
+        ///  CretedBy: PTTAM (07/03/2023)
         public override User GetById(Guid userId)
         {
 
