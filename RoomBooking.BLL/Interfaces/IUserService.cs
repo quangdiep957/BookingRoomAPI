@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoomBooking.DAL.Interfaces
+namespace RoomBooking.BLL.Interfaces
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IUserService : IBaseService<User>
     {
         /// <summary>
-        /// Thực hiện phân trang 
+        /// Thực hiện nghiệp vụ khi phân trang 
         /// </summary>
         /// <param name="pageSize">Số bản ghi trên 1 trang</param>
         /// <param name="pageIndex">Tổng số trang</param>
@@ -22,20 +22,19 @@ namespace RoomBooking.DAL.Interfaces
 
 
         /// <summary>
-        /// Thực hiên lấy mã nhân viên mới của người dùng
+        /// Thực hiên nghiệp vụ khi lấy mã nhân viên mới của người dùng
         /// </summary>
         /// <returns>Mã nhân viên mới</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by:  PTTAM (07/03/2023)
         public string GetNewUserCode();
 
         /// <summary>
-        /// Thực hiên sửa vai trò của nhân viên
+        /// Thực hiên nghiệp vụ khi sửa vai trò của nhân viên
         /// </summary>
         /// <param name="roleList">Mảng vai trò của nhân viên</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
         public string UpdateUserRole(Guid userId, List<User_Role> roleList);
-
 
     }
 }
