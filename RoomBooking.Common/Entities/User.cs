@@ -128,7 +128,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Danh sách vai trò của nhân viên
         /// </summary>
-        public List<User_Role> UserRoles { get; set; }
+        public List<UserRole> UserRoles { get; set; }
 
 
 

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.BLL.Interfaces
 {
-    public interface IJobPositionService : IBaseService<JobPosition>
+    public interface ITokenService : IBaseService<User>
     {
+        public string GenerateJwtToken(User user);
+        public void RevokeToken(string token);
+        public bool IsValidToken(string token);
     }
 }

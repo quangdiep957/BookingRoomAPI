@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace RoomBooking.Common.Entities
 {
     /// <summary>
-    /// Thông tin loại thiết bị
+    /// Thông tin loại phòng
     /// </summary>
     ///  Created by: PTTAM (07/03/2023)
-    public class Equipment_Type : BaseEntity
+    public class RoomType : BaseEntity
     {
         /// <summary>
-        /// Khóa chính loại thiết bị
+        /// Khóa chính loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(36)]
@@ -23,31 +23,31 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
-        public Guid EquipmentTypeID { get; set; }
+        public Guid RoomTypeID { get; set; }
 
         /// <summary>
-        /// Mã loại thiết bị
+        /// Mã loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(20)]
-        [PropertyNameDisplay(propName: "Mã loại thiết bị")]
+        [PropertyNameDisplay(propName: "Mã loại phòng")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
 
-        public string EquipmentTypeCode { get; set; } = string.Empty;
+        public string RoomTypeCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tên loại thiết bị
+        /// Tên loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(255)]
-        [PropertyNameDisplay(propName: "Tên loại thiết bị")]
+        [PropertyNameDisplay(propName: "Tên loại phòng")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
 
-        public string EquipmentTypeName { get; set; } = string.Empty;
+        public string RoomTypeName { get; set; } = string.Empty;
 
     }
 }

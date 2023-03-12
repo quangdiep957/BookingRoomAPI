@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.DAL.Repositories
 {
-    public class JobPositionRepository : BaseRepository<Job_Position>, IJobPositionRepository
+    public class JobPositionRepository : BaseRepository<JobPosition>, IJobPositionRepository
     {
         public JobPositionRepository(IConfiguration configuration) : base(configuration)
         {

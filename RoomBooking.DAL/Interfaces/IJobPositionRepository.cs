@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.DAL.Interfaces
 {
-    public interface IJobPositionRepository : IBaseRepository<Job_Position>
+    public interface IJobPositionRepository : IBaseRepository<JobPosition>
     {
     }
 }

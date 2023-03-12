@@ -1,5 +1,6 @@
 ﻿using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Functions;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,10 @@ namespace RoomBooking.BLL.Services
         {
             _repository = repository;
         }
-
+        private List<User> _users = new List<User>
+    {
+        new User { UserCode="admin", FullName = "admin", Password = "password", Email = "admin@example.com" }
+    };
         /// <summary>
         /// Thực hiện nghiệp vụ khi lấy mã nhân viên mới
         /// </summary>
@@ -51,7 +55,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="roleList">Mảng vai trò</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         ///  Created by: PTTAM(10/9/2022)
-        public string UpdateUserRole(Guid userId, List<User_Role> roleList)
+        public string UpdateUserRole(Guid userId, List<UserRole> roleList)
         {
             var res = _repository.UpdateUserRole(userId, roleList);
             return res;
@@ -66,7 +70,7 @@ namespace RoomBooking.BLL.Services
         protected override bool ValidateCustom(User user)
         {
             
-            if (!Commons.Common.IsValidEmail(user.Email))
+            if (!CommonFunction.IsValidEmail(user.Email))
             {
                 isValidCustom = false;
 
@@ -82,6 +86,17 @@ namespace RoomBooking.BLL.Services
 
             return isValidCustom;
         }
+        public User Authenticate(string username, string password)
+        {
+            var user = _users.SingleOrDefault(x => x.UserCode == username && x.Password == password);
 
+            if (user == null)
+                return null;
+
+            // remove password before returning
+            user.Password = null;
+
+            return user;
+        }
     }
 }

@@ -85,7 +85,7 @@ namespace RoomBooking.DAL.Repositories
             //}
             base._sqlConnection.Open();
             //1. Thực hiện insert user
-            List<User_Role> listUserRole = new List<User_Role>(); // Danh sách vai trò của người dùng
+            List<UserRole> listUserRole = new List<UserRole>(); // Danh sách vai trò của người dùng
             int countUser = 0; // biến đếm khi thực hiện thêm người dùng
             int countUserRole = 0; // biến đếm khi thực hiện thêm vai trò của người dùng
             string sqlQuery = GetAllBindingNames(listUsers[0]); // câu truy vấn lấy ra tên trường của user
@@ -127,7 +127,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="countUserRole"> biến đếm khi thực hiện thêm vai trò của người dùng</param>
         /// <param name="transaction">Transaction</param>
         ///  CretedBy: PTTAM (07/03/2023)
-        private int InsertUserRole(List<User_Role> listUserRole, ref int countUserRole, MySqlTransaction transaction)
+        private int InsertUserRole(List<UserRole> listUserRole, ref int countUserRole, MySqlTransaction transaction)
         {
             DynamicParameters parametersInsertUserRole = new DynamicParameters();
             var sqlInsertUserRole = "INSERT INTO UserRole(UserId,RoleId) Values";
@@ -150,7 +150,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="userId">Khóa chính người dùng</param>
         /// <param name="roleList">Danh sách vai trò của người dùng</param>
         /// CretedBy: PTTAM (07/03/2023)
-        public string UpdateUserRole(Guid userId, List<User_Role> roleList)
+        public string UpdateUserRole(Guid userId, List<UserRole> roleList)
         {
             //Mở connection
             if (_sqlConnection.State == System.Data.ConnectionState.Closed)
@@ -215,7 +215,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listUnChange">Danh sách vai trò không thay đổi</param>
         /// <param name="countUnchange">Biến đếm khi cập nhật</param>
         ///  CretedBy: PTTAM (07/03/2023)
-        private int UpdateRoleName(Guid userId, MySqlTransaction transaction, string sqlUpdateUserRole, DynamicParameters paramUpdate, ref string roleName, List<User_Role> listUnChange, ref int countUnchange)
+        private int UpdateRoleName(Guid userId, MySqlTransaction transaction, string sqlUpdateUserRole, DynamicParameters paramUpdate, ref string roleName, List<UserRole> listUnChange, ref int countUnchange)
         {
             // Nếu danh sách vai trò có state = unchange mà không trống
             if (listUnChange.Count > 0)
@@ -245,7 +245,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listDelete">Danh sách cần xóa</param>
         /// <param name="countDelete">Biến đếm khi xóa</param>
         ///  CretedBy: PTTAM (07/03/2023)
-        private int DeleteRole(Guid userId, MySqlTransaction transaction, List<User_Role> listDelete, ref int countDelete)
+        private int DeleteRole(Guid userId, MySqlTransaction transaction, List<UserRole> listDelete, ref int countDelete)
         {
             var sqlDeleteUserRole = "DELETE FROM UserRole WHERE RoleId IN (";
             DynamicParameters paramsDelete = new DynamicParameters();
@@ -272,7 +272,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listInsert">Danh sách cần thêm</param>
         /// <param name="countInsert">Biến đếm khi thêm</param>
         /// CretedBy: PTTAM (07/03/2023)
-        private int InsertRole(Guid userId, MySqlTransaction transaction, ref string roleName, List<User_Role> listInsert, ref int countInsert)
+        private int InsertRole(Guid userId, MySqlTransaction transaction, ref string roleName, List<UserRole> listInsert, ref int countInsert)
         {
             var sqlInsertUserRole = "INSERT INTO UserRole(UserId,RoleId) Values";
             DynamicParameters paramInsert = new DynamicParameters();
@@ -320,7 +320,7 @@ namespace RoomBooking.DAL.Repositories
             var users = _sqlConnection.QueryMultiple(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
 
             User user = users.Read<User>().First();
-            user.UserRoles = users.Read<User_Role>().ToList();
+            user.UserRoles = users.Read<UserRole>().ToList();
 
             return user;
         }

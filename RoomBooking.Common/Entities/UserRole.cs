@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class User_Role:BaseEntity
+    public class UserRole:BaseEntity
     {
         /// <summary>
         /// Khóa chính vai trò

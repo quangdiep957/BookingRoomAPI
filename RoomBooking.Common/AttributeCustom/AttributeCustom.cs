@@ -11,7 +11,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để validate các trường dữ liệu không được để trống
     /// </summary>
-    ///  created by: PTTAM (30/8/2022)
+    ///  created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class NotEmpty : Attribute
     {
@@ -21,7 +21,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để lấy các trường dữ liệu 
     /// </summary>
-    ///  created by: PTTAM (30/8/2022)
+    ///  created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class ForGetting : Attribute
     {
@@ -31,7 +31,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để lấy các trường dữ liệu 
     /// </summary>
-    ///  created by: PTTAM (30/8/2022)
+    ///  created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class ForBinding : Attribute
     {
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để lấy trường dữ liệu là khóa ngoại
     /// </summary>
-    ///  created by: PTTAM (30/8/2022)
+    ///  created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class Ambiguous : Attribute
     {
@@ -50,7 +50,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để validate mã phải là duy nhất
     /// </summary>
-    /// created by: PTTAM (30/8/2022)
+    /// created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class Unique : Attribute
     {
@@ -60,7 +60,7 @@ namespace RoomBooking.Common.AttributeCustom
     /// <summary>
     /// Attribute dùng để validate mã phải là duy nhất
     /// </summary>
-    /// created by: PTTAM (30/8/2022)
+    /// created by: PTTAM (08/03/2023)
     [AttributeUsage(AttributeTargets.Property)]
     public class PrimaryKey : Attribute
     {

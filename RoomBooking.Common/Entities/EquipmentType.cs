@@ -8,44 +8,46 @@ using System.Threading.Tasks;
 namespace RoomBooking.Common.Entities
 {
     /// <summary>
-    /// Thông tin vị trí
+    /// Thông tin loại thiết bị
     /// </summary>
     ///  Created by: PTTAM (07/03/2023)
-    public class Job_Position : BaseEntity
+    public class EquipmentType : BaseEntity
     {
         /// <summary>
-        /// Khóa chính vị trí
+        /// Khóa chính loại thiết bị
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [PropertyNameDisplay(propName: "Khóa chính vị trí")]
         [MISADataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
-        public Guid JobPositionID { get; set; }
+        [NotEmpty]
+        [Unique]
+        public Guid EquipmentTypeID { get; set; }
 
         /// <summary>
-        /// Mã vị trí
+        /// Mã loại thiết bị
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(20)]
-        [PropertyNameDisplay(propName: "Mã vị trí")]
+        [PropertyNameDisplay(propName: "Mã loại thiết bị")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
-        [Unique]
-        public string JobPositionCode { get; set; } = string.Empty;
+
+        public string EquipmentTypeCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tên vị trí
+        /// Tên loại thiết bị
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(255)]
-        [PropertyNameDisplay(propName: "Tên vị trí")]
+        [PropertyNameDisplay(propName: "Tên loại thiết bị")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
 
-        public string JobPositionName { get; set; } = string.Empty;
+        public string EquipmentTypeName { get; set; } = string.Empty;
+
     }
 }

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.BLL.Services
 {
-    public class JobPositionService : BaseService<JobPosition>, IJobPositionService
+    public class EquipmentService : BaseService<Equipment>, IEquipmentService
     {
-        public JobPositionService(IBaseRepository<JobPosition> repository) : base(repository)
+        public EquipmentService(IBaseRepository<Equipment> repository) : base(repository)
         {
         }
     }

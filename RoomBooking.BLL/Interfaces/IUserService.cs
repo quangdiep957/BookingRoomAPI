@@ -34,7 +34,8 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="roleList">Mảng vai trò của nhân viên</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public string UpdateUserRole(Guid userId, List<User_Role> roleList);
+        public string UpdateUserRole(Guid userId, List<UserRole> roleList);
 
+        public User Authenticate(string username, string password);
     }
 }
