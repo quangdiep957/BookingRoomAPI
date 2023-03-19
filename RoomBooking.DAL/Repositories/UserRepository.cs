@@ -29,7 +29,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
         /// Created by: PTTAM (07/03/2023)
-        public Object GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
+        public async Task<Object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
 
             var storeName = "Proc_GetUserPaging"; // Tên của thủ thục
@@ -41,7 +41,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
             //2. Lấy dữ liệu
-            var employees = _sqlConnection.Query<User>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var employees = await _sqlConnection.QueryAsync<User>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
@@ -76,7 +76,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listUsers">Danh sách người dùng</param>
         /// <returns></returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override string InsertMulti(List<User> listUsers)
+        public override async Task<bool> InsertMulti(List<User> listUsers)
         {
             // Mở connection
             //if (_sqlConnection.State == System.Data.ConnectionState.Closed)
@@ -98,26 +98,26 @@ namespace RoomBooking.DAL.Repositories
                 countUser++;
             }
             sqlQuery = sqlQuery[..^1]; // bỏ dấu ',' cuối cùng
-            var rowEffect = _sqlConnection.Execute(sqlQuery, dynamicParameters, transaction: transaction);
+            var rowEffect = await _sqlConnection.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
 
             // nếu số bản ghi thay đổi < countUser
             if (rowEffect < countUser)
             {
                 transaction.Rollback(); // rollback 
-                return ""; // thêm thất bại
+                return false; // thêm thất bại
             }
             else // ngược lại
             {   // thực hiện thêm mới vai trò
-                int res = InsertUserRole(listUserRole, ref countUserRole, transaction);
+                int res = await InsertUserRole(listUserRole, ref countUserRole,transaction);
                 if (res < countUserRole)
                 {
                     transaction.Rollback();
-                    return "";
+                    return false;
                 }
             }
             transaction.Commit();
             CloseConnection();
-            return "";
+            return true;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="countUserRole"> biến đếm khi thực hiện thêm vai trò của người dùng</param>
         /// <param name="transaction">Transaction</param>
         ///  CretedBy: PTTAM (07/03/2023)
-        private int InsertUserRole(List<UserRole> listUserRole, ref int countUserRole, MySqlTransaction transaction)
+        private  Task<int> InsertUserRole(List<UserRole> listUserRole, ref int countUserRole, MySqlTransaction transaction)
         {
             DynamicParameters parametersInsertUserRole = new DynamicParameters();
             var sqlInsertUserRole = "INSERT INTO UserRole(UserId,RoleId) Values";
@@ -140,7 +140,7 @@ namespace RoomBooking.DAL.Repositories
             }
 
             sqlInsertUserRole = sqlInsertUserRole[..^1];
-            var res = _sqlConnection.Execute(sqlInsertUserRole, parametersInsertUserRole, transaction: transaction);
+            var res =  _sqlConnection.ExecuteAsync(sqlInsertUserRole, parametersInsertUserRole, transaction: transaction);
             return res;
         }
 
@@ -150,7 +150,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="userId">Khóa chính người dùng</param>
         /// <param name="roleList">Danh sách vai trò của người dùng</param>
         /// CretedBy: PTTAM (07/03/2023)
-        public string UpdateUserRole(Guid userId, List<UserRole> roleList)
+        public async Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList)
         {
             //Mở connection
             if (_sqlConnection.State == System.Data.ConnectionState.Closed)
@@ -172,7 +172,7 @@ namespace RoomBooking.DAL.Repositories
             if (listInsert.Count > 0)
             {
                 // Thực hiện thêm vai trò
-                int rowEffect = InsertRole(userId, transaction, ref roleName, listInsert, ref countInsert);
+                int rowEffect = await InsertRole(userId, transaction, ref roleName, listInsert, ref countInsert);
                 if (rowEffect < countInsert)
                 {
                     transaction.Rollback();
@@ -183,7 +183,7 @@ namespace RoomBooking.DAL.Repositories
             if (listDelete.Count > 0)
             {
                 // Thực hiên xóa vai trò
-                int rowEffect = DeleteRole(userId, transaction, listDelete, ref countDelete);
+                int rowEffect = await DeleteRole(userId, transaction, listDelete, ref countDelete);
                 if (rowEffect < countDelete)
                 {
                     transaction.Rollback();
@@ -245,7 +245,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listDelete">Danh sách cần xóa</param>
         /// <param name="countDelete">Biến đếm khi xóa</param>
         ///  CretedBy: PTTAM (07/03/2023)
-        private int DeleteRole(Guid userId, MySqlTransaction transaction, List<UserRole> listDelete, ref int countDelete)
+        private  Task<int> DeleteRole(Guid userId, MySqlTransaction transaction, List<UserRole> listDelete, ref int countDelete)
         {
             var sqlDeleteUserRole = "DELETE FROM UserRole WHERE RoleId IN (";
             DynamicParameters paramsDelete = new DynamicParameters();
@@ -259,7 +259,7 @@ namespace RoomBooking.DAL.Repositories
             sqlDeleteUserRole = sqlDeleteUserRole[..^1];
             paramsDelete.Add("@UserId", userId);
             sqlDeleteUserRole += " )" + " AND UserId = @UserId";
-            var rowEffect = _sqlConnection.Execute(sqlDeleteUserRole, paramsDelete, transaction: transaction);
+            var rowEffect =  _sqlConnection.ExecuteAsync(sqlDeleteUserRole, paramsDelete, transaction: transaction);
             return rowEffect;
         }
 
@@ -272,7 +272,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listInsert">Danh sách cần thêm</param>
         /// <param name="countInsert">Biến đếm khi thêm</param>
         /// CretedBy: PTTAM (07/03/2023)
-        private int InsertRole(Guid userId, MySqlTransaction transaction, ref string roleName, List<UserRole> listInsert, ref int countInsert)
+        private  Task<int> InsertRole(Guid userId, MySqlTransaction transaction, ref string roleName, List<UserRole> listInsert, ref int countInsert)
         {
             var sqlInsertUserRole = "INSERT INTO UserRole(UserId,RoleId) Values";
             DynamicParameters paramInsert = new DynamicParameters();
@@ -285,7 +285,7 @@ namespace RoomBooking.DAL.Repositories
                 countInsert++;
             }
             sqlInsertUserRole = sqlInsertUserRole[..^1];
-            var rowEffect = _sqlConnection.Execute(sqlInsertUserRole, paramInsert, transaction: transaction);
+            var rowEffect =  _sqlConnection.ExecuteAsync(sqlInsertUserRole, paramInsert, transaction: transaction);
             return rowEffect;
         }
 
@@ -294,12 +294,12 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <returns>Mã người dùng mới</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public string GetNewUserCode()
+        public async Task<string> GetNewUserCode()
         {
             var storeName = "Proc_GetNewCode";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@UserNewCode", DbType.String, direction: ParameterDirection.Output);
-            _sqlConnection.Execute(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+           await _sqlConnection.ExecuteAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
             string employeeNewCode = dynamicParameters.Get<String>("@UserNewCode");
             return employeeNewCode;
         }
@@ -311,13 +311,13 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="userId">Khóa chính người dùng</param>
         /// <returns>THông tin người dùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override User GetById(Guid userId)
+        public override async Task<User> GetById(Guid userId)
         {
 
             var storeName = "Proc_GetUserById";
             DynamicParameters dynamic = new DynamicParameters();
             dynamic.Add("@UserId", userId);
-            var users = _sqlConnection.QueryMultiple(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
+            var users = await _sqlConnection.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
 
             User user = users.Read<User>().First();
             user.UserRoles = users.Read<UserRole>().ToList();

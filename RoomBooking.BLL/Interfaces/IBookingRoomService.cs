@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.BLL.Interfaces
 {
-    public interface ITokenService : IBaseService<User>
+    public interface IBookingRoomService:IBaseService<BookingRoom>
     {
-        Token GenerateToken(User user);
-        bool ValidateToken(string token);
-        void InvalidateToken(string token);
+        public Task<Object> ReadExcelFile(string filePath);
+
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.BLL.Interfaces
 {
-    public interface ISemesterService : IBaseService<Semester>
+    public interface IWeekService : IBaseService<Week>
     {
     }
 }

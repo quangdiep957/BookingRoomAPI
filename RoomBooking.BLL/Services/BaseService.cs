@@ -1,5 +1,6 @@
 ﻿using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.AttributeCustom;
+using RoomBooking.Common.Entities;
 using RoomBooking.Common.Exception;
 using RoomBooking.DAL.Interfaces;
 using System;
@@ -36,14 +37,14 @@ namespace RoomBooking.BLL.Services
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// <exception cref="ValidateException"></exception>
         /// Created by: PTTAM (07/03/2023)
-        public string InsertService(Entity entity)
+        public async Task<bool> InsertService(Entity entity)
         {
             // Gọi đến hàm validate dữ liệu
             ValidateError(entity);
             // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
             if (isValidCustom == true && errorList.Count <= 0)
             {
-                var res = _repository.Insert(entity);
+                var res = await _repository.Insert(entity);
                 return res;
             }
             else // Ngược lại throw ra lỗi
@@ -61,14 +62,14 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng</param>
         /// <returns>Cập nhật thành công || Cập nhật thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public string UpdateService(Guid entityId, Entity entity)
+        public async Task<bool> UpdateService(Guid entityId, Entity entity)
         {
             // Gọi đến hàm validate dữ liệu
             ValidateError(entity);
             // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
             if (isValidCustom == true && errorList.Count <= 0)
             {
-                var res = _repository.Update(entity, entityId);
+                var res = await _repository.Update(entity, entityId);
                 return res;
             }
             else // Ngược lại throw ra lỗi
@@ -86,8 +87,9 @@ namespace RoomBooking.BLL.Services
         /// <param name="entities">Danh sách các đối tượng</param>
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public string InsertMultiService(List<Entity> entities)
+        public async Task<bool> InsertMultiService(List<Entity> entities)
         {
+
             for (int i = 0; i < entities.Count; i++)
             {
                 ValidateError(entities[i]); // gọi hàm validte
@@ -96,7 +98,7 @@ namespace RoomBooking.BLL.Services
             // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
             if (isValidCustom == true && errorList.Count <= 0)
             {
-                var res = _repository.InsertMulti(entities);
+                var res = await _repository.InsertMulti(entities);
                 return res;
             }
             else // Ngược lại throw ra lỗi
@@ -111,9 +113,9 @@ namespace RoomBooking.BLL.Services
         /// Thực hiện nghiệp vụ khi lấy tất cả dữ liệu
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        public IEnumerable GetAllService()
+        public async Task<IEnumerable> GetAllService()
         {
-            var res = _repository.GetAll();
+            var res = await _repository.GetAll();
             return res;
         }
 
@@ -122,9 +124,9 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
         ///  Created by: PTTAM (07/03/2023)
-        public Entity GetByIdService(Guid entityId)
+        public async Task<Entity> GetByIdService(Guid entityId)
         {
-            var res = _repository.GetById(entityId);
+            var res = await _repository.GetById(entityId);
             return res;
         }
 
@@ -133,9 +135,9 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
         ///  Created by: PTTAM (07/03/2023)
-        public string DeleteService(Guid entityId)
+        public async Task<bool> DeleteService(Guid entityId)
         {
-            var res = _repository.Delete(entityId);
+            var res = await _repository.Delete(entityId);
             return res;
         }
         #region Validate
@@ -215,7 +217,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entity">Đối tượng kiểm tra </param>
         ///  Created by: PTTAM (07/03/2023)
-        private void CheckUnique(Entity entity)
+        private async void CheckUnique(Entity entity)
         {
             // lấy attribute Unique để kiểm trường duy nhất
             var propertyUnique = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(Unique)));
@@ -234,7 +236,7 @@ namespace RoomBooking.BLL.Services
                 var value = property.GetValue(entity).ToString(); // lấy ra giá trị
                 var name = property.Name; // lấy ra tên 
                 //Gọi đến hàm kiểm tra trường phải là duy nhất trong repository
-                if (_repository.CheckUnique(name, value))
+                if (await _repository.CheckUnique(name, value))
                 {
                     // lấy ra attribute PropertyNameDisplay
                     var getVIName = property.GetCustomAttributes(typeof(PropertyNameDisplay), true).First();
@@ -304,6 +306,12 @@ namespace RoomBooking.BLL.Services
         protected virtual bool ValidateCustom(Entity entity)
         {
             return true;
+        }
+
+        public async Task<object> GetEntityPaging(int pageSize, int pageIndex, string? keyWord)
+        {
+            var res = await _repository.GetEntityPaging(keyWord, pageSize, pageIndex);
+            return res;
         }
 
         #endregion

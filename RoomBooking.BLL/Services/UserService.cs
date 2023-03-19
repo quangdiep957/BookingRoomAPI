@@ -27,9 +27,9 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <returns></returns>
         ///  Created by: PTTAM(10/9/2022)
-        public string GetNewUserCode()
+        public async Task<string> GetNewUserCode()
         {
-            var res = _repository.GetNewUserCode();
+            var res = await _repository.GetNewUserCode();
             return res;
         }
 
@@ -42,9 +42,9 @@ namespace RoomBooking.BLL.Services
         /// <param name="roleId">Khóa chính vai trò</param>
         /// <returns>Object chứa danh sách người dùng lọc được theo yêu cầu</returns>
         ///  Created by: PTTAM(10/9/2022)
-        public object GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
+        public async Task<object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
-            var res = _repository.GetPaging(pageSize, pageIndex, keyWord, roleId);
+            var res = await _repository.GetPaging(pageSize, pageIndex, keyWord, roleId);
             return res;
         }
 
@@ -55,9 +55,9 @@ namespace RoomBooking.BLL.Services
         /// <param name="roleList">Mảng vai trò</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         ///  Created by: PTTAM(10/9/2022)
-        public string UpdateUserRole(Guid userId, List<UserRole> roleList)
+        public async Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList)
         {
-            var res = _repository.UpdateUserRole(userId, roleList);
+            var res = await _repository.UpdateUserRole(userId, roleList);
             return res;
         }
 
@@ -98,5 +98,7 @@ namespace RoomBooking.BLL.Services
 
             return user;
         }
+
+      
     }
 }

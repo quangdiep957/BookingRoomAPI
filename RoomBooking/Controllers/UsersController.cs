@@ -33,10 +33,10 @@ namespace RoomBooking.API.Controllers
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
         /// Created by: PTTAM (08/03/2023)
         [HttpGet("filter")]
-        public IActionResult FilterUser(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
+        public async Task<IActionResult> FilterUser(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
 
-            var res = _service.GetPaging(pageSize, pageIndex, keyWord, roleId);
+            var res =await _service.GetPaging(pageSize, pageIndex, keyWord, roleId);
 
             return StatusCode(200, res);
 
@@ -52,9 +52,9 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         [HttpGet("NewUserCode")]
-        public IActionResult GetNewUserCode()
+        public async Task<IActionResult> GetNewUserCode()
         {
-            var res = _service.GetNewUserCode();
+            var res = await _service.GetNewUserCode();
             return StatusCode(200, res);
         }
 

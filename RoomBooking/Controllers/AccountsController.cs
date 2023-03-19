@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
 
 namespace RoomBooking.API.Controllers
 {
@@ -20,21 +24,21 @@ namespace RoomBooking.API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login( AuthenticateRequest model)
+        public IActionResult Login([FromBody] AuthenticateRequest model)
         {
             var user = _userService.Authenticate(model.Username, model.Password);
 
-            //if (user == null)
-            //{
-            //    return BadRequest(new { message = "Username or password is incorrect" });
-            //}
+            if (user == null)
+            {
+                return Unauthorized("Invalid username or password.");
+            }
 
-            var token = _tokenService.GenerateJwtToken(user);
-           return  StatusCode(200, token);
+            var token = _tokenService.GenerateToken(user);
+            return StatusCode(200, token);
             //return Ok(new { token });
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -45,7 +49,7 @@ namespace RoomBooking.API.Controllers
                 return BadRequest(new { message = "Token is required" });
             }
 
-            _tokenService.RevokeToken(token);
+            _tokenService.InvalidateToken(token);
 
             return Ok(new { message = "Logout successful" });
         }
@@ -56,7 +60,7 @@ namespace RoomBooking.API.Controllers
         {
             return Ok(new { message = "Token is valid" });
         }
-
+      
 
     }
 }

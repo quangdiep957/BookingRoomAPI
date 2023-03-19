@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.DAL.Interfaces
 {
-    public interface ISemesterRepository : IBaseRepository<Semester>
+    public interface IWeekRepository : IBaseRepository<Week>
     {
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
+using RoomBooking.Common.Entities;
 using RoomBooking.Common.Enum;
 
 namespace RoomBooking.API.Controllers
@@ -30,6 +31,18 @@ namespace RoomBooking.API.Controllers
 
 
         #region Resful API
+
+        /// <summary>
+        /// Phân trang
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetEntityPaging(int pageSize, int pageIndex, string? keyWord)
+        {
+            var res = await _service.GetEntityPaging(pageSize, pageIndex, keyWord);
+
+            return StatusCode(200, res);
+        }
         /// <summary>
         /// Thực hiện lấy toàn bộ dữ liệu
         /// </summary>
@@ -41,9 +54,9 @@ namespace RoomBooking.API.Controllers
         /// </returns>
         /// Created by: PTTAM (08/03/2023)
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return StatusCode((int)HTTPStatusCode.SuccessResponse, _service.GetAllService());
+            return StatusCode((int)HTTPStatusCode.SuccessResponse,await _service.GetAllService());
         }
 
         /// <summary>
@@ -58,9 +71,9 @@ namespace RoomBooking.API.Controllers
         /// </returns>
         /// Created by: PTTAM (08/03/2023)
         [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            return StatusCode((int)HTTPStatusCode.SuccessResponse, _service.GetByIdService(id));
+            return StatusCode((int)HTTPStatusCode.SuccessResponse,await _service.GetByIdService(id));
         }
 
         /// <summary>
@@ -74,9 +87,9 @@ namespace RoomBooking.API.Controllers
         /// </returns>
         /// created by: PTTAM (08/03/2023)
         [HttpPost]
-        public IActionResult Insert(Entity entity)
+        public async Task<IActionResult> Insert(Entity entity)
         {
-            var res = _service.InsertService(entity);
+            var res =await _service.InsertService(entity);
             return StatusCode(201, res);
 
         }
@@ -93,9 +106,9 @@ namespace RoomBooking.API.Controllers
         /// </returns>
         /// created by: PTTAM (08/03/2023)
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, Entity entity)
+        public async Task<IActionResult> Update(Guid id, Entity entity)
         {
-            var res = _service.UpdateService(id, entity);
+            var res = await _service.UpdateService(id, entity);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
 
@@ -111,15 +124,15 @@ namespace RoomBooking.API.Controllers
         /// </returns>
         /// created by: PTTAM (08/03/2023)
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return StatusCode(200, _service.DeleteService(id));
+            return StatusCode(200,await _service.DeleteService(id));
         }
 
         [HttpPost("InsertMultiple")]
-        public IActionResult InsertMultiple(List<Entity> entities)
+        public async Task<IActionResult> InsertMultiple(List<Entity> entities)
         {
-            return StatusCode(201, _service.InsertMultiService(entities));
+            return StatusCode(201, await _service.InsertMultiService(entities));
         }
         #endregion
     }

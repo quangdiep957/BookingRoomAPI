@@ -1,9 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
 using RoomBooking.DAL.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -15,11 +18,23 @@ namespace RoomBooking.BLL.Services
 {
     public class TokenService : BaseService<User>, ITokenService
     {
-        public TokenService(IBaseRepository<User> repository) : base(repository)
+        private readonly IMemoryCache _cache;
+      //  private readonly TimeSpan _expirationTime;
+        public TokenService(IBaseRepository<User> repository,IMemoryCache cache) : base(repository)
         {
+            _cache = cache;
+         //   _expirationTime = expirationTime;
         }
-        private List<string> _tokens = new List<string>();
-        public string GenerateJwtToken(User user)
+
+
+        //public TokenService(IMemoryCache cache, IUserRepository userRepository, TimeSpan expirationTime)
+        //{
+        //    _cache = cache;
+        //    _userRepository = userRepository;
+        //    _expirationTime = expirationTime;
+        //}
+
+        public Token GenerateToken(User model)
         {
             var key = Encoding.ASCII.GetBytes("this is a secret key"); // should be more secure in real application
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -27,47 +42,43 @@ namespace RoomBooking.BLL.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-            new Claim(ClaimTypes.Name, user.UserID.ToString())
+            new Claim(ClaimTypes.Name, model.UserCode)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
+            var newtoken = new Token
+            {
+                Value = tokenString,
+                Expiration = DateTime.UtcNow.AddHours(1)
+            };
 
-            _tokens.Add(tokenString);
-
-            return tokenString;
+            // Lưu token vào cache
+            
+            _cache.Set( model.UserCode, newtoken.Value, newtoken.Expiration);
+      
+            return newtoken;
         }
 
-        public bool IsValidToken(string token)
+        public bool ValidateToken(string tokenValue)
         {
-           
-            var key = Encoding.ASCII.GetBytes("this is a secret key"); // should be more secure in real application
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
-
-                return _tokens.Contains(token);
-            }
-            catch
+            if (string.IsNullOrEmpty(tokenValue))
             {
                 return false;
             }
+
+            return _cache.TryGetValue(tokenValue, out _);
         }
 
-        public void RevokeToken(string token)
+        public void InvalidateToken(string tokenValue)
         {
-            _tokens.Remove(token);
+            if (!string.IsNullOrEmpty(tokenValue))
+            {
+                _cache.Remove(tokenValue);
+            }
         }
+
     }
 }

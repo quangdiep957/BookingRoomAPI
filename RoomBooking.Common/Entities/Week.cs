@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace RoomBooking.Common.Entities
 {
     /// <summary>
-    /// Thông tin kì học
+    /// Thông tin tuần
     /// </summary>
     ///  Created by: PTTAM (07/03/2023)
-    public class Semester : BaseEntity
+    public class Week : BaseEntity
     {
         /// <summary>
-        /// Khóa chính kì học
+        /// Khóa chính tuần
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(36)]
@@ -23,34 +23,34 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
-        public Guid SemesterID { get; set; }
+        public Guid WeekrID { get; set; }
 
         /// <summary>
-        /// Mã kì học
+        /// Mã tuần
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(20)]
-        [PropertyNameDisplay(propName: "Mã kì học")]
+        [PropertyNameDisplay(propName: "Mã tuần")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
 
-        public string SemesterCode { get; set; } = string.Empty;
+        public string WeekrCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tên kì học
+        /// Tên tuần
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [MISADataLength(255)]
-        [PropertyNameDisplay(propName: "Tên kì học")]
+        [PropertyNameDisplay(propName: "Tên tuần")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
 
-        public string SemesterName { get; set; } = string.Empty;
+        public string WeekrName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Ngày bắt đầu kì học
+        /// Ngày bắt đầu tuần
         /// </summary>
         [PropertyNameDisplay(propName: "Ngày bắt đầu")]
         [ForGetting]
@@ -59,7 +59,7 @@ namespace RoomBooking.Common.Entities
         public DateTime StartDate { get; set; }
 
         /// <summary>
-        /// Ngày kết thúc kì học
+        /// Ngày kết thúc tuần
         /// </summary>
         [PropertyNameDisplay(propName: "Ngày kết thúc")]
         [ForGetting]

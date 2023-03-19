@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.DAL.Repositories
 {
-    public class SemesterRepository : BaseRepository<Semester>, ISemesterRepository
+    public class WeekRepository : BaseRepository<Week>, IWeekRepository
     {
-        public SemesterRepository(IConfiguration configuration) : base(configuration)
+        public WeekRepository(IConfiguration configuration) : base(configuration)
         {
         }
     }

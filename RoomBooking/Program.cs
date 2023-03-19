@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.BLL.Services;
@@ -28,16 +30,19 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IJobPositionRepository, JobPositionRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IRoomScheduleRepository, RoomScheduleRepository>();
 builder.Services.AddScoped<IBuildingRepository, BuildingRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
-builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+builder.Services.AddScoped<IWeekRepository, WeekRepository>();
+builder.Services.AddScoped<IBookingRoomRepository, BookingRoomRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IJobPositionService, JobPositionService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IBuildingService, BuildingService>();
-builder.Services.AddScoped<ISemesterService, SemesterService>();
+builder.Services.AddScoped<IWeekService, WeekService>();
+builder.Services.AddScoped<IBookingRoomService, BookingRoomService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -63,7 +68,7 @@ builder.Services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
 });
-
+//builder.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("CorsPolicy", b =>
@@ -73,6 +78,7 @@ builder.Services.AddCors(o =>
     );
 }
 );
+builder.Services.AddMemoryCache();
 var app = builder.Build();
 app.UseRouting();
 

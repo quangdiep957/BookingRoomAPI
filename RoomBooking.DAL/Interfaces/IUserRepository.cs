@@ -17,7 +17,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="keyWord">Dữ liệu chọn lọc để tìm kiếm</param>
         /// <returns>Object: chứa pageSize, pageIndex, data</returns>
         /// Created by: PTTAM (07/03/2023)
-        public object GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId);
+        public Task<object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId);
 
 
 
@@ -26,7 +26,7 @@ namespace RoomBooking.DAL.Interfaces
         /// </summary>
         /// <returns>Mã nhân viên mới</returns>
         /// Created by: PTTAM (07/03/2023)
-        public string GetNewUserCode();
+        public Task<string> GetNewUserCode();
 
         /// <summary>
         /// Thực hiên sửa vai trò của nhân viên
@@ -34,7 +34,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="roleList">Mảng vai trò của nhân viên</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public string UpdateUserRole(Guid userId, List<UserRole> roleList);
+        public Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList);
 
 
     }

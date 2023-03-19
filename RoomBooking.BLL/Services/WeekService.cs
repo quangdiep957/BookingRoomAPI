@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.BLL.Services
 {
-    public class SemesterService : BaseService<Semester>, ISemesterService
+    public class WeekService : BaseService<Week>, IWeekService
     {
-        public SemesterService(IBaseRepository<Semester> repository) : base(repository)
+        public WeekService(IBaseRepository<Week> repository) : base(repository)
         {
         }
     }

@@ -5,6 +5,7 @@ using RoomBooking.Common.AttributeCustom;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace RoomBooking.DAL.Repositories
         public BaseRepository(IConfiguration configuration)
         {
 
-            _connectionString = configuration.GetConnectionString("MISA_PROCESS");
+            _connectionString = configuration.GetConnectionString("ROOM_BOOKING");
             _sqlConnection = new MySqlConnection(_connectionString);
 
             _className = typeof(Entity).Name;
@@ -35,14 +36,14 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy toàn bộ danh sách
         /// </summary>
         /// CretedBy: PTTAM (07/03/2023)
-        public IEnumerable<Entity> GetAll()
+        public async Task<IEnumerable<Entity>> GetAll()
         {
             DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetAll";
             var fields = GetAllRequestValues<Entity>();
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var entities = _sqlConnection.Query<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var entities = await _sqlConnection.QueryAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
 
             CloseConnection();
             return entities;
@@ -54,7 +55,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng cần lấy </returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public virtual Entity GetById(Guid entityId)
+        public virtual async Task<Entity> GetById(Guid entityId)
         {
             var storeName = "Proc_GetByEntityId";
             var fields = GetAllRequestValues<Entity>();
@@ -62,7 +63,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@EntityId", entityId);
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var res = _sqlConnection.QueryFirstOrDefault<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await _sqlConnection.QueryFirstOrDefaultAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
             CloseConnection();
             return res;
         }
@@ -73,21 +74,20 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entity">Đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public string Insert(Entity entity)
+        public async Task<bool> Insert(Entity entity)
         {
             var storeName = $"Proc_Insert{_className}";
 
-            var res = _sqlConnection.Execute(storeName, param: entity, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await _sqlConnection.ExecuteAsync(storeName, param: entity, commandType: System.Data.CommandType.StoredProcedure);
             CloseConnection();
             if (res == 1)
             {
-                return "Thành công";
-               // return MISAResource.InsertSuccess;
+                return true;
 
             }
             else
             {
-                return "Thất bại";
+                return false;
                 //return MISAResource.InsertFail;
             }
         }
@@ -99,7 +99,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public string Update(Entity entity, Guid entityId)
+        public async Task<bool> Update(Entity entity, Guid entityId)
         {
             if (_sqlConnection.State == System.Data.ConnectionState.Closed)
             {
@@ -119,10 +119,10 @@ namespace RoomBooking.DAL.Repositories
                     prop.SetValue(entity, entityId); // gán lại id của đối tượng
 
                 }
-                var rowEffect = _sqlConnection.Execute(storeUpdate, param: entity, transaction: transaction, commandType: System.Data.CommandType.StoredProcedure);
+                var rowEffect = await _sqlConnection.ExecuteAsync(storeUpdate, param: entity, transaction: transaction, commandType: System.Data.CommandType.StoredProcedure);
                 transaction.Commit();
 
-                return "Thành công";
+                return true;
             }
             catch (Exception ex)
             {
@@ -142,20 +142,20 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public string Delete(Guid entityId)
+        public async Task<bool> Delete(Guid entityId)
         {
             var storeDelete = "Proc_Delete";
             DynamicParameters paramId = new DynamicParameters();
             paramId.Add("@EntityId", entityId);
             paramId.Add("@TableName", _className);
-            var res = _sqlConnection.Execute(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await _sqlConnection.ExecuteAsync(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
             CloseConnection();
             if (res == 1)
             {
-                return "Thành công";
+                return true;
 
             }
-            else return "Thất bại";
+            else return false;
 
         }
 
@@ -272,7 +272,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listEntities">Danh sách các đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public virtual string InsertMulti(List<Entity> listEntities)
+        public async virtual Task<bool> InsertMulti(List<Entity> listEntities)
         {
             if (_sqlConnection.State == System.Data.ConnectionState.Closed)
             {
@@ -281,21 +281,21 @@ namespace RoomBooking.DAL.Repositories
             Entity entity = listEntities[0];
             string sqlQuery = GetAllBindingNames(entity);
             DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
+            MySqlTransaction transaction = _sqlConnection.BeginTransaction(); 
             for (int i = 0; i < listEntities.Count; i++)
             {
                 sqlQuery += GetAllBindingValues(listEntities[i], i, dynamicParameters);
             }
             sqlQuery = sqlQuery[..^1];
-            var rowEffect = _sqlConnection.Execute(sqlQuery, dynamicParameters, transaction: transaction);
+            var rowEffect = await _sqlConnection.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
             if (rowEffect < listEntities.Count)
             {
                 transaction.Rollback();
-                return "Thất bại";
+                return false;
             }
             transaction.Commit();
             CloseConnection();
-            return "Thành công";
+            return true;
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của trường</param>
         /// <returns>True: không trùng, false: trùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public bool CheckUnique(string entityName, object entityValue, Guid? entityId = null)
+        public async Task<bool> CheckUnique(string entityName, object entityValue, Guid? entityId = null)
         {
             var storeName = "Proc_CheckUnique";
             DynamicParameters parameters = new DynamicParameters();
@@ -317,9 +317,52 @@ namespace RoomBooking.DAL.Repositories
 
             parameters.Add("@EntityValue", entityValue);
 
-            var res = _sqlConnection.QueryFirstOrDefault(storeName, parameters, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await _sqlConnection.QueryFirstOrDefaultAsync(storeName, parameters, commandType: System.Data.CommandType.StoredProcedure);
             CloseConnection();
             return res != null;
+        }
+
+        public async Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex)
+        {
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            var storeName = $"Proc_GetEntityPaging";
+            var fields = GetAllRequestValues<Entity>();
+            dynamicParameters.Add("@TableName", _className);
+            dynamicParameters.Add("@Properties", fields);
+            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(filterName)?filterName:"");
+            dynamicParameters.Add("@PageSize", pageSize);
+            dynamicParameters.Add("@PageIndex", pageIndex);
+            var data = await _sqlConnection.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            int totalRecords = 0;
+            int totalPages = 0;
+            if (data!= null ) {
+                totalRecords = data.Count();
+                totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            }
+            int startRecord = pageSize * (pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = pageSize * (pageIndex - 1) + pageSize; // Bản ghi kết thúc của trang hiện tại
+
+            if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
+            {
+                endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
+            }
+
+            // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
+            if (startRecord > endRecord)
+            {
+                startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
+            }
+         
+            CloseConnection();
+            return new
+            {
+                TotalPage = totalPages,
+                TotalRecord = totalRecords,
+                CurrentPage = pageIndex,
+                StartRecord = startRecord,
+                EndRecord = endRecord,
+                Data = data
+            };
         }
     }
 }

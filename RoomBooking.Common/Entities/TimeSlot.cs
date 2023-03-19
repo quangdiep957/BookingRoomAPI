@@ -11,7 +11,7 @@ namespace RoomBooking.Common.Entities
     /// Thông tin thời gian
     /// </summary>
     ///  Created by: PTTAM (07/03/2023)
-    public class Time_Slot : BaseEntity
+    public class TimeSlot : BaseEntity
     {
         /// <summary>
         /// Khóa chính thời gian
@@ -35,7 +35,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
 
-        public string TimeSlotName { get; set; } = string.Empty;
+        public int TimeSlotName { get; set; }
 
     }
 }
