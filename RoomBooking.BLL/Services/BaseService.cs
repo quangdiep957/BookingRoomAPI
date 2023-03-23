@@ -1,4 +1,6 @@
-﻿using RoomBooking.BLL.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using MySqlConnector;
+using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Exception;
@@ -6,6 +8,7 @@ using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,19 +42,43 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public async Task<bool> InsertService(Entity entity)
         {
+            MySqlConnection cnn = _repository.GetConnection();
+            cnn.Open();
             // Gọi đến hàm validate dữ liệu
-            ValidateError(entity);
-            // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
-            if (isValidCustom == true && errorList.Count <= 0)
-            {
-                var res = await _repository.Insert(entity);
-                return res;
-            }
-            else // Ngược lại throw ra lỗi
-            {
+            ValidateError(entity, cnn);
 
-                throw new ValidateException(errors);
-            }
+            using (MySqlTransaction tran = cnn.BeginTransaction())
+            {
+                try
+                {
+                    // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
+                    if (isValidCustom == true && errorList.Count <= 0)
+                    {
+                        var res = await _repository.Insert(entity, cnn, tran);
+                        if (res == true) {
+                            tran.Commit();
+
+                        }
+                        else { tran.Rollback(); }
+                        return res;
+                    }
+                    else // Ngược lại throw ra lỗi
+                    {
+
+                        throw new ValidateException(errors);
+                    }
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    cnn.Close();
+
+                }
+            }   
 
         }
 
@@ -64,19 +91,48 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public async Task<bool> UpdateService(Guid entityId, Entity entity)
         {
-            // Gọi đến hàm validate dữ liệu
-            ValidateError(entity);
-            // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
-            if (isValidCustom == true && errorList.Count <= 0)
-            {
-                var res = await _repository.Update(entity, entityId);
-                return res;
-            }
-            else // Ngược lại throw ra lỗi
-            {
 
-                throw new ValidateException(errors);
+            var cnn = _repository.GetConnection();
+            cnn.Open();
+            ValidateError(entity, cnn);
+           
+            using (MySqlTransaction tran = cnn.BeginTransaction())
+            {
+                try
+                {
+                    // Gọi đến hàm validate dữ liệu
+                    // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
+                    if (isValidCustom == true && errorList.Count <= 0)
+                    {
+                        var res = await _repository.Update(entity, entityId, cnn,tran);
+                        if (res)
+                        {
+                            tran.Commit();
+                        }
+                        else
+                        {
+                            tran.Rollback();
+                        }
+                        return res;
+                    }
+                    else // Ngược lại throw ra lỗi
+                    {
+
+                        throw new ValidateException(errors);
+                    }
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    cnn.Close();
+
+                }
             }
+           
 
 
         }
@@ -89,24 +145,43 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public async Task<bool> InsertMultiService(List<Entity> entities)
         {
-
+            MySqlConnection cnn= _repository.GetConnection();
+            cnn.Open();
             for (int i = 0; i < entities.Count; i++)
             {
-                ValidateError(entities[i]); // gọi hàm validte
+                ValidateError(entities[i],cnn); // gọi hàm validte
             }
-
-            // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
-            if (isValidCustom == true && errorList.Count <= 0)
+            using (MySqlTransaction tran = cnn.BeginTransaction())
             {
-                var res = await _repository.InsertMulti(entities);
-                return res;
-            }
-            else // Ngược lại throw ra lỗi
-            {
+                try
+                {
+                    // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
+                    if (isValidCustom == true && errorList.Count <= 0)
+                    {
+                        var res = await _repository.InsertMulti(entities,tran,cnn);
+                        if (res)
+                        {
+                            tran.Commit();
+                        }
+                        else { tran.Rollback(); }
+                        return res;
+                    }
+                    else // Ngược lại throw ra lỗi
+                    {
+                        tran.Rollback();
+                        throw new ValidateException(errors);
+                    }
 
-                throw new ValidateException(errors);
+                }
+                catch
+                {
+                    tran.Rollback();
+                    
+                    throw;
+                }
+                finally { cnn.Close(); }
             }
-
+           
         }
 
         /// <summary>
@@ -115,7 +190,10 @@ namespace RoomBooking.BLL.Services
         ///  Created by: PTTAM (07/03/2023)
         public async Task<IEnumerable> GetAllService()
         {
-            var res = await _repository.GetAll();
+            var cnn = _repository.GetConnection();
+            cnn.Open();
+            var res = await _repository.GetAll(cnn);
+            cnn.Close();
             return res;
         }
 
@@ -126,7 +204,10 @@ namespace RoomBooking.BLL.Services
         ///  Created by: PTTAM (07/03/2023)
         public async Task<Entity> GetByIdService(Guid entityId)
         {
-            var res = await _repository.GetById(entityId);
+        
+            var cnn = _repository.GetConnection(); cnn.Open();
+            var res = await _repository.GetById(entityId,cnn);
+            cnn.Close();
             return res;
         }
 
@@ -137,8 +218,31 @@ namespace RoomBooking.BLL.Services
         ///  Created by: PTTAM (07/03/2023)
         public async Task<bool> DeleteService(Guid entityId)
         {
-            var res = await _repository.Delete(entityId);
-            return res;
+            bool isSucess = true;
+            var cnn = _repository.GetConnection(); cnn.Open();
+            using (MySqlTransaction tran = cnn.BeginTransaction())
+            {
+                try
+                {
+                    var res = await _repository.Delete(entityId,cnn,tran);
+                    if (!res)
+                    {
+                        isSucess= false;
+                    }
+                }
+                catch (Exception)
+                {
+                    isSucess = false;
+
+                }
+                finally
+                {
+                    cnn.Close();
+                }
+            } 
+
+              
+            return isSucess;
         }
         #region Validate
 
@@ -148,7 +252,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng cần validare</param>
         /// <param name="id">Khóa chính</param>
         /// Created by: PTTAM (07/03/2023)
-        private void ValidateError(Entity entity)
+        private void ValidateError(Entity entity,MySqlConnection cnn)
         {
             // thực hiện validate Dữ liệu
             //1. Check các trường trống
@@ -160,7 +264,7 @@ namespace RoomBooking.BLL.Services
             //3. Check các trường bị trùng
             if (isValidLength == true)
             {
-                CheckUnique(entity);
+                CheckUnique(entity,cnn);
             }
             isValidCustom = ValidateCustom(entity);//Gọi đến hàm validate custom cho từng đối tượng
 
@@ -217,7 +321,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entity">Đối tượng kiểm tra </param>
         ///  Created by: PTTAM (07/03/2023)
-        private async void CheckUnique(Entity entity)
+        private async void CheckUnique(Entity entity,MySqlConnection cnn)
         {
             // lấy attribute Unique để kiểm trường duy nhất
             var propertyUnique = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(Unique)));
@@ -236,7 +340,7 @@ namespace RoomBooking.BLL.Services
                 var value = property.GetValue(entity).ToString(); // lấy ra giá trị
                 var name = property.Name; // lấy ra tên 
                 //Gọi đến hàm kiểm tra trường phải là duy nhất trong repository
-                if (await _repository.CheckUnique(name, value))
+                if (await _repository.CheckUnique(name, value, cnn))
                 {
                     // lấy ra attribute PropertyNameDisplay
                     var getVIName = property.GetCustomAttributes(typeof(PropertyNameDisplay), true).First();
@@ -310,7 +414,10 @@ namespace RoomBooking.BLL.Services
 
         public async Task<object> GetEntityPaging(int pageSize, int pageIndex, string? keyWord)
         {
-            var res = await _repository.GetEntityPaging(keyWord, pageSize, pageIndex);
+            var cnn = _repository.GetConnection(); cnn.Open();
+
+            var res = await _repository.GetEntityPaging(cnn,keyWord, pageSize, pageIndex);
+            cnn.Close();
             return res;
         }
 

@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using RoomBooking.Common.AttributeCustom;
@@ -6,9 +8,12 @@ using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RoomBooking.DAL.Repositories
 {
@@ -36,16 +41,15 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy toàn bộ danh sách
         /// </summary>
         /// CretedBy: PTTAM (07/03/2023)
-        public async Task<IEnumerable<Entity>> GetAll()
+        public async Task<IEnumerable<Entity>> GetAll(MySqlConnection cnn)
         {
             DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetAll";
             var fields = GetAllRequestValues<Entity>();
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var entities = await _sqlConnection.QueryAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var entities = await cnn.QueryAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
 
-            CloseConnection();
             return entities;
         }
 
@@ -55,7 +59,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng cần lấy </returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public virtual async Task<Entity> GetById(Guid entityId)
+        public virtual async Task<Entity> GetById(Guid entityId, MySqlConnection cnn)
         {
             var storeName = "Proc_GetByEntityId";
             var fields = GetAllRequestValues<Entity>();
@@ -63,8 +67,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@EntityId", entityId);
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var res = await _sqlConnection.QueryFirstOrDefaultAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
-            CloseConnection();
+            var res = await cnn.QueryFirstOrDefaultAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
             return res;
         }
 
@@ -74,22 +77,33 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entity">Đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Insert(Entity entity)
+        public async Task<bool> Insert(Entity entity,MySqlConnection cnn, MySqlTransaction transaction)
         {
-            var storeName = $"Proc_Insert{_className}";
 
-            var res = await _sqlConnection.ExecuteAsync(storeName, param: entity, commandType: System.Data.CommandType.StoredProcedure);
-            CloseConnection();
-            if (res == 1)
+            bool isSuccess = true;
+            try
             {
-                return true;
+
+
+                string sqlQuery = GetAllBindingNames(entity);
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                sqlQuery += GetAllBindingValues(entity, 0, dynamicParameters);
+                sqlQuery = sqlQuery[..^1];
+                var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
+                if (rowEffect < 1)
+                {
+                    isSuccess = false;
+                }
+
 
             }
-            else
+            catch (DbException ex)
             {
-                return false;
-                //return MISAResource.InsertFail;
+                isSuccess = false;
+
             }
+            return isSuccess;
+
         }
 
         /// <summary>
@@ -99,41 +113,20 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Update(Entity entity, Guid entityId)
+        public async Task<bool> Update(Entity entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
-            if (_sqlConnection.State == System.Data.ConnectionState.Closed)
+            bool isSuccess = true;
+
+
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            string sqlQuery = GetAllBindingUpdate(entity, dynamicParameters);
+
+            var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
+            if (rowEffect == 0)
             {
-                _sqlConnection.Open();
+                isSuccess = false;
             }
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
-
-            try
-            {
-
-                var storeUpdate = $"Proc_Update{_className}"; // tên thủ tục cập nhật đối tượng
-
-                // Lấy ra attribute có tên PrimaryKey
-                var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
-                foreach (var prop in primaryKey)
-                {
-                    prop.SetValue(entity, entityId); // gán lại id của đối tượng
-
-                }
-                var rowEffect = await _sqlConnection.ExecuteAsync(storeUpdate, param: entity, transaction: transaction, commandType: System.Data.CommandType.StoredProcedure);
-                transaction.Commit();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw new Exception(ex.Message);
-            }
-            finally
-            {
-                CloseConnection();
-
-            }
+            return isSuccess;
         }
 
         /// <summary>
@@ -142,29 +135,36 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Delete(Guid entityId)
+        public async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
-            var storeDelete = "Proc_Delete";
-            DynamicParameters paramId = new DynamicParameters();
-            paramId.Add("@EntityId", entityId);
-            paramId.Add("@TableName", _className);
-            var res = await _sqlConnection.ExecuteAsync(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
-            CloseConnection();
-            if (res == 1)
+            bool isSucess = true;
+            try
             {
-                return true;
+                var storeDelete = "Proc_Delete";
+                DynamicParameters paramId = new DynamicParameters();
+                paramId.Add("@EntityId", entityId);
+                paramId.Add("@TableName", _className);
+
+                var res = await cnn.ExecuteAsync(storeDelete, paramId,transaction, commandType: System.Data.CommandType.StoredProcedure);
 
             }
-            else return false;
+            catch (Exception)
+            {
 
+                isSucess = false;
+            }
+
+
+            return isSucess;
         }
 
         /// <summary>
         /// Đóng connection
         /// </summary>
-        public void CloseConnection()
+        public async Task CloseConnection()
         {
             _sqlConnection.Close();
+            // _sqlConnection.Dispose();
 
         }
 
@@ -198,6 +198,39 @@ namespace RoomBooking.DAL.Repositories
             }
             // bỏ kí tự ',' cuối cùng
             allNames = allNames[..^1];
+            return allNames;
+        }
+
+        protected string GetAllBindingUpdate(Entity entity, DynamicParameters parameters)
+        {
+            // lấy tất cả cá properties ForBinding
+
+            var properties = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(ForBinding)));
+            // Buid câu truy vấn
+            var allNames = $"Update {typeof(Entity).Name} SET ";
+            foreach (var property in properties)
+            {
+                if (!Attribute.IsDefined(property, typeof(PrimaryKey)))
+                {
+                    // lấy tên của prop 
+                    allNames += property.Name + " = " + $"@{property.Name}0" + ",";
+                    parameters.Add($"@{property.Name}0", property.GetValue(entity));
+                }
+
+
+
+            }
+            allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
+                                       // Lấy ra attribute có tên PrimaryKey
+            var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
+            Guid key = Guid.Empty;
+            foreach (var prop in primaryKey)
+            {
+                key = (Guid)prop.GetValue(entity);
+
+            }
+            allNames += $" WHERE {typeof(Entity).Name}ID = @{typeof(Entity).Name}ID0;";
+            parameters.Add($"@{typeof(Entity).Name}ID" + 0, key);
             return allNames;
         }
 
@@ -272,29 +305,22 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listEntities">Danh sách các đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async virtual Task<bool> InsertMulti(List<Entity> listEntities)
+        public async virtual Task<bool> InsertMulti(List<Entity> listEntities, MySqlTransaction transaction,MySqlConnection cnn)
         {
-            if (_sqlConnection.State == System.Data.ConnectionState.Closed)
-            {
-                _sqlConnection.Open();
-            }
+            bool isSuccess = true;
             Entity entity = listEntities[0];
             string sqlQuery = GetAllBindingNames(entity);
             DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction(); 
             for (int i = 0; i < listEntities.Count; i++)
             {
                 sqlQuery += GetAllBindingValues(listEntities[i], i, dynamicParameters);
             }
             sqlQuery = sqlQuery[..^1];
-            var rowEffect = await _sqlConnection.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
+            var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
             if (rowEffect < listEntities.Count)
             {
-                transaction.Rollback();
                 return false;
             }
-            transaction.Commit();
-            CloseConnection();
             return true;
         }
 
@@ -306,7 +332,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của trường</param>
         /// <returns>True: không trùng, false: trùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> CheckUnique(string entityName, object entityValue, Guid? entityId = null)
+        public async Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn, Guid? entityId = null)
         {
             var storeName = "Proc_CheckUnique";
             DynamicParameters parameters = new DynamicParameters();
@@ -317,25 +343,26 @@ namespace RoomBooking.DAL.Repositories
 
             parameters.Add("@EntityValue", entityValue);
 
-            var res = await _sqlConnection.QueryFirstOrDefaultAsync(storeName, parameters, commandType: System.Data.CommandType.StoredProcedure);
-            CloseConnection();
+            var res = await cnn.QueryFirstOrDefaultAsync(storeName, parameters, commandType: System.Data.CommandType.StoredProcedure);
+
             return res != null;
         }
 
-        public async Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex)
+        public async Task<Object> GetEntityPaging(MySqlConnection cnn,string filterName, int pageSize, int pageIndex )
         {
             DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetEntityPaging";
             var fields = GetAllRequestValues<Entity>();
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(filterName)?filterName:"");
+            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(filterName) ? filterName : "");
             dynamicParameters.Add("@PageSize", pageSize);
             dynamicParameters.Add("@PageIndex", pageIndex);
-            var data = await _sqlConnection.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var data = await cnn.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
             int totalRecords = 0;
             int totalPages = 0;
-            if (data!= null ) {
+            if (data != null)
+            {
                 totalRecords = data.Count();
                 totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             }
@@ -352,8 +379,7 @@ namespace RoomBooking.DAL.Repositories
             {
                 startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
             }
-         
-            CloseConnection();
+
             return new
             {
                 TotalPage = totalPages,
@@ -363,6 +389,11 @@ namespace RoomBooking.DAL.Repositories
                 EndRecord = endRecord,
                 Data = data
             };
+        }
+
+        public MySqlConnection GetConnection()
+        {
+            return _sqlConnection;
         }
     }
 }

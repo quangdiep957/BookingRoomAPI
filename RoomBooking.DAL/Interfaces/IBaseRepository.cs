@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace RoomBooking.DAL.Interfaces
         /// </summary>
         /// <returns>Danh sách tất cả các bản ghi</returns>
         /// Created by: PTTAM (19/03/2023)
-        public Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex);
+        public Task<Object> GetEntityPaging(MySqlConnection cnn,string filterName, int pageSize, int pageIndex);
         /// <summary>
         /// Lấy tất cả dữ liệu 
         /// </summary>
         /// <returns>Danh sách tất cả các bản ghi</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<IEnumerable<EntityCustom>> GetAll();
+        public Task<IEnumerable<EntityCustom>> GetAll(MySqlConnection cnn);
 
         /// <summary>
         /// Lấy thông tin đối tượng theo khóa chính
@@ -28,7 +29,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng lấy được theo khóa chính</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<EntityCustom> GetById(Guid entityId);
+        public Task<EntityCustom> GetById(Guid entityId,MySqlConnection cnn);
 
         /// <summary>
         /// Thêm mới một đối tượng
@@ -39,7 +40,7 @@ namespace RoomBooking.DAL.Interfaces
         /// "Thêm mới thất bại" (Trường hợp ngược lại)
         /// </returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<bool> Insert(EntityCustom entity);
+        public Task<bool> Insert(EntityCustom entity,MySqlConnection cnn,MySqlTransaction transaction);
 
         /// <summary>
         /// Sửa một đối tượng theo khóa chính
@@ -51,7 +52,7 @@ namespace RoomBooking.DAL.Interfaces
         /// "Sửa thất bại" (Trường hợp ngược lại)
         ///</returns>
         ///Created by: PTTAM (06/03/2023)
-        public Task<bool> Update(EntityCustom entity, Guid entityId);
+        public Task<bool> Update(EntityCustom entity, Guid entityId,MySqlConnection cnn,MySqlTransaction tran);
 
         /// <summary>
         /// Xóa đối tượng theo khóa chính
@@ -62,7 +63,7 @@ namespace RoomBooking.DAL.Interfaces
         /// "Xóa thất bại" (Trường hợp ngược lại)
         /// </returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<bool> Delete(Guid entityId);
+        public Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction);
 
         /// <summary>
         /// Thực hiện thêm nhiều 
@@ -70,7 +71,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="listEntities">danh sách đối tượng cần thêm</param>
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<bool> InsertMulti(List<EntityCustom> listEntities);
+        public Task<bool> InsertMulti(List<EntityCustom> listEntities, MySqlTransaction tran, MySqlConnection cnn);
 
         /// <summary>
         /// Thực hiện kiểm tra trường dữ liệu phải là duy nhất
@@ -80,6 +81,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns> true: mã trùng, false: không có mã trùng</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<bool> CheckUnique(string entityName, object entityValue, Guid? entityId = null);
+        public Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn,Guid? entityId = null);
+        public MySqlConnection GetConnection();
     }
 }

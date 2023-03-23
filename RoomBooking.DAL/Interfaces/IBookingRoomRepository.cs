@@ -9,7 +9,7 @@ namespace RoomBooking.DAL.Interfaces
 {
     public interface IBookingRoomRepository : IBaseRepository<BookingRoom>
     {
-        public Task<object> CheckRoom(List<BookingRoom> listRoom);
+        public Task<List<string>> CheckRoom(List<BookingRoom> listRoom);
     }
 
 }

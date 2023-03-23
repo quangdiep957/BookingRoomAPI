@@ -73,33 +73,32 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<bool> InsertMulti(List<BookingRoom> listRoom)
+        public async override Task<bool> InsertMulti(List<BookingRoom> listRoom, MySqlTransaction transaction, MySqlConnection cnn)
         {
-
-            base._sqlConnection.Open();
+            bool isSuccess = true;
             //1. Thực hiện insert Room
             int countRoom = 0; // biến đếm khi thực hiện thêm người dùng
             string sqlQuery = GetAllBindingNames(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
             DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
 
 
             List<Room> dataRoom = (List<Room>)await _sqlConnection.QueryAsync<Room>("SELECT * FROM Room;", transaction: transaction);
-
+            List<Week> dataWeek = (List<Week>)await _sqlConnection.QueryAsync<Week>("SELECT * FROM Week;", transaction: transaction);
             List<TimeSlot> slotTime = (List<TimeSlot>)await _sqlConnection.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: transaction);
+           Guid weekID= dataWeek.Where(x=> x.WeekCode== listRoom[0].Week).Select(x=>x.WeekID).FirstOrDefault();
             foreach (BookingRoom room in listRoom)
             {
                 var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
-
                 var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
                 room.BookingRoomID = Guid.NewGuid();
                 room.RoomID = itemRoom.RoomID;
                 room.TimeSlotID = itemTimeSlot.TimeSlotID;
+                room.WeekID = weekID;
                 room.Subject = "Lịch học tuần " + room.Week;
                 room.UserID = new Guid("d06fc80f-c4d4-11ed-b43e-f8b46ac25bb6");
                 room.YearPlan = room.DateBooking.Year;
                 room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
-
+                
 
             }
 
@@ -109,25 +108,21 @@ namespace RoomBooking.DAL.Repositories
                 countRoom++;
             }
             sqlQuery = sqlQuery[..^1]; // bỏ dấu ',' cuối cùng
-            var rowEffect = _sqlConnection.Execute(sqlQuery, dynamicParameters, transaction: transaction);
+            var rowEffect = cnn.Execute(sqlQuery, dynamicParameters, transaction: transaction);
 
             // nếu số bản ghi thay đổi < countRoom
             if (rowEffect < countRoom)
             {
-                transaction.Rollback(); // rollback 
-                CloseConnection();
 
-                return false; // thêm thất bại
+                isSuccess = false; // thêm thất bại
             }
 
-            transaction.Commit();
-            CloseConnection();
-            return true;
+            return isSuccess;
 
 
 
         }
-        public async Task<object> CheckRoom(List<BookingRoom> listRoom)
+        public async Task<List<string>> CheckRoom(List<BookingRoom> listRoom)
         {
 
             base._sqlConnection.Open();
@@ -151,7 +146,7 @@ namespace RoomBooking.DAL.Repositories
 
             }
            var res= listRoomNotIn.Select(x=>x.Room).Distinct().ToList();
-            CloseConnection();
+           CloseConnection();
             return res;
         }
     }

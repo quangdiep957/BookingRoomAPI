@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class BookingRoom:BaseEntity
+    public class BookingRoom : BaseEntity
     {
         /// <summary>
         /// Khóa ngoại người dùng
@@ -55,6 +55,17 @@ namespace RoomBooking.Common.Entities
         public Guid TimeSlotID { get; set; }
 
         /// <summary>
+        /// Khóa chính thời gian
+        /// </summary>
+        [MISADataLength(36)]
+        [ForGetting]
+        [ForBinding]
+        [Ambiguous]
+        [NotEmpty]
+
+        public Guid WeekID { get; set; }
+
+        /// <summary>
         /// Khóa chính kì học
         /// </summary> }
 
@@ -85,17 +96,19 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         public int YearPlan { get; set; }
 
-
-        public string Building { get; set; }
         public string Room { get; set; }
         [ForGetting]
         [ForBinding]
         public string DayOfWeek { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public string Week { get; set; }
+        public string Building { get; set; }
         public string Time { get; set; }
         public string MorningFreePeriod { get; set; }
         public string AfternoonFreePeriod { get; set; }
         public string EveningFreePeriod { get; set; }
-        public string Week { get; set; }
+
         public int Day { get; set; }
         public string SlotTime { get; set; }
         public int Times { get; set; }

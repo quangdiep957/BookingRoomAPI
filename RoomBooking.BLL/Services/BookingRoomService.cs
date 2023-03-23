@@ -17,20 +17,24 @@ namespace RoomBooking.BLL.Services
     {
         IBookingRoomRepository _repository;
         IWeekRepository _repoWeek;
-        public BookingRoomService(IBookingRoomRepository repository,IWeekRepository repoWeek) : base(repository)
+        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek) : base(repository)
         {
             _repository = repository;
             _repoWeek = repoWeek;
         }
-       
 
-        
+
+        /// <summary>
+        /// Đọc file excell
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns>Object</returns>
         public async Task<Object> ReadExcelFile(string filePath)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             List<BookingRoom> scheduleItems = new List<BookingRoom>();
-
-            using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+          
+                    using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
@@ -62,8 +66,8 @@ namespace RoomBooking.BLL.Services
                 }
             }
             List<Week> weeks = new List<Week>();
-           // int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
-           // var dates = new List<DateTime>();
+            // int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
+            // var dates = new List<DateTime>();
             //foreach (var weekday in weekDays)
             //{
             //    // Tính ngày bắt đầu và kết thúc của tuần
@@ -76,34 +80,87 @@ namespace RoomBooking.BLL.Services
             //    var date = weekStart.AddDays(diff);
             //    dates.Add(date);
             //}
-
+            // Thực hiện convert lại dữ liệu
             List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
 
+            // Check xem các phòng trong list đã có trong db chưa
             var listRoomEmpty = await _repository.CheckRoom(lst);
-            if (listRoomEmpty==null)
-            {
-                var res = _repository.InsertMulti(lst);
-                return new
-                {
-                    
-                    IsSucces = res,
-                    Data= listRoomEmpty
-                };
-            }
-            else
+           // Nếu chưa có
+            if (listRoomEmpty.Count>0)
             {
                 return new
                 {
 
                     IsSucces = false,
-                    Data = listRoomEmpty
+                    Data = listRoomEmpty // mảng chứa tên phòng chưa có trong csdl
                 };
             }
+            // Nếu có rồi
+            else
+            {
+                // Thực hiện thêm tuần vào db
+                var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
+                var weekEnd = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[1], "dd/MM/yyyy", null);
+                Week week = new Week
+                {
+                    WeekID = Guid.NewGuid(),
+                    WeekCode = scheduleItems[0].Week
+                    ,
+                    WeekName = "Tuần " + scheduleItems[0].Week,
+                    StartDate = weekStart,
+                    EndDate = weekEnd
+                };
+                MySqlConnection cnn = _repository.GetConnection();
+                cnn.Open();
+                Object result = new();
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        bool isInsertSucessWeek = await _repoWeek.Insert(week,cnn,tran);
+
+                        //Thêm tuần thành công
+                        if (isInsertSucessWeek)
+                        {
+                            var res = await _repository.InsertMulti(lst,tran,cnn);
+                            tran.Commit();
+                            result= new
+                            {
+
+                                IsSucces = res,
+                                Data = listRoomEmpty
+                            };
+                        }
+                        // Thêm tuần thất bại (TH đã thêm tuần => đã thêm dữ liệu vào 1 lần)
+                        else
+                        {
+                            tran.Rollback();
+                            result = new
+                            {
+                                
+                                IsSucces = false,
+                                Data = listRoomEmpty // mảng trống
+                            };
+                        }
+                    }
+                    catch { tran.Rollback(); }
+                    finally { cnn.Close(); }
+                }
+
+                return result;
+            }
+       
         }
+
+        /// <summary>
+        /// Thực hiện convert lại dữ liệu
+        /// </summary>
+        /// <param name="scheduleList"></param>
+        /// <returns></returns>
         private List<BookingRoom> ConvertScheduleList(List<BookingRoom> scheduleList)
         {
             var newScheduleList = new List<BookingRoom>();
-            
+
             for (int i = 0; i < scheduleList.Count; i++)
             {
                 int j = i - 1;
@@ -118,11 +175,8 @@ namespace RoomBooking.BLL.Services
                 scheduleList[i].Room = scheduleList[i].Room.Replace(" ", "");
                 // Tách thông tin về toà nhà và phòng học
                 var buildingInfo = scheduleList[i].Room.Split('-');
-                var buildingCode = buildingInfo.Length > 1?buildingInfo[1]: scheduleList[i].Room;
-               
-                
+                var buildingCode = buildingInfo.Length > 1 ? buildingInfo[1] : scheduleList[i].Room;
                 var buildingName = scheduleList[i].Room;
-
                 // Tạo danh sách các tiết trống sáng, chiều và tối
                 var morningFreePeriod = scheduleList[i].MorningFreePeriod;
                 var afternoonFreePeriod = scheduleList[i].AfternoonFreePeriod;
@@ -137,7 +191,6 @@ namespace RoomBooking.BLL.Services
                 foreach (var weekday in weekDays)
                 {
                     // Tính ngày bắt đầu và kết thúc của tuần
-
                     var weekStart = DateTime.ParseExact(scheduleList[i].Time.Split('-')[0], "dd/MM/yyyy", null);
                     var weekEnd = DateTime.ParseExact(scheduleList[i].Time.Split('-')[1], "dd/MM/yyyy", null);
 
@@ -167,11 +220,12 @@ namespace RoomBooking.BLL.Services
                         AfternoonFreePeriod = afternoonFreePeriod.ToString(),
                         EveningFreePeriod = eveningFreePeriod.ToString(),
                         Week = scheduleList[i].Week,
-                        DateBooking= date,
+                        DateBooking = date,
                     };
                     newScheduleList.Add(newSchedule);
                 }
             }
+
             // Tạo một danh sách rỗng để chứa các mục được chuyển đổi
             List<BookingRoom> convertedList = new List<BookingRoom>();
             // Vòng lặp qua từng mục trong danh sách ban đầu
@@ -185,7 +239,7 @@ namespace RoomBooking.BLL.Services
                     SlotTime = item.MorningFreePeriod,
                     Week = item.Week,
                     Times = 1,
-                    DateBooking= item.DateBooking
+                    DateBooking = item.DateBooking
                 });
                 convertedList.Add(new BookingRoom
                 {
@@ -223,8 +277,16 @@ namespace RoomBooking.BLL.Services
 
             return list;
 
-         
+
         }
+
+        /// <summary>
+        /// Thực hiện convert dữ liệu theo ca học
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="lstPeriods"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
         private List<BookingRoom> ConverDataToTimeSlot(BookingRoom item, string[] lstPeriods, int slot)
         {
             List<BookingRoom> convertedList = new List<BookingRoom>();
@@ -268,7 +330,7 @@ namespace RoomBooking.BLL.Services
                         DayOfWeek = item.DayOfWeek,
                         Times = int.Parse(ca.ToString()),
                         Week = item.Week,
-                        DateBooking= item.DateBooking
+                        DateBooking = item.DateBooking
                     });
                 }
             }

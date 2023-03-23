@@ -76,21 +76,15 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="listUsers">Danh sách người dùng</param>
         /// <returns></returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<bool> InsertMulti(List<User> listUsers)
+        public override async Task<bool> InsertMulti(List<User> listUsers, MySqlTransaction transaction, MySqlConnection cnn)
         {
-            // Mở connection
-            //if (_sqlConnection.State == System.Data.ConnectionState.Closed)
-            //{
-            //    _sqlConnection.Open();
-            //}
-            base._sqlConnection.Open();
+            bool isSuccess = true;
             //1. Thực hiện insert user
             List<UserRole> listUserRole = new List<UserRole>(); // Danh sách vai trò của người dùng
             int countUser = 0; // biến đếm khi thực hiện thêm người dùng
             int countUserRole = 0; // biến đếm khi thực hiện thêm vai trò của người dùng
             string sqlQuery = GetAllBindingNames(listUsers[0]); // câu truy vấn lấy ra tên trường của user
             DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
             for (int i = 0; i < listUsers.Count; i++)
             {
                 listUserRole.AddRange(listUsers[i].UserRoles); // thêm vai trò của người dùng vào danh sách vai trò 
@@ -98,26 +92,23 @@ namespace RoomBooking.DAL.Repositories
                 countUser++;
             }
             sqlQuery = sqlQuery[..^1]; // bỏ dấu ',' cuối cùng
-            var rowEffect = await _sqlConnection.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
+            var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
 
             // nếu số bản ghi thay đổi < countUser
             if (rowEffect < countUser)
             {
-                transaction.Rollback(); // rollback 
-                return false; // thêm thất bại
+                isSuccess= false;
             }
             else // ngược lại
             {   // thực hiện thêm mới vai trò
                 int res = await InsertUserRole(listUserRole, ref countUserRole,transaction);
                 if (res < countUserRole)
                 {
-                    transaction.Rollback();
-                    return false;
+                    isSuccess = false;
+
                 }
             }
-            transaction.Commit();
-            CloseConnection();
-            return true;
+            return isSuccess;
         }
 
         /// <summary>
@@ -311,13 +302,13 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="userId">Khóa chính người dùng</param>
         /// <returns>THông tin người dùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<User> GetById(Guid userId)
+        public override async Task<User> GetById(Guid userId, MySqlConnection cnn)
         {
 
             var storeName = "Proc_GetUserById";
             DynamicParameters dynamic = new DynamicParameters();
             dynamic.Add("@UserId", userId);
-            var users = await _sqlConnection.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
+            var users = await cnn.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
 
             User user = users.Read<User>().First();
             user.UserRoles = users.Read<UserRole>().ToList();

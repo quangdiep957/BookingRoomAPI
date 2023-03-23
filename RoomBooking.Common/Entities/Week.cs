@@ -23,20 +23,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
-        public Guid WeekrID { get; set; }
-
-        /// <summary>
-        /// Mã tuần
-        /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(20)]
-        [PropertyNameDisplay(propName: "Mã tuần")]
-        [ForGetting]
-        [ForBinding]
-        [NotEmpty]
-
-        public string WeekrCode { get; set; } = string.Empty;
-
+        public Guid WeekID { get; set; }
         /// <summary>
         /// Tên tuần
         /// </summary>
@@ -47,7 +34,20 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
 
-        public string WeekrName { get; set; } = string.Empty;
+        public string WeekName { get; set; } = string.Empty;
+        /// <summary>
+        /// Mã tuần
+        /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [MISADataLength(20)]
+        [PropertyNameDisplay(propName: "Mã tuần")]
+        [ForGetting]
+        [ForBinding]
+        [NotEmpty]
+
+        public string WeekCode { get; set; } = string.Empty;
+
+      
 
         /// <summary>
         /// Ngày bắt đầu tuần
