@@ -26,19 +26,24 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<Object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
+        public async Task<Object> GetPaging(int pageSize, int pageIndex,int type,string listDate,MySqlConnection cnn, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID)
         {
-
-            var storeName = "Proc_GetRoomPaging"; // Tên của thủ thục
+           
+            var storeName = "Proc_GetSchedulerRoomPaging"; // Tên của thủ thục
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PageSize", pageSize); //input: Số bản ghi/trang
             dynamicParameters.Add("@PageIndex", pageIndex);//input: Trang hiện tại
+            dynamicParameters.Add("@ListDate", listDate); //input: Từ khóa
             dynamicParameters.Add("@RoomFilter", keyWord); //input: Từ khóa
-            dynamicParameters.Add("@RoleId", roleId); //input: Khóa chính vai trò
+            dynamicParameters.Add("@RoomID", roomID); //input: Khóa chính vai trò
+            dynamicParameters.Add("@BuildingID", buildingID); //input: Khóa chính vai trò
+            dynamicParameters.Add("@TimeSlotID", timeSlotID); //input: Khóa chính vai trò
+            dynamicParameters.Add("@Type", type); //input: Khóa chính vai trò
+
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
             //2. Lấy dữ liệu
-            var employees = await _sqlConnection.QueryAsync<Room>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var employees = await cnn.QueryAsync<BookingRoom>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang

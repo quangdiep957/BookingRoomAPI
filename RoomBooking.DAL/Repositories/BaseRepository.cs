@@ -41,15 +41,19 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy toàn bộ danh sách
         /// </summary>
         /// CretedBy: PTTAM (07/03/2023)
-        public async Task<IEnumerable<Entity>> GetAll(MySqlConnection cnn)
+        public async Task<IEnumerable<Entity>> GetAll()
         {
+           if(_sqlConnection.State!= ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
             DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetAll";
             var fields = GetAllRequestValues<Entity>();
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var entities = await cnn.QueryAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
-
+            var entities = await _sqlConnection.QueryAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            CloseMyConnection();
             return entities;
         }
 
@@ -59,15 +63,20 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng cần lấy </returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public virtual async Task<Entity> GetById(Guid entityId, MySqlConnection cnn)
+        public virtual async Task<Entity> GetById(Guid entityId)
         {
+            if (_sqlConnection.State != ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
             var storeName = "Proc_GetByEntityId";
             var fields = GetAllRequestValues<Entity>();
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@EntityId", entityId);
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            var res = await cnn.QueryFirstOrDefaultAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await _sqlConnection.QueryFirstOrDefaultAsync<Entity>(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            CloseMyConnection();
             return res;
         }
 
@@ -332,7 +341,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của trường</param>
         /// <returns>True: không trùng, false: trùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn, Guid? entityId = null)
+        public async Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn, MySqlTransaction tran,Guid? entityId = null)
         {
             var storeName = "Proc_CheckUnique";
             DynamicParameters parameters = new DynamicParameters();
@@ -343,13 +352,17 @@ namespace RoomBooking.DAL.Repositories
 
             parameters.Add("@EntityValue", entityValue);
 
-            var res = await cnn.QueryFirstOrDefaultAsync(storeName, parameters, commandType: System.Data.CommandType.StoredProcedure);
+            var res = await cnn.QueryFirstOrDefaultAsync(storeName, parameters,transaction:tran, commandType: System.Data.CommandType.StoredProcedure);
 
             return res != null;
         }
 
-        public async Task<Object> GetEntityPaging(MySqlConnection cnn,string filterName, int pageSize, int pageIndex )
+        public async Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex )
         {
+            if(_sqlConnection.State!= ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
             DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetEntityPaging";
             var fields = GetAllRequestValues<Entity>();
@@ -358,7 +371,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(filterName) ? filterName : "");
             dynamicParameters.Add("@PageSize", pageSize);
             dynamicParameters.Add("@PageIndex", pageIndex);
-            var data = await cnn.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+            var data = await _sqlConnection.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
             int totalRecords = 0;
             int totalPages = 0;
             if (data != null)
@@ -379,7 +392,7 @@ namespace RoomBooking.DAL.Repositories
             {
                 startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
             }
-
+            CloseMyConnection();
             return new
             {
                 TotalPage = totalPages,
@@ -391,9 +404,14 @@ namespace RoomBooking.DAL.Repositories
             };
         }
 
-        public MySqlConnection GetConnection()
+        public MySqlConnection GetOpenConnection()
         {
+            _sqlConnection.Open();
             return _sqlConnection;
+        }
+        public void CloseMyConnection()
+        {
+            _sqlConnection.Close();
         }
     }
 }

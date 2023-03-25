@@ -1,5 +1,7 @@
-﻿using ExcelDataReader;
+﻿using Dapper;
+using ExcelDataReader;
 using MySqlConnector;
+using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
 using RoomBooking.DAL.Interfaces;
@@ -10,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RoomBooking.BLL.Services
 {
@@ -91,7 +94,7 @@ namespace RoomBooking.BLL.Services
                 return new
                 {
 
-                    IsSucces = false,
+                    IsSuccess = false,
                     Data = listRoomEmpty // mảng chứa tên phòng chưa có trong csdl
                 };
             }
@@ -110,43 +113,48 @@ namespace RoomBooking.BLL.Services
                     StartDate = weekStart,
                     EndDate = weekEnd
                 };
-                MySqlConnection cnn = _repository.GetConnection();
-                cnn.Open();
                 Object result = new();
-                using (MySqlTransaction tran = cnn.BeginTransaction())
+                using (MySqlConnection cnn = _repository.GetOpenConnection())
                 {
-                    try
+                  
+                    using (MySqlTransaction tran = cnn.BeginTransaction())
                     {
-                        bool isInsertSucessWeek = await _repoWeek.Insert(week,cnn,tran);
-
-                        //Thêm tuần thành công
-                        if (isInsertSucessWeek)
+                        try
                         {
-                            var res = await _repository.InsertMulti(lst,tran,cnn);
-                            tran.Commit();
-                            result= new
-                            {
+                            bool isInsertSucessWeek = await _repoWeek.Insert(week, cnn, tran);
 
-                                IsSucces = res,
-                                Data = listRoomEmpty
-                            };
-                        }
-                        // Thêm tuần thất bại (TH đã thêm tuần => đã thêm dữ liệu vào 1 lần)
-                        else
-                        {
-                            tran.Rollback();
-                            result = new
+                            //Thêm tuần thành công
+                            if (isInsertSucessWeek)
                             {
-                                
-                                IsSucces = false,
-                                Data = listRoomEmpty // mảng trống
-                            };
+                                var res = await _repository.InsertMulti(lst, tran, cnn);
+                                tran.Commit();
+                                result = new
+                                {
+
+                                    IsSuccess = res,
+                                    Data = listRoomEmpty
+                                };
+                            }
+                            // Thêm tuần thất bại (TH đã thêm tuần => đã thêm dữ liệu vào 1 lần)
+                            else
+                            {
+                                tran.Rollback();
+                                result = new
+                                {
+
+                                    IsSuccess = false,
+                                    Data = listRoomEmpty // mảng trống
+                                };
+                            }
                         }
+                        catch { tran.Rollback(); }
+                        finally { _repository.CloseMyConnection(); }
                     }
-                    catch { tran.Rollback(); }
-                    finally { cnn.Close(); }
-                }
 
+                    _repository.CloseMyConnection();
+
+                }
+                
                 return result;
             }
        
@@ -337,7 +345,43 @@ namespace RoomBooking.BLL.Services
             return convertedList;
         }
 
+        /// <summary>
+        /// Phân trang 
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="keyWord"></param>
+        /// <param name="roleId"></param>
+        /// <returns></returns>
+        public async Task<object> GetPaging(int pageSize, int pageIndex, int type,string week, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID)
+        {
+            object result = null;
+            // List<Week> weeks = new List<Week>();
+            int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
+            var datetimes = new List<DateTime>();
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
+                var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == week);
+                foreach (var weekday in weekDays)
+                {
+                    // Tính ngày bắt đầu và kết thúc của tuần
+                    //var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
+                    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+                    var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
 
-
+                    // Tìm ngày trong tuần tương ứng với ngày thứ weekday
+                    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
+                    var date = weekStart.AddDays(diff);
+                    datetimes.Add(date);
+                }
+                var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
+                string jsonDate = JsonConvert.SerializeObject(dateConvert);
+                var res = await _repository.GetPaging(pageSize, pageIndex, type, jsonDate,cnn, keyWord, roomID, buildingID, timeSlotID);
+                result = res; 
+            }
+            
+            return result;
+        }
     }
 }

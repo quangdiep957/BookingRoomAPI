@@ -302,13 +302,13 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="userId">Khóa chính người dùng</param>
         /// <returns>THông tin người dùng</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<User> GetById(Guid userId, MySqlConnection cnn)
+        public override async Task<User> GetById(Guid userId)
         {
 
             var storeName = "Proc_GetUserById";
             DynamicParameters dynamic = new DynamicParameters();
             dynamic.Add("@UserId", userId);
-            var users = await cnn.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
+            var users = await _sqlConnection.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
 
             User user = users.Read<User>().First();
             user.UserRoles = users.Read<UserRole>().ToList();

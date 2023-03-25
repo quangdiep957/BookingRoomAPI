@@ -15,13 +15,13 @@ namespace RoomBooking.DAL.Interfaces
         /// </summary>
         /// <returns>Danh sách tất cả các bản ghi</returns>
         /// Created by: PTTAM (19/03/2023)
-        public Task<Object> GetEntityPaging(MySqlConnection cnn,string filterName, int pageSize, int pageIndex);
+        public Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex);
         /// <summary>
         /// Lấy tất cả dữ liệu 
         /// </summary>
         /// <returns>Danh sách tất cả các bản ghi</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<IEnumerable<EntityCustom>> GetAll(MySqlConnection cnn);
+        public Task<IEnumerable<EntityCustom>> GetAll();
 
         /// <summary>
         /// Lấy thông tin đối tượng theo khóa chính
@@ -29,7 +29,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng lấy được theo khóa chính</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<EntityCustom> GetById(Guid entityId,MySqlConnection cnn);
+        public Task<EntityCustom> GetById(Guid entityId);
 
         /// <summary>
         /// Thêm mới một đối tượng
@@ -81,7 +81,8 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns> true: mã trùng, false: không có mã trùng</returns>
         /// Created by: PTTAM (06/03/2023)
-        public Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn,Guid? entityId = null);
-        public MySqlConnection GetConnection();
+        public Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn,MySqlTransaction tran,Guid? entityId = null);
+        public MySqlConnection GetOpenConnection();
+        public void CloseMyConnection();
     }
 }
