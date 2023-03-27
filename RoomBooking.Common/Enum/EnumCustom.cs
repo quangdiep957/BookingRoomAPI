@@ -48,4 +48,24 @@ namespace RoomBooking.Common.Enum
         /// </summary>
         Unchanged = 0
     }
+
+    public enum OptionRequest
+    {
+        // Chờ duyệt
+        Await=1,
+        // Đồng ý
+        Approve=2,
+        // Từ chối
+        Reject=3
+    }
+
+    public enum StatusRoom
+    {
+        // Phòng trống
+        Empty=1,
+        // Phòng đang được sử dụng
+        Active=2,
+        // Bảo trì
+        Maintenance=3
+    }
 }

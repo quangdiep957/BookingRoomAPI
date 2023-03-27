@@ -4,6 +4,7 @@ using MySqlConnector;
 using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Enum;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,15 @@ namespace RoomBooking.BLL.Services
     public class BookingRoomService : BaseService<BookingRoom>, IBookingRoomService
     {
         IBookingRoomRepository _repository;
+        IBookingRequestRepository _requestRepository;
+        IBookingHistoryRepository _historyRepository;
         IWeekRepository _repoWeek;
-        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek) : base(repository)
+        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek, IBookingRequestRepository requestRepository, IBookingHistoryRepository historyRepository) : base(repository)
         {
             _repository = repository;
             _repoWeek = repoWeek;
+            _requestRepository = requestRepository;
+            _historyRepository = historyRepository;
         }
 
 
@@ -381,6 +386,172 @@ namespace RoomBooking.BLL.Services
                 result = res; 
             }
             
+            return result;
+        }
+
+        /// <summary>
+        /// Xử lý duyệt phòng
+        /// </summary>
+        /// <param name="booking"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<object> RequestBookingRoom(BookingRequest booking, int option)
+        {
+            object result = null;
+           
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        booking.StatusRequest = option;
+                        //1. Update lại trạng thái đặt phòng trong bảng BookingRequest
+                        var isUpdateBookingRequest =await _requestRepository.Update(booking, booking.BookingRoomID, cnn, tran);
+                      
+
+                        BookingHistory bookingHistory = new BookingHistory
+                        {
+                            BookingRoomID=booking.BookingRoomID,
+                            UserID=booking.UserID,
+                            RoomID=booking.RoomID,
+                            TimeSlotID=booking.TimeSlotID,
+                            WeekID=booking.WeekID,
+                            DateBooking=booking.DateRequest,
+                            Day=booking.Day,
+                            Subject=booking.Subject,
+                            YearPlan=booking.YearPlan,
+                            Description=booking.Description,
+                            StatusRequest=booking.StatusRequest,
+                            DayOfWeek=booking.DayOfWeek
+                        };
+                       // Nếu là trạng thái phê duyệt
+                        if(option== (int)OptionRequest.Approve)
+                        {
+                            result = await ApproveRequestBookingRoom(booking, cnn, tran, isUpdateBookingRequest, bookingHistory);
+
+                        }
+                        else if(option==(int)OptionRequest.Reject) {
+                            
+                            // 2.Thêm vào lịch sử đặt phòng
+                            var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
+
+                            if (!isUpdateBookingRequest || !isInsertHistory)
+                            {
+                                result = new
+                                {
+                                    IsSucces = false,
+                                    StatusRoom = (int)StatusRoom.Active,
+                                     Description = "Có lỗi xảy ra"
+                                };
+                                tran.Rollback();
+                            }
+                            else
+                            {
+                                result = new
+                                {
+                                    IsSucces = true,
+                                    StatusRoom = (int)StatusRoom.Active
+                                };
+                                tran.Commit();
+                            }
+
+                        }
+                       
+                      
+                    }
+                    catch (Exception ex)
+                    {
+
+                        result = new
+                        {
+                            IsSucces = false,
+                        };
+                        tran.Rollback();
+                    }
+                   
+
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Nhấn đồng ý phê duyệt
+        /// </summary>
+        /// <param name="booking"></param>
+        /// <param name="result"></param>
+        /// <param name="cnn"></param>
+        /// <param name="tran"></param>
+        /// <param name="isUpdateBookingRequest"></param>
+        /// <param name="bookingHistory"></param>
+        /// <returns></returns>
+        private async Task<object> ApproveRequestBookingRoom(BookingRequest booking, MySqlConnection cnn, MySqlTransaction tran, bool isUpdateBookingRequest, BookingHistory bookingHistory)
+        {
+            object result = null;
+            // 2. Kiểm tra phòng đã được đặt chưa
+            // Lấy tất cả phòng đã đặt
+            var listRoomBooking = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
+
+            var itemRoomBooking = listRoomBooking.FirstOrDefault(x => x.RoomID == booking.RoomID
+            && x.TimeSlotID == booking.TimeSlotID && x.DateBooking.Equals(booking.DateRequest));
+            // Nếu phòng đã được đặt
+            if (itemRoomBooking != null)
+            {
+                result = new
+                {
+                    IsSucces = false,
+                    StatusRoom = (int)StatusRoom.Active,
+                };
+                tran.Rollback();
+            }
+            else
+            {
+                BookingRoom bookingRoom = new BookingRoom
+                {
+                    BookingRoomID = booking.BookingRoomID,
+                    UserID = booking.UserID,
+                    RoomID = booking.RoomID,
+                    TimeSlotID = booking.TimeSlotID,
+                    WeekID = booking.WeekID,
+                    DateBooking = booking.DateRequest,
+                    Day = booking.Day,
+                    Subject = booking.Subject,
+                    YearPlan = booking.YearPlan,
+                    Description = booking.Description,
+                    DayOfWeek = booking.DayOfWeek
+                };
+                // 3. Thêm mới phòng
+                var isInsertBookingRoom = await _repository.Insert(bookingRoom, cnn, tran);
+                // 4. Thêm vào lịch sử 
+                var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
+
+                // Kiểm tra update, thêm mới có lỗi gì không, nếu có:
+                if (!isUpdateBookingRequest || !isInsertHistory || isInsertBookingRoom)
+                {
+                    result = new
+                    {
+                        IsSucces = false,
+                        StatusRoom = StatusRoom.Empty,
+                        Description = "Có lỗi xảy ra"
+                    };
+                    tran.Rollback();
+
+                }
+                else
+                {
+                    result = new
+                    {
+                        IsSucces = true,
+                        StatusRoom = StatusRoom.Empty,
+                        Description = "Thành công"
+                    };
+                    tran.Commit();
+                }
+
+            }
+
             return result;
         }
     }

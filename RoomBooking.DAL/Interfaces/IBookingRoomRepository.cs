@@ -12,7 +12,7 @@ namespace RoomBooking.DAL.Interfaces
     {
         public Task<object> GetPaging(int pageSize, int pageIndex, int type, string listDate, MySqlConnection cnn, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID);
         public Task<List<string>> CheckRoom(List<BookingRoom> listRoom);
-
+        
     }
 
 }

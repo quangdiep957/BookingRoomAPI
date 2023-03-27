@@ -33,15 +33,15 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PageSize", pageSize); //input: Số bản ghi/trang
             dynamicParameters.Add("@PageIndex", pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@ListDate", listDate); //input: Từ khóa
+            dynamicParameters.Add("@ListDate", listDate); //input: Mảng ngày
             dynamicParameters.Add("@RoomFilter", keyWord); //input: Từ khóa
-            dynamicParameters.Add("@RoomID", roomID); //input: Khóa chính vai trò
-            dynamicParameters.Add("@BuildingID", buildingID); //input: Khóa chính vai trò
-            dynamicParameters.Add("@TimeSlotID", timeSlotID); //input: Khóa chính vai trò
+            dynamicParameters.Add("@RoomID", roomID); //input: Khóa chính phòng học
+            dynamicParameters.Add("@BuildingID", buildingID); //input: Khóa chính tòa
+            dynamicParameters.Add("@TimeSlotID", timeSlotID); //input: Khóa chính thời gian
             dynamicParameters.Add("@Type", type); //input: Khóa chính vai trò
-
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
+           
             //2. Lấy dữ liệu
             var employees = await cnn.QueryAsync<BookingRoom>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
@@ -154,5 +154,7 @@ namespace RoomBooking.DAL.Repositories
            CloseConnection();
             return res;
         }
+
+      
     }
 }

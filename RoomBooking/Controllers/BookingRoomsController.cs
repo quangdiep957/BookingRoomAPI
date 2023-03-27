@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.BLL.Services;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Enum;
+using static Dapper.SqlMapper;
 
 namespace RoomBooking.API.Controllers
 {
@@ -53,6 +55,19 @@ namespace RoomBooking.API.Controllers
 
             return StatusCode(200, res);
 
+        }
+
+        /// <summary>
+        /// Thực hiện duyệt phòng
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [HttpPost("requestBookingRoom")]
+        public async Task<IActionResult> RequestBookingRoom(BookingRequest bookingRequest,int option)
+        {
+            var res = await _scheduleService.RequestBookingRoom(bookingRequest, option);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
     }
 }

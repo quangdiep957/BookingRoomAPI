@@ -86,7 +86,7 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         /// created by: PTTAM (08/03/2023)
-        [HttpPost]
+        [HttpPost("insert")]
         public async Task<IActionResult> Insert(Entity entity)
         {
             var res =await _service.InsertService(entity);
@@ -129,6 +129,10 @@ namespace RoomBooking.API.Controllers
             return StatusCode(200,await _service.DeleteService(id));
         }
 
+        /// <summary>
+        /// Insert multi đối tượng
+        /// </summary>
+        /// <param name="entities"></param>
         [HttpPost("InsertMultiple")]
         public async Task<IActionResult> InsertMultiple(List<Entity> entities)
         {
