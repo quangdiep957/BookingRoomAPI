@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoomBooking.Common.Entities.Params;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="keyWord">Dữ liệu chọn lọc để tìm kiếm</param>
         /// <returns>Object: chứa pageSize, pageIndex, data</returns>
         /// Created by: PTTAM (07/03/2023)
-        public  Task<object> GetEntityPaging(int pageSize, int pageIndex, string? keyWord);
+        public  Task<object> GetEntityPaging(PagingParam param);
         /// <summary>
         /// Thực hiện validate lấy tất cả dữ liệu
         /// </summary>

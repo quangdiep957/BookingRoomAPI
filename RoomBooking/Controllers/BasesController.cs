@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
 
 namespace RoomBooking.API.Controllers
@@ -36,10 +37,10 @@ namespace RoomBooking.API.Controllers
         /// Phân trang
         /// </summary>
         /// <returns></returns>
-        [HttpGet("paging")]
-        public async Task<IActionResult> GetEntityPaging(int pageSize, int pageIndex, string? keyWord)
+        [HttpPost("paging")]
+        public async Task<IActionResult> GetEntityPaging([FromBody] PagingParam param)
         {
-            var res = await _service.GetEntityPaging(pageSize, pageIndex, keyWord);
+            var res = await _service.GetEntityPaging(param);
 
             return StatusCode(200, res);
         }
@@ -70,7 +71,7 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         /// Created by: PTTAM (08/03/2023)
-        [HttpGet("{id}")]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             return StatusCode((int)HTTPStatusCode.SuccessResponse,await _service.GetByIdService(id));

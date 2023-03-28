@@ -9,8 +9,8 @@ namespace RoomBooking.BLL.Interfaces
 {
     public interface ITokenService : IBaseService<User>
     {
-        Token GenerateToken(User user);
-        bool ValidateToken(string token);
-        void InvalidateToken(string token);
+        public Task<Token> GenerateToken(User user);
+        public Task<bool> ValidateToken(string token);
+        public Task InvalidateToken(string token);
     }
 }

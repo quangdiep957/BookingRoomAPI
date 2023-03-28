@@ -34,7 +34,7 @@ namespace RoomBooking.BLL.Services
         //    _expirationTime = expirationTime;
         //}
 
-        public Token GenerateToken(User model)
+        public async Task<Token> GenerateToken(User model)
         {
             var key = Encoding.ASCII.GetBytes("this is a secret key"); // should be more secure in real application
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -62,7 +62,7 @@ namespace RoomBooking.BLL.Services
             return newtoken;
         }
 
-        public bool ValidateToken(string tokenValue)
+        public async Task<bool> ValidateToken(string tokenValue)
         {
             if (string.IsNullOrEmpty(tokenValue))
             {
@@ -72,7 +72,7 @@ namespace RoomBooking.BLL.Services
             return _cache.TryGetValue(tokenValue, out _);
         }
 
-        public void InvalidateToken(string tokenValue)
+        public async Task InvalidateToken(string tokenValue)
         {
             if (!string.IsNullOrEmpty(tokenValue))
             {

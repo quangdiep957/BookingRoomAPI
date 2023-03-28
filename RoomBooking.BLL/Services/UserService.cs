@@ -18,10 +18,7 @@ namespace RoomBooking.BLL.Services
         {
             _repository = repository;
         }
-        private List<User> _users = new List<User>
-    {
-        new User { UserCode="admin", FullName = "admin", Password = "password", Email = "admin@example.com" }
-    };
+      
         /// <summary>
         /// Thực hiện nghiệp vụ khi lấy mã nhân viên mới
         /// </summary>
@@ -86,9 +83,10 @@ namespace RoomBooking.BLL.Services
 
             return isValidCustom;
         }
-        public User Authenticate(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
-            var user = _users.SingleOrDefault(x => x.UserCode == username && x.Password == password);
+            var users = await _repository.GetAll();
+            var user = users.FirstOrDefault(x=>x.Email==username&&x.Password==password);
 
             if (user == null)
                 return null;

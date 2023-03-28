@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using RoomBooking.Common.AttributeCustom;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -357,7 +358,7 @@ namespace RoomBooking.DAL.Repositories
             return res != null;
         }
 
-        public async Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex )
+        public async Task<Object> GetEntityPaging(PagingParam param )
         {
             if(_sqlConnection.State!= ConnectionState.Open)
             {
@@ -368,19 +369,19 @@ namespace RoomBooking.DAL.Repositories
             var fields = GetAllRequestValues<Entity>();
             dynamicParameters.Add("@TableName", _className);
             dynamicParameters.Add("@Properties", fields);
-            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(filterName) ? filterName : "");
-            dynamicParameters.Add("@PageSize", pageSize);
-            dynamicParameters.Add("@PageIndex", pageIndex);
+            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(param.keyWord) ? param.keyWord : "");
+            dynamicParameters.Add("@PageSize", param.pageSize);
+            dynamicParameters.Add("@PageIndex", param.pageIndex);
             var data = await _sqlConnection.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
             int totalRecords = 0;
             int totalPages = 0;
             if (data != null)
             {
                 totalRecords = data.Count();
-                totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+                totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
             }
-            int startRecord = pageSize * (pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = pageSize * (pageIndex - 1) + pageSize; // Bản ghi kết thúc của trang hiện tại
+            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
 
             if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
             {
@@ -397,7 +398,7 @@ namespace RoomBooking.DAL.Repositories
             {
                 TotalPage = totalPages,
                 TotalRecord = totalRecords,
-                CurrentPage = pageIndex,
+                CurrentPage = param.pageIndex,
                 StartRecord = startRecord,
                 EndRecord = endRecord,
                 Data = data

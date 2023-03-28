@@ -37,6 +37,8 @@ builder.Services.AddScoped<IWeekRepository, WeekRepository>();
 builder.Services.AddScoped<IBookingRoomRepository, BookingRoomRepository>();
 builder.Services.AddScoped<IBookingHistoryRepository, BookingHistoryRepository>();
 builder.Services.AddScoped<IBookingRequestRepository, BookingRequestRepository>();
+builder.Services.AddScoped<ITimeSlotRepository, TimeSlotRepository>();
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
@@ -50,8 +52,11 @@ builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
 builder.Services.AddScoped<IBookingHistoryService, BookingHistoryService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITimeSlotService, TimeSlotService>();
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

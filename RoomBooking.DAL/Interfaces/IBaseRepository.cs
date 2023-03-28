@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using RoomBooking.Common.Entities.Params;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +16,7 @@ namespace RoomBooking.DAL.Interfaces
         /// </summary>
         /// <returns>Danh sách tất cả các bản ghi</returns>
         /// Created by: PTTAM (19/03/2023)
-        public Task<Object> GetEntityPaging(string filterName, int pageSize, int pageIndex);
+        public Task<Object> GetEntityPaging(PagingParam param);
         /// <summary>
         /// Lấy tất cả dữ liệu 
         /// </summary>

@@ -24,16 +24,16 @@ namespace RoomBooking.API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] AuthenticateRequest model)
+        public async Task<IActionResult> Login([FromBody] AuthenticateRequest model)
         {
-            var user = _userService.Authenticate(model.Username, model.Password);
+            var user = await _userService.Authenticate(model.Username, model.Password);
 
             if (user == null)
             {
                 return Unauthorized("Invalid username or password.");
             }
 
-            var token = _tokenService.GenerateToken(user);
+            var token =await _tokenService.GenerateToken(user);
             return StatusCode(200, token);
             //return Ok(new { token });
         }

@@ -3,6 +3,7 @@ using MySqlConnector;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Exception;
 using RoomBooking.DAL.Interfaces;
 using System;
@@ -415,10 +416,10 @@ namespace RoomBooking.BLL.Services
             return true;
         }
 
-        public async Task<object> GetEntityPaging(int pageSize, int pageIndex, string? keyWord)
+        public async Task<object> GetEntityPaging(PagingParam param)
         {
 
-            var res = await _repository.GetEntityPaging(keyWord, pageSize, pageIndex);
+            var res = await _repository.GetEntityPaging(param);
             return res;
         }
 

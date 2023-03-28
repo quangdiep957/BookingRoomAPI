@@ -36,6 +36,6 @@ namespace RoomBooking.BLL.Interfaces
         /// Created by: PTTAM (07/03/2023)
         public Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList);
 
-        public User Authenticate(string username, string password);
+        public Task<User> Authenticate(string username, string password);
     }
 }
