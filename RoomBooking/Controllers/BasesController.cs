@@ -53,7 +53,7 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         /// Created by: PTTAM (08/03/2023)
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetAll()
         {
             return StatusCode((int)HTTPStatusCode.SuccessResponse,await _service.GetAllService());
@@ -105,7 +105,7 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         /// created by: PTTAM (08/03/2023)
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> Update(Guid id, Entity entity)
         {
             var res = await _service.UpdateService(id, entity);
@@ -123,7 +123,7 @@ namespace RoomBooking.API.Controllers
         /// 500 - Lỗi do hệ thống
         /// </returns>
         /// created by: PTTAM (08/03/2023)
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return StatusCode(200,await _service.DeleteService(id));

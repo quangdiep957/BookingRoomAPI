@@ -17,7 +17,7 @@ namespace RoomBooking.Common.Entities
         /// Khóa chính người dùng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(36)]
+        [DataLength(36)]
         [PrimaryKey]
         [ForGetting]
         [ForBinding]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// Mã người dùng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(20)]
+        [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã người dùng")]
         [ForGetting]
         [ForBinding]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// Tên người dùng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(100)]
+        [DataLength(100)]
         [PropertyNameDisplay(propName: "Tên người dùng")]
         [ForGetting]
         [ForBinding]
@@ -52,7 +52,7 @@ namespace RoomBooking.Common.Entities
         /// Địa chỉ
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Địa chỉ")]
         [ForGetting]
         [ForBinding]
@@ -64,7 +64,7 @@ namespace RoomBooking.Common.Entities
         /// Địa chỉ
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Mật khẩu")]
         [ForGetting]
         [ForBinding]
@@ -76,7 +76,7 @@ namespace RoomBooking.Common.Entities
         /// Email
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(100)]
+        [DataLength(100)]
         [PropertyNameDisplay(propName: "Email")]
         [ForGetting]
         [ForBinding]
@@ -88,7 +88,7 @@ namespace RoomBooking.Common.Entities
         /// Khóa ngoại phòng ban
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(36)]
+        [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã phòng ban")]
         [ForGetting]
         [Ambiguous]
@@ -118,7 +118,7 @@ namespace RoomBooking.Common.Entities
         /// Email
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(100)]
+        [DataLength(100)]
         [ForGetting]
         [ForBinding]
         [NotEmpty]

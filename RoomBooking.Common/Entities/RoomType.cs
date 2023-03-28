@@ -17,7 +17,7 @@ namespace RoomBooking.Common.Entities
         /// Khóa chính loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(36)]
+        [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
@@ -29,7 +29,7 @@ namespace RoomBooking.Common.Entities
         /// Mã loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(20)]
+        [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã loại phòng")]
         [ForGetting]
         [ForBinding]
@@ -41,7 +41,7 @@ namespace RoomBooking.Common.Entities
         /// Tên loại phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên loại phòng")]
         [ForGetting]
         [ForBinding]

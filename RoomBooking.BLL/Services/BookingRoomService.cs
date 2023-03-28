@@ -4,6 +4,7 @@ using MySqlConnector;
 using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
 using RoomBooking.DAL.Interfaces;
 using System;
@@ -358,7 +359,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="keyWord"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<object> GetPaging(int pageSize, int pageIndex, int type,string week, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID)
+        public async Task<object> GetPaging(PagingParam param)
         {
             object result = null;
             // List<Week> weeks = new List<Week>();
@@ -367,7 +368,7 @@ namespace RoomBooking.BLL.Services
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
                 var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
-                var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == week);
+                var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
                 foreach (var weekday in weekDays)
                 {
                     // Tính ngày bắt đầu và kết thúc của tuần
@@ -382,7 +383,8 @@ namespace RoomBooking.BLL.Services
                 }
                 var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
                 string jsonDate = JsonConvert.SerializeObject(dateConvert);
-                var res = await _repository.GetPaging(pageSize, pageIndex, type, jsonDate,cnn, keyWord, roomID, buildingID, timeSlotID);
+                param.week= jsonDate;
+                var res = await _repository.GetPaging(param,cnn);
                 result = res; 
             }
             

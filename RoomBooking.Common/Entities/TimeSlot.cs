@@ -17,7 +17,7 @@ namespace RoomBooking.Common.Entities
         /// Khóa chính thời gian
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(36)]
+        [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
@@ -29,7 +29,7 @@ namespace RoomBooking.Common.Entities
         /// Tên thời gian
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên thời gian")]
         [ForGetting]
         [ForBinding]

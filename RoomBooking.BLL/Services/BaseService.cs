@@ -374,16 +374,16 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public void CheckLimitLength(Entity entity)
         {
-            //  lấy tất cả cá properties có attribute là MISADataLength
-            var propertiesLength = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(MISADataLength)));
+            //  lấy tất cả cá properties có attribute là DataLength
+            var propertiesLength = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(DataLength)));
             foreach (var prop in propertiesLength)
             {
                 // Nếu value khác null
                 if (prop.GetValue(entity) != null)
                 {
                     var value = prop.GetValue(entity)?.ToString(); // lấy ra valua
-                    var propLength = Attribute.GetCustomAttribute(prop, typeof(MISADataLength));
-                    int length = (propLength as MISADataLength).Length; // lấy ra value
+                    var propLength = Attribute.GetCustomAttribute(prop, typeof(DataLength));
+                    int length = (propLength as DataLength).Length; // lấy ra value
                     var getVIName = Attribute.GetCustomAttribute(prop, typeof(PropertyNameDisplay));
                     var getDisplayName = (getVIName as PropertyNameDisplay)?.displayName;
                     if (value != null && value.Count() > length)

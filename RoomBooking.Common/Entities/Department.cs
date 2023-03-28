@@ -18,7 +18,7 @@ namespace RoomBooking.Common.Entities
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [PropertyNameDisplay(propName: "Khóa chính phòng ban")]
-        [MISADataLength(36)]
+        [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// Mã phòng ban
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(20)]
+        [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã phòng ban")]
         [ForGetting]
         [ForBinding]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// Tên phòng ban
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên phòng ban")]
         [ForGetting]
         [ForBinding]

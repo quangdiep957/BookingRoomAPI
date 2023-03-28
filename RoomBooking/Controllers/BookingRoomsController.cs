@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.BLL.Services;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
 using static Dapper.SqlMapper;
 
@@ -47,11 +48,11 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
         /// Created by: PTTAM (08/03/2023)
-        [HttpGet("pagingScheduler")]
-        public async Task<IActionResult> FilterRoom(int pageSize, int pageIndex, int Type, string week, string? keyWord, Guid? RoomID, Guid? BuildingID, Guid? TimeSlotID)
+        [HttpPost("pagingScheduler")]
+        public async Task<IActionResult> FilterRoom([FromBody] PagingParam param)
         {
 
-            var res = await _scheduleService.GetPaging(pageSize, pageIndex, Type, week, keyWord, RoomID, BuildingID, TimeSlotID);
+            var res = await _scheduleService.GetPaging(param);
 
             return StatusCode(200, res);
 

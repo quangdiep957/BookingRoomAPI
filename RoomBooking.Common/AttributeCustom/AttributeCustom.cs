@@ -87,11 +87,11 @@ namespace RoomBooking.Common.AttributeCustom
     /// </summary>
     /// created by: PTTAM
     [AttributeUsage(AttributeTargets.Property)]
-    public class MISADataLength : Attribute
+    public class DataLength : Attribute
     {
         public int Length { get; set; }
 
-        public MISADataLength(int length)
+        public DataLength(int length)
         {
             Length = length;
         }

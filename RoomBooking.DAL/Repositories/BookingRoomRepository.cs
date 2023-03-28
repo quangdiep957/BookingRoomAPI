@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -26,19 +27,19 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<Object> GetPaging(int pageSize, int pageIndex,int type,string listDate,MySqlConnection cnn, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID)
+        public async Task<Object> GetPaging(PagingParam param, MySqlConnection cnn)
         {
            
             var storeName = "Proc_GetSchedulerRoomPaging"; // Tên của thủ thục
             DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@PageSize", pageSize); //input: Số bản ghi/trang
-            dynamicParameters.Add("@PageIndex", pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@ListDate", listDate); //input: Mảng ngày
-            dynamicParameters.Add("@RoomFilter", keyWord); //input: Từ khóa
-            dynamicParameters.Add("@RoomID", roomID); //input: Khóa chính phòng học
-            dynamicParameters.Add("@BuildingID", buildingID); //input: Khóa chính tòa
-            dynamicParameters.Add("@TimeSlotID", timeSlotID); //input: Khóa chính thời gian
-            dynamicParameters.Add("@Type", type); //input: Khóa chính vai trò
+            dynamicParameters.Add("@PageSize", param.pageSize); //input: Số bản ghi/trang
+            dynamicParameters.Add("@PageIndex", param.pageIndex);//input: Trang hiện tại
+            dynamicParameters.Add("@ListDate", param.week); //input: Mảng ngày
+            dynamicParameters.Add("@RoomFilter", param.keyWord); //input: Từ khóa
+            dynamicParameters.Add("@RoomID", param.roomID); //input: Khóa chính phòng học
+            dynamicParameters.Add("@BuildingID", param.buildingID); //input: Khóa chính tòa
+            dynamicParameters.Add("@TimeSlotID", param.timeSlotID); //input: Khóa chính thời gian
+            dynamicParameters.Add("@Type", param.type); //input: Khóa chính vai trò
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
            
@@ -47,8 +48,8 @@ namespace RoomBooking.DAL.Repositories
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
-            int startRecord = pageSize * (pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = pageSize * (pageIndex - 1) + pageSize; // Bản ghi kết thúc của trang hiện tại
+            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
 
             if (endRecord > totalRecord) // nếu bản ghi kết thúc > tổng số bản ghi
             {
@@ -64,7 +65,7 @@ namespace RoomBooking.DAL.Repositories
             {
                 TotalPage = totalPage,
                 TotalRecord = totalRecord,
-                CurrentPage = pageIndex,
+                CurrentPage = param.pageIndex,
                 StartRecord = startRecord,
                 EndRecord = endRecord,
                 Data = employees

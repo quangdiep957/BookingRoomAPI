@@ -18,7 +18,7 @@ namespace RoomBooking.Common.Entities
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [PropertyNameDisplay(propName: "Khóa chính vị trí")]
-        [MISADataLength(36)]
+        [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// Mã vị trí
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(20)]
+        [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã vị trí")]
         [ForGetting]
         [ForBinding]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// Tên vị trí
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
-        [MISADataLength(255)]
+        [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên vị trí")]
         [ForGetting]
         [ForBinding]

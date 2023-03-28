@@ -1,4 +1,6 @@
-﻿using RoomBooking.Common.Entities;
+﻿using MySqlConnector;
+using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +30,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="BuildingID"></param>
         /// <param name="TimeSlotID"></param>
         /// PTTAM 25/03/2023
-        public Task<object> GetPaging(int pageSize, int pageIndex, int type, string week, string? keyWord, Guid? roomID, Guid? buildingID, Guid? timeSlotID);
+        public Task<object> GetPaging(PagingParam param);
        /// <summary>
        /// Xử lý yêu cầu duyệt phòng
        /// </summary>
