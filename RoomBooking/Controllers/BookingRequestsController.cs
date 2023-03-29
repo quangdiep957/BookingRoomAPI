@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 
 namespace RoomBooking.API.Controllers
 {
@@ -19,6 +20,22 @@ namespace RoomBooking.API.Controllers
         public BookingRequestsController(IBookingRequestService service) : base(service)
         {
             _service = service;
+        }
+        /// <summary>
+        /// Thực hiện phân trang 
+        /// </summary>
+        /// <param name="pageSize">Số bản ghi/ 1 trang</param>
+        /// <param name="pageIndex">Trang số bao nhiêu</param>
+        /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
+        /// Created by: PTTAM (08/03/2023)
+        [HttpPost("pagingRequestBooking")]
+        public async Task<IActionResult> FilterRoom([FromBody] PagingParam param)
+        {
+
+            var res = await _service.GetPaging(param);
+
+            return StatusCode(200, res);
+
         }
     }
 }

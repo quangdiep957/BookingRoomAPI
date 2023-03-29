@@ -65,9 +65,9 @@ namespace RoomBooking.API.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [HttpPost("requestBookingRoom")]
-        public async Task<IActionResult> RequestBookingRoom(BookingRequest bookingRequest,int option)
+        public async Task<IActionResult> RequestBookingRoom(Guid requestID,int option)
         {
-            var res = await _scheduleService.RequestBookingRoom(bookingRequest, option);
+            var res = await _scheduleService.RequestBookingRoom(requestID, option);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
     }

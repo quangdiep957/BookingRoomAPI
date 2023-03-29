@@ -1,4 +1,6 @@
-﻿using RoomBooking.Common.Entities;
+﻿using MySqlConnector;
+using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +11,7 @@ namespace RoomBooking.DAL.Interfaces
 {
     public interface IBookingRequestRepository: IBaseRepository<BookingRequest>
     {
+        public Task<Object> GetPaging(PagingParam param, MySqlConnection cnn);
     }
+    
 }

@@ -101,7 +101,7 @@ namespace RoomBooking.DAL.Repositories
                 room.TimeSlotID = itemTimeSlot.TimeSlotID;
                 room.WeekID = weekID;
                 room.Subject = "Lịch học tuần " + room.Week;
-                room.UserID = new Guid("d06fc80f-c4d4-11ed-b43e-f8b46ac25bb6");
+                room.UserID = new Guid("11cf33c0-44f7-725b-685f-4db9ab45a18c");
                 room.YearPlan = room.DateBooking.Year;
                 room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                 

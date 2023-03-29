@@ -398,7 +398,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="option"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> RequestBookingRoom(BookingRequest booking, int option)
+        public async Task<object> RequestBookingRoom(Guid requestID, int option)
         {
             object result = null;
            
@@ -408,6 +408,8 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
+                        var requests = await cnn.QueryAsync<BookingRequest>("SELECT * FROM BookingRequest");
+                        var booking = requests.FirstOrDefault(x => x.BookingRoomID == requestID);
                         booking.StatusRequest = option;
                         //1. Update lại trạng thái đặt phòng trong bảng BookingRequest
                         var isUpdateBookingRequest =await _requestRepository.Update(booking, booking.BookingRoomID, cnn, tran);
@@ -445,7 +447,7 @@ namespace RoomBooking.BLL.Services
                                 {
                                     IsSucces = false,
                                     StatusRoom = (int)StatusRoom.Active,
-                                     Description = "Có lỗi xảy ra"
+                                    Description = "Có lỗi xảy ra"
                                 };
                                 tran.Rollback();
                             }

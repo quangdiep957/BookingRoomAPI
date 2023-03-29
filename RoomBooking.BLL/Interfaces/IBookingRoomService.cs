@@ -31,16 +31,16 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="TimeSlotID"></param>
         /// PTTAM 25/03/2023
         public Task<object> GetPaging(PagingParam param);
-       /// <summary>
-       /// Xử lý yêu cầu duyệt phòng
-       /// </summary>
-       /// <param name="booking">Lịch đặt phòng</param>
-       /// <param name="option">
-       /// 1. Đồng ý
-       /// 2.Từ chối
-       /// </param>
-       /// <returns></returns>
-        public Task<object> RequestBookingRoom(BookingRequest booking, int option);
+        /// <summary>
+        /// Xử lý yêu cầu duyệt phòng
+        /// </summary>
+        /// <param name="requestID">Lịch đặt phòng</param>
+        /// <param name="option">
+        /// 1. Đồng ý
+        /// 2.Từ chối
+        /// </param>
+        /// <returns></returns>
+        public Task<object> RequestBookingRoom(Guid requestID, int option);
 
     }
 }

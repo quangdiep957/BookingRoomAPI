@@ -16,5 +16,6 @@ namespace RoomBooking.Common.Entities.Params
         public Guid? roomID;
         public Guid? buildingID;
         public Guid? timeSlotID;
+        public Guid? weekID;
     }
 }
