@@ -36,7 +36,6 @@ builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IWeekRepository, WeekRepository>();
 builder.Services.AddScoped<IBookingRoomRepository, BookingRoomRepository>();
 builder.Services.AddScoped<IBookingHistoryRepository, BookingHistoryRepository>();
-builder.Services.AddScoped<IBookingRequestRepository, BookingRequestRepository>();
 builder.Services.AddScoped<ITimeSlotRepository, TimeSlotRepository>();
 
 
@@ -48,7 +47,6 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<IWeekService, WeekService>();
 builder.Services.AddScoped<IBookingRoomService, BookingRoomService>();
-builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
 builder.Services.AddScoped<IBookingHistoryService, BookingHistoryService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

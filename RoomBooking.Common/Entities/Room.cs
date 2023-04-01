@@ -85,5 +85,14 @@ namespace RoomBooking.Common.Entities
         [NotEmpty]
 
         public Guid RoomTypeID { get; set; }
+
+        [ForGetting]
+        [ForBinding]
+        public int StatusRoom { get; set; }
+
+        [ForBinding]
+        [ForGetting]
+        [DataLength(36)]
+        public Guid UserID { get; set; }
     }
 }

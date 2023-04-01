@@ -42,5 +42,12 @@ namespace RoomBooking.BLL.Interfaces
         /// <returns></returns>
         public Task<object> RequestBookingRoom(Guid requestID, int option);
 
+        /// <summary>
+        /// Gọi phân trang cho các yêu cầu chờ duyệt
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Task<object> GetPagingRequest(PagingParam param);
+
     }
 }

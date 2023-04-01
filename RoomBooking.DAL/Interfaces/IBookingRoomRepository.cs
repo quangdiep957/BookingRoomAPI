@@ -13,7 +13,8 @@ namespace RoomBooking.DAL.Interfaces
     {
         public Task<object> GetPaging(PagingParam param, MySqlConnection cnn);
         public Task<List<string>> CheckRoom(List<BookingRoom> listRoom);
-        
+        public Task<Object> GetPagingRequest(PagingParam param, MySqlConnection cnn);
+
     }
 
 }

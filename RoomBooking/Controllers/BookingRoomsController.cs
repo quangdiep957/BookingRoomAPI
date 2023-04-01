@@ -70,5 +70,22 @@ namespace RoomBooking.API.Controllers
             var res = await _scheduleService.RequestBookingRoom(requestID, option);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
+
+        /// <summary>
+        /// Thực hiện phân trang 
+        /// </summary>
+        /// <param name="pageSize">Số bản ghi/ 1 trang</param>
+        /// <param name="pageIndex">Trang số bao nhiêu</param>
+        /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
+        /// Created by: PTTAM (08/03/2023)
+        [HttpPost("pagingRequestBooking")]
+        public async Task<IActionResult> RequestBooking([FromBody] PagingParam param)
+        {
+
+            var res = await _scheduleService.GetPaging(param);
+
+            return StatusCode(200, res);
+
+        }
     }
 }

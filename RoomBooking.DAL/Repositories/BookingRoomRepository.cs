@@ -101,7 +101,7 @@ namespace RoomBooking.DAL.Repositories
                 room.TimeSlotID = itemTimeSlot.TimeSlotID;
                 room.WeekID = weekID;
                 room.Subject = "Lịch học tuần " + room.Week;
-                room.UserID = new Guid("11cf33c0-44f7-725b-685f-4db9ab45a18c");
+                room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
                 room.YearPlan = room.DateBooking.Year;
                 room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                 
@@ -128,6 +128,13 @@ namespace RoomBooking.DAL.Repositories
 
 
         }
+
+        /// <summary>
+        /// Kiểm tra phòng trong dữ liệu 
+        /// </summary>
+        /// <param name="listRoom"></param>
+        /// <returns></returns>
+        /// PTTAM
         public async Task<List<string>> CheckRoom(List<BookingRoom> listRoom)
         {
 
@@ -156,6 +163,49 @@ namespace RoomBooking.DAL.Repositories
             return res;
         }
 
-      
+        /// <summary>
+        /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt
+        /// </summary>
+        /// <param name="param"></param>
+        /// PTTAM 04.01.2023
+        public async Task<object> GetPagingRequest(PagingParam param, MySqlConnection cnn)
+        {
+            var storeName = "Proc_GetPagingRequestBooking"; // Tên của thủ thục
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@PageSize", param.pageSize); //input: Số bản ghi/trang
+            dynamicParameters.Add("@PageIndex", param.pageIndex);//input: Trang hiện tại
+            dynamicParameters.Add("@WeekID", param.weekID); //input: Khóa chính phòng học
+            dynamicParameters.Add("@KeyWord", param.keyWord); //input: Khóa chính phòng học
+            dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
+            dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
+
+            //2. Lấy dữ liệu
+            var employees = await cnn.QueryAsync<Object>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+
+            int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
+            int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
+            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+
+            if (endRecord > totalRecord) // nếu bản ghi kết thúc > tổng số bản ghi
+            {
+                endRecord = totalRecord; // gán bản ghi kết thúc = tổng số bản ghi
+            }
+
+            // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
+            if (startRecord > endRecord)
+            {
+                startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
+            }
+            return new
+            {
+                TotalPage = totalPage,
+                TotalRecord = totalRecord,
+                CurrentPage = param.pageIndex,
+                StartRecord = startRecord,
+                EndRecord = endRecord,
+                Data = employees
+            };
+        }
     }
 }
