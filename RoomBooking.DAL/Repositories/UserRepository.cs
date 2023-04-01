@@ -87,7 +87,6 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
             for (int i = 0; i < listUsers.Count; i++)
             {
-                listUserRole.AddRange(listUsers[i].UserRoles); // thêm vai trò của người dùng vào danh sách vai trò 
                 sqlQuery += GetAllBindingValues(listUsers[i], i, dynamicParameters); // Thực hiện buid câu truy vấn 
                 countUser++;
             }
@@ -311,7 +310,6 @@ namespace RoomBooking.DAL.Repositories
             var users = await _sqlConnection.QueryMultipleAsync(storeName, param: dynamic, commandType: System.Data.CommandType.StoredProcedure);
 
             User user = users.Read<User>().First();
-            user.UserRoles = users.Read<UserRole>().ToList();
 
             return user;
         }

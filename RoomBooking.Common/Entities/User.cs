@@ -107,28 +107,6 @@ namespace RoomBooking.Common.Entities
 
         public string AvartarColor { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Tên vai trò của nhân viên
-        /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
-        [ForBinding]
-        public string RoleNames { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Email
-        /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
-        [DataLength(100)]
-        [ForGetting]
-        [ForBinding]
-        [NotEmpty]
-
-        public int isAdmin { get; set; } = 0;
-
-        /// <summary>
-        /// Danh sách vai trò của nhân viên
-        /// </summary>
-        public List<UserRole> UserRoles { get; set; }
 
 
 
