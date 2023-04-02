@@ -49,5 +49,16 @@ namespace RoomBooking.Common.Entities
 
         public string RoleName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Tên vai trò
+        /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [PropertyNameDisplay(propName: "Giá trị vai trò")]
+        [ForGetting]
+        [ForBinding]
+        [NotEmpty]
+
+        public int RoleValue{ get; set; }
+
     }
 }

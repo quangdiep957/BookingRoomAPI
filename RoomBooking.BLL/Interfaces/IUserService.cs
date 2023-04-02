@@ -36,6 +36,12 @@ namespace RoomBooking.BLL.Interfaces
         /// Created by: PTTAM (07/03/2023)
         public Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList);
 
+        /// <summary>
+        /// Thực hiện nghiệp vụ check đăng nhập
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// Created by: PTTAM (02/04/2023)
         public Task<User> Authenticate(string username, string password);
     }
 }

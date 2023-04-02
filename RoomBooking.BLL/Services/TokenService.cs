@@ -52,7 +52,8 @@ namespace RoomBooking.BLL.Services
             var newtoken = new Token
             {
                 Value = tokenString,
-                Expiration = DateTime.UtcNow.AddHours(1)
+                Expiration = DateTime.UtcNow.AddHours(1),
+                User=model
             };
 
             // Lưu token vào cache

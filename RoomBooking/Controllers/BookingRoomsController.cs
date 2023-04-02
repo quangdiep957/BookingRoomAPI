@@ -82,7 +82,7 @@ namespace RoomBooking.API.Controllers
         public async Task<IActionResult> RequestBooking([FromBody] PagingParam param)
         {
 
-            var res = await _scheduleService.GetPaging(param);
+            var res = await _scheduleService.GetPagingRequest(param);
 
             return StatusCode(200, res);
 

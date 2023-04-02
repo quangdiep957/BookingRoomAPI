@@ -10,6 +10,8 @@ namespace RoomBooking.Common.Entities
     {
         public string Value { get; set; }
         public DateTime Expiration { get; set; }
+        public User User { get; set; }
+
 
     }
 }
