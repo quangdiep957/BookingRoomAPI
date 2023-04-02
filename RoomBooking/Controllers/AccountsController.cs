@@ -23,6 +23,12 @@ namespace RoomBooking.API.Controllers
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Thực hiện đăng nhập
+        /// </summary>
+        /// <param name="model">username và password</param>
+        /// PTTAM
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthenticateRequest model)
         {
@@ -38,6 +44,10 @@ namespace RoomBooking.API.Controllers
             //return Ok(new { token });
         }
 
+        /// <summary>
+        /// Thực hiện đăng xuất
+        /// </summary>
+        /// PTTAM 
         //[Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()

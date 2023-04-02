@@ -5,7 +5,7 @@ using RoomBooking.Common.Entities;
 
 namespace RoomBooking.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class EquipmentsController : BasesController<Equipment>
     {

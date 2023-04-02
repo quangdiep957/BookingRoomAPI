@@ -97,6 +97,19 @@ namespace RoomBooking.Common.Entities
 
         public Guid DepartmentID { get; set; }
 
+        /// <summary>
+        /// Khóa ngoại vai trò
+        /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [DataLength(36)]
+        [PropertyNameDisplay(propName: "Mã vai trò")]
+        [ForGetting]
+        [Ambiguous]
+        [ForBinding]
+        [NotEmpty]
+
+        public Guid RoleID { get; set; }
+
 
         /// <summary>
         /// Màu avartar người dùng
@@ -116,7 +129,10 @@ namespace RoomBooking.Common.Entities
         ///  Created by: PTTAM (07/03/2023)
         public string? DepartmentName { get; set; }
 
-  
+        /// <summary>
+        /// Loại vai trò
+        /// </summary>
+        public int RoleOption { get; set; }
 
     }
 }

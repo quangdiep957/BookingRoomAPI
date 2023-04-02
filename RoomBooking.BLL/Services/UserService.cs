@@ -1,5 +1,6 @@
 ﻿using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Enum;
 using RoomBooking.Common.Functions;
 using RoomBooking.DAL.Interfaces;
 using System;
@@ -13,10 +14,11 @@ namespace RoomBooking.BLL.Services
     public class UserService : BaseService<User>, IUserService
     {
         IUserRepository _repository;
-
-        public UserService(IUserRepository repository) : base(repository)
+        IRoleRepository _roleRepo;
+        public UserService(IUserRepository repository,IRoleRepository roleRepository) : base(repository)
         {
             _repository = repository;
+            _roleRepo = roleRepository;
         }
       
         /// <summary>
@@ -83,14 +85,23 @@ namespace RoomBooking.BLL.Services
 
             return isValidCustom;
         }
+
+        /// <summary>
+        /// Kiểm tra đăng nhập
+        /// </summary>
+        /// <param name="username">tên đăng nhập</param>
+        /// <param name="password">mật khẩu</param>
+        /// Created by: PTTAM
         public async Task<User> Authenticate(string username, string password)
         {
             var users = await _repository.GetAll();
             var user = users.FirstOrDefault(x=>x.Email==username&&x.Password==password);
+            var roles = await _roleRepo.GetAll();
+            var role = roles.FirstOrDefault(x=>x.RoleID==user.RoleID);
+            
+            if (user == null) { return null; }
 
-            if (user == null)
-                return null;
-
+            user.RoleOption = role.RoleValue;
             // remove password before returning
             user.Password = null;
 
