@@ -58,21 +58,7 @@ namespace RoomBooking.API.Controllers
             return StatusCode(200, res);
         }
 
-        /// <summary>
-        /// Thực hiện sửa vai trò của người dùng theo khóa chính
-        /// </summary>
-        /// <param name="userId">Khóa chính người dùng</param>
-        /// <param name="roles">Mảng vai trò</param>
-        /// <returns> /// 200 - Danh sách dữ liệu 
-        /// 204 - Không có dữ liệu
-        /// 400 - Lỗi do đầu vào
-        /// 500 - Lỗi do hệ thống</returns>
-        [HttpPost("UserRole")]
-        public IActionResult UpdateUserRole(Guid userId, List<UserRole> roles)
-        {
-            var res = _service.UpdateUserRole(userId, roles);
-            return StatusCode(200, res);
-        }
+     
 
     }
 }

@@ -44,7 +44,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
            
             //2. Lấy dữ liệu
-            var employees = await cnn.QueryAsync<BookingRoom>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var employees = await cnn.QueryAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang

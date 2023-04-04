@@ -88,7 +88,7 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public int StatusRoom { get; set; }
+        public int RoomStatus { get; set; }
 
         [ForBinding]
         [ForGetting]
