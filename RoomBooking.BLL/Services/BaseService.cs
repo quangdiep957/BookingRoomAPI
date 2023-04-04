@@ -5,6 +5,7 @@ using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Exception;
+using RoomBooking.Common.Resources;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections;
@@ -309,8 +310,8 @@ namespace RoomBooking.BLL.Services
                         //listErrors.Add(String.Format(MISAResource.IsErrorEmptyMultiple, getDisplayName));
                         object error = new
                         {
-                            errorTitle = "",
-                            errorName = String.Format("", getDisplayName)
+                            errorTitle =Resource.ErrorEmpty,
+                            errorName = String.Format(Resource.IsErrorEmptyMultiple, getDisplayName)
 
                         };
                         errorList.Add(error);
@@ -355,8 +356,8 @@ namespace RoomBooking.BLL.Services
                         object error = new
                         {
                             UserId = userId,
-                            errorTitle = "",
-                            errorName = String.Format("", getDisplayName, value)
+                            errorTitle = Resource.ErrorDuplicate,
+                            errorName = String.Format(Resource.IsErrorDuplicateMutiple, getDisplayName, value)
 
                         };
                         errorList.Add(error);
@@ -394,8 +395,8 @@ namespace RoomBooking.BLL.Services
 
                         object error = new
                         {
-                            errorTitle = "",
-                            errorName = String.Format("", getDisplayName, value, length)
+                            errorTitle = Resource.ErrorLimitLength,
+                            errorName = String.Format(Resource.IsErrorLimitLengthMultiple, getDisplayName, value, length)
 
                         };
                         errorList.Add(error);

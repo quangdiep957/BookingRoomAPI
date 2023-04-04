@@ -4,6 +4,7 @@ using RoomBooking.Common.Entities;
 using RoomBooking.Common.Enum;
 using RoomBooking.Common.Exception;
 using RoomBooking.Common.Functions;
+using RoomBooking.Common.Resources;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -119,8 +120,8 @@ namespace RoomBooking.BLL.Services
 
                 object error = new
                 {
-                    errorTitle ="",
-                    errorName = ""
+                    errorTitle = Resource.ErrorInput,
+                    errorName = Resource.IsErrorEmail
 
                 };
                 errorList.Add(error);

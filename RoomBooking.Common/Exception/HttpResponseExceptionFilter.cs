@@ -23,7 +23,7 @@ namespace RoomBooking.Common.Exception
                     var res = new
                     {
 
-                        userMsg ="Có lỗi",
+                        userMsg =Resources.Resource.Error_DataInputIsError,
                         data = context.Exception.Data
                     };
                     context.Result = new ObjectResult(res)
@@ -39,7 +39,7 @@ namespace RoomBooking.Common.Exception
                     var res = new
                     {
 
-                        userMsg = "Có lỗi",
+                        userMsg = Resources.Resource.Error,
                         data = context.Exception.Data,
 
                     };
