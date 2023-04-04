@@ -61,6 +61,24 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mã đã tồn tại trong hệ thống..
+        /// </summary>
+        public static string DuplicateCode {
+            get {
+                return ResourceManager.GetString("DuplicateCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email đã tồn tại trong hệ thống..
+        /// </summary>
+        public static string DuplicateEmail {
+            get {
+                return ResourceManager.GetString("DuplicateEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Có lỗi xảy ra, vui lòng liên hệ nhân viên kĩ thuật để được hỗ trợ!.
         /// </summary>
         public static string Error {

@@ -62,46 +62,81 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public async override Task<bool> InsertService(User entity)
         {
+            var users = await _repository.GetAll();
 
-            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            var email = users.FirstOrDefault(x => x.Email.Equals(entity.Email));
+            if (email != null)
             {
-                // Gọi đến hàm validate dữ liệu
+                isValidCustom = false;
 
-                using (MySqlTransaction tran = cnn.BeginTransaction())
+                object error = new
                 {
-                    try
+                    errorTitle = Resource.ErrorDuplicate,
+                    errorName = Resource.DuplicateEmail
+
+                };
+                errorList.Add(error);
+            }
+            var userCode = users.FirstOrDefault(x => x.UserCode.Equals(entity.UserCode));
+
+            if (userCode != null)
+            {
+                isValidCustom = false;
+
+                object error = new
+                {
+                    errorTitle = Resource.ErrorDuplicate,
+                    errorName = Resource.DuplicateCode
+
+                };
+                errorList.Add(error);
+            }
+            if(isValidCustom)
+            {
+                using (MySqlConnection cnn = _repository.GetOpenConnection())
+                {
+                    // Gọi đến hàm validate dữ liệu
+
+                    using (MySqlTransaction tran = cnn.BeginTransaction())
                     {
-                        ValidateError(entity, cnn, tran);
-                        
-                        // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
-                        if (isValidCustom == true && errorList.Count <= 0)
+                        try
                         {
-                            entity.Password=HashPassword(entity.Password);
-                            var res = await _repository.Insert(entity, cnn, tran);
-                            if (res == true)
+                            ValidateError(entity, cnn, tran);
+
+                            // kiểm tra biến isValidCustom và listErrors thỏa mãn điều kiện thì gọi repository để thực hiện việc thêm mới
+                            if (isValidCustom == true && errorList.Count <= 0)
                             {
-                                tran.Commit();
+                                entity.Password = HashPassword(entity.Password);
+                                var res = await _repository.Insert(entity, cnn, tran);
+                                if (res == true)
+                                {
+                                    tran.Commit();
 
+                                }
+                                else { tran.Rollback(); }
+                                return res;
                             }
-                            else { tran.Rollback(); }
-                            return res;
+                            else // Ngược lại throw ra lỗi
+                            {
+
+                                throw new ValidateException(errors);
+                            }
                         }
-                        else // Ngược lại throw ra lỗi
+                        catch
                         {
-
-                            throw new ValidateException(errors);
+                            tran.Rollback();
+                            throw;
                         }
-                    }
-                    catch
-                    {
-                        tran.Rollback();
-                        throw;
-                    }
 
 
+                    }
                 }
             }
 
+            return isValidCustom;
+                
+         
+         
         }
 
         /// <summary>
