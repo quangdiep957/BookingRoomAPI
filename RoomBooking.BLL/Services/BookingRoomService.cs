@@ -483,9 +483,11 @@ namespace RoomBooking.BLL.Services
                     try
                     {
                         var requests = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
+                        //1. Lấy ra yêu cầu của người dùng gửi lên
                         var booking = requests.FirstOrDefault(x => x.BookingRoomID == requestID);
+                        //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
                         booking.StatusBooking = option;
-                        //1. Update lại trạng thái đặt phòng trong bảng BookingRoom
+                        //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
 
 
@@ -496,24 +498,26 @@ namespace RoomBooking.BLL.Services
                             RoomID = booking.RoomID,
                             TimeSlotID = booking.TimeSlotID,
                             WeekID = booking.WeekID,
-                            DateBooking = booking.DateRequest,
+                            DateBooking = booking.DateBooking,
                             Day = booking.Day,
                             Subject = booking.Subject,
                             YearPlan = booking.YearPlan,
                             Description = booking.Description,
-                            StatusRequest = booking.StatusBooking,
-                            DayOfWeek = booking.DayOfWeek
+                            StatusBooking = booking.StatusBooking,
+                            DayOfWeek = booking.DayOfWeek,
+                            DateRequest=booking.DateRequest
                         };
-                        // Nếu là trạng thái phê duyệt
+                        //2. Nếu là trạng thái phê duyệt
                         if (option == (int)OptionRequest.Approve)
                         {
                             result = await ApproveRequestBookingRoom(booking, cnn, tran, isUpdateBookingRequest, bookingHistory);
 
                         }
+                        //3. Nếu là trạng thái từ chối 
                         else if (option == (int)OptionRequest.Reject)
                         {
 
-                            // 2.Thêm vào lịch sử đặt phòng
+                            // 3.1.Thêm vào lịch sử đặt phòng
                             var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
 
                             if (!isUpdateBookingRequest || !isInsertHistory)
@@ -584,12 +588,12 @@ namespace RoomBooking.BLL.Services
                 Description = booking.Description,
                 DayOfWeek = booking.DayOfWeek
             };
-            // 3. Thêm mới phòng
+            // 2.1. Thêm mới phòng
             var isInsertBookingRoom = await _repository.Insert(bookingRoom, cnn, tran);
-            // 4. Thêm vào lịch sử 
+            // 2.2. Thêm vào lịch sử 
             var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
 
-            // Kiểm tra update, thêm mới có lỗi gì không, nếu có:
+            //2.3. Kiểm tra update, thêm mới có lỗi gì không, nếu có:
             if (!isUpdateBookingRequest || !isInsertHistory || isInsertBookingRoom)
             {
                 result = new
