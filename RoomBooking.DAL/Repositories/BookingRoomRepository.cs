@@ -87,27 +87,6 @@ namespace RoomBooking.DAL.Repositories
             string sqlQuery = GetAllBindingNames(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
             DynamicParameters dynamicParameters = new DynamicParameters();
 
-
-            List<Room> dataRoom = (List<Room>)await _sqlConnection.QueryAsync<Room>("SELECT * FROM Room;", transaction: transaction);
-            List<Week> dataWeek = (List<Week>)await _sqlConnection.QueryAsync<Week>("SELECT * FROM Week;", transaction: transaction);
-            List<TimeSlot> slotTime = (List<TimeSlot>)await _sqlConnection.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: transaction);
-           Guid weekID= dataWeek.Where(x=> x.WeekCode== listRoom[0].Week).Select(x=>x.WeekID).FirstOrDefault();
-            foreach (BookingRoom room in listRoom)
-            {
-                var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
-                var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
-                room.BookingRoomID = Guid.NewGuid();
-                room.RoomID = itemRoom.RoomID;
-                room.TimeSlotID = itemTimeSlot.TimeSlotID;
-                room.WeekID = weekID;
-                room.Subject = "Lịch học tuần " + room.Week;
-                room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
-                room.YearPlan = room.DateBooking.Year;
-                room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
-                
-
-            }
-
             for (int i = 0; i < listRoom.Count; i++)
             {
                 sqlQuery += GetAllBindingValues(listRoom[i], i, dynamicParameters); // Thực hiện buid câu truy vấn 
@@ -129,39 +108,6 @@ namespace RoomBooking.DAL.Repositories
 
         }
 
-        /// <summary>
-        /// Kiểm tra phòng trong dữ liệu 
-        /// </summary>
-        /// <param name="listRoom"></param>
-        /// <returns></returns>
-        /// PTTAM
-        public async Task<List<string>> CheckRoom(List<BookingRoom> listRoom)
-        {
-
-            base._sqlConnection.Open();
-            string sqlQuery = GetAllBindingNames(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
-            DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
-
-
-            List<Room> dataRoom = (List<Room>)await _sqlConnection.QueryAsync<Room>("SELECT * FROM Room;", transaction: transaction);
-
-            List<BookingRoom> listRoomNotIn = new();
-            foreach (BookingRoom room in listRoom)
-            {
-                 
-                var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
-               
-                if (itemRoom == null)
-                {
-                    listRoomNotIn.Add(room);
-                }
-
-            }
-           var res= listRoomNotIn.Select(x=>x.Room).Distinct().ToList();
-           CloseConnection();
-            return res;
-        }
 
         /// <summary>
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt

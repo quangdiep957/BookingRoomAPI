@@ -60,7 +60,6 @@ namespace RoomBooking.Common.Entities
         [DataLength(36)]
         [ForGetting]
         [ForBinding]
-        [Ambiguous]
         [NotEmpty]
 
         public Guid WeekID { get; set; }
@@ -120,5 +119,11 @@ namespace RoomBooking.Common.Entities
         public string SlotTime { get; set; }
         public int Times { get; set; }
 
+    }
+
+    public class BookingError
+    {
+        public string Error { get; set; }
+        public string DescriptionError { get; set; }
     }
 }
