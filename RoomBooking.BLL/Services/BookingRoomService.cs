@@ -23,7 +23,7 @@ namespace RoomBooking.BLL.Services
         IBookingRoomRepository _repository;
         IBookingHistoryRepository _historyRepository;
         IWeekRepository _repoWeek;
-        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek,  IBookingHistoryRepository historyRepository) : base(repository)
+        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek, IBookingHistoryRepository historyRepository) : base(repository)
         {
             _repository = repository;
             _repoWeek = repoWeek;
@@ -40,8 +40,8 @@ namespace RoomBooking.BLL.Services
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             List<BookingRoom> scheduleItems = new List<BookingRoom>();
-          
-                    using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+
+            using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
@@ -90,80 +90,136 @@ namespace RoomBooking.BLL.Services
             // Thực hiện convert lại dữ liệu
             List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
 
-            // Check xem các phòng trong list đã có trong db chưa
-            var listRoomEmpty = await _repository.CheckRoom(lst);
-           // Nếu chưa có
-            if (listRoomEmpty.Count>0)
-            {
-                return new
-                {
 
-                    IsSuccess = false,
-                    Data = listRoomEmpty // mảng chứa tên phòng chưa có trong csdl
-                };
-            }
-            // Nếu có rồi
-            else
+            // Thực hiện thêm tuần vào db
+            var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
+            var weekEnd = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[1], "dd/MM/yyyy", null);
+
+
+            Object result = new();
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-                // Thực hiện thêm tuần vào db
-                var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-                var weekEnd = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[1], "dd/MM/yyyy", null);
-                Week week = new Week
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
                 {
-                    WeekID = Guid.NewGuid(),
-                    WeekCode = scheduleItems[0].Week
-                    ,
-                    WeekName = "Tuần " + scheduleItems[0].Week,
-                    StartDate = weekStart,
-                    EndDate = weekEnd
-                };
-                Object result = new();
-                using (MySqlConnection cnn = _repository.GetOpenConnection())
-                {
-                  
-                    using (MySqlTransaction tran = cnn.BeginTransaction())
+                    try
                     {
-                        try
-                        {
-                            bool isInsertSucessWeek = await _repoWeek.Insert(week, cnn, tran);
-
-                            //Thêm tuần thành công
-                            if (isInsertSucessWeek)
+                        List<BookingError> errors = new List<BookingError>();
+                        int count = lst.Count;
+                        bool checkRoom = await CheckRoom(lst, cnn, tran, errors);
+                        if (checkRoom) {
+                            var res = await _repository.InsertMulti(lst, tran, cnn);
+                            tran.Commit();
+                            result = new
                             {
-                                var res = await _repository.InsertMulti(lst, tran, cnn);
-                                tran.Commit();
-                                result = new
-                                {
 
-                                    IsSuccess = res,
-                                    Data = listRoomEmpty
-                                };
-                            }
-                            // Thêm tuần thất bại (TH đã thêm tuần => đã thêm dữ liệu vào 1 lần)
-                            else
-                            {
-                                tran.Rollback();
-                                result = new
-                                {
+                                IsSuccess = res,
+                                Data= errors,
+                                Count= count
 
-                                    IsSuccess = false,
-                                    Data = listRoomEmpty // mảng trống
-                                };
-                            }
+                            };
                         }
-                        catch { tran.Rollback(); }
-                        finally { _repository.CloseMyConnection(); }
+                        else
+                        {
+                            tran.Rollback();
+                            result = new
+                            {
+
+                                IsSuccess = false,
+                                Data = errors,
+                                Count = count
+
+
+                            };
+                        }
+                       
+
                     }
-
-                    _repository.CloseMyConnection();
-
+                    catch { tran.Rollback(); }
+                    finally { _repository.CloseMyConnection(); }
                 }
-                
-                return result;
+
+                _repository.CloseMyConnection();
+
             }
-       
+
+            return result;
+
+
         }
 
+        /// <summary>
+        /// Thực hiện validate dữ liệu phòng trước khi import
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <param name="cnn"></param>
+        /// <param name="tran"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        /// PTTAM 04/06/2023
+        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        {
+            // Thực hiện kiểm tra phòng đã được đặt chưa
+            bool checkRoom = true;
+            List<Room> dataRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
+            List<TimeSlot> slotTime = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
+            List<BookingRoom> listRoomNotIn = new();
+
+            foreach (BookingRoom room in lst)
+            {
+                var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
+                if (itemRoom == null)
+                {
+
+                    listRoomNotIn.Add(room);
+                }
+                else
+                {
+                    var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
+                    room.BookingRoomID = Guid.NewGuid();
+                    room.RoomID = itemRoom.RoomID;
+                    room.TimeSlotID = itemTimeSlot.TimeSlotID;
+                    room.Subject = "Lịch học tuần " + room.Week;
+                    room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
+                    room.YearPlan = room.DateBooking.Year;
+                    room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
+                }
+            }
+
+            if (listRoomNotIn != null && listRoomNotIn.Any())
+            {
+                foreach (var room in listRoomNotIn.Select(x => x.Room).Distinct().ToList())
+                {
+                    errors.Add(new BookingError
+                    {
+                        Error = "Không có dữ liệu",
+                        DescriptionError = $"Không có phòng {room}."
+                    });
+                }
+                checkRoom = false;
+            }
+
+            // Thực hiện kiểm tra phòng đã được đặt chưa
+            List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
+            foreach (BookingRoom room in lst)
+            {
+
+                var itemRoom = lstBookingRoom.Where(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking).FirstOrDefault();
+
+                if (itemRoom != null)
+                {
+
+                    errors.Add(new BookingError
+                    {
+                        Error = "Đã có dữ liệu",
+                        DescriptionError = $"Phòng {room.Room} ca {room.Times} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
+                    });
+                    checkRoom = false;
+                }
+
+            }
+            return checkRoom;
+        }
         /// <summary>
         /// Thực hiện convert lại dữ liệu
         /// </summary>
@@ -194,6 +250,10 @@ namespace RoomBooking.BLL.Services
                 var afternoonFreePeriod = scheduleList[i].AfternoonFreePeriod;
                 var eveningFreePeriod = scheduleList[i].EveningFreePeriod;
                 // Tạo danh sách các ngày trong tuần
+                if (scheduleList[i].DayOfWeek == "CN")
+                {
+                    scheduleList[i].DayOfWeek = "1";
+                }
                 var weekDays = scheduleList[i].DayOfWeek.Split(',').Select(x => int.Parse(x));
                 var dates = new List<DateTime>();
                 foreach (var weekday in weekDays)
@@ -278,10 +338,11 @@ namespace RoomBooking.BLL.Services
             foreach (var item in convertedList)
             {
                 string[] periods = item.SlotTime.Split(',');
-                if (periods.Length < 4) {
+                if (periods.Length < 4)
+                {
                     list.AddRange(ConverDataToTimeSlot(item, periods, item.Times));
                 }
-               
+
             }
 
 
@@ -305,61 +366,61 @@ namespace RoomBooking.BLL.Services
 
 
                 int ca = 0;
-                    if (item.Times==5)
+                if (item.Times == 5)
+                {
+                    ca = item.Times;
+
+                }
+                else
+                {
+                    if (item.SlotTime.StartsWith("1,"))
                     {
-                        ca = item.Times;
-                      
+                        ca = 2;
                     }
-                    else
+                    else if (item.SlotTime.StartsWith("4"))
                     {
-                            if (item.SlotTime.StartsWith("1,"))
-                            {
-                                ca = 2;
-                            }
-                            else if (item.SlotTime.StartsWith("4"))
-                            {
-                                ca = 1;
-                            }
-                            else if (item.SlotTime.StartsWith("7"))
-                            {
-                                ca = 4;
-                            }
-                            else if (item.SlotTime.StartsWith("10"))
-                            {
-                                ca = 3;
-                            }
-                        
+                        ca = 1;
+                    }
+                    else if (item.SlotTime.StartsWith("7"))
+                    {
+                        ca = 4;
+                    }
+                    else if (item.SlotTime.StartsWith("10"))
+                    {
+                        ca = 3;
                     }
 
-                    convertedList.Add(new BookingRoom
-                    {
-                        Building = item.Building,
-                        Room = item.Room,
-                        DayOfWeek = item.DayOfWeek,
-                        Times = int.Parse(ca.ToString()),
-                        Week = item.Week,
-                        DateBooking = item.DateBooking
-                    });
-                
+                }
+
+                convertedList.Add(new BookingRoom
+                {
+                    Building = item.Building,
+                    Room = item.Room,
+                    DayOfWeek = item.DayOfWeek,
+                    Times = int.Parse(ca.ToString()),
+                    Week = item.Week,
+                    DateBooking = item.DateBooking
+                });
+
             }
             else
             {
                 int ca = item.Times;
                 int j = ca - 1;
-                for(int i = ca-1; i <= item.Times; i++)
+                for (int i = ca - 1; i <= item.Times; i++)
                 {
-                    if (i == 6) { break; }
+                    if (i == 5) { break; }
                     convertedList.Add(new BookingRoom
                     {
                         Building = item.Building,
                         Room = item.Room,
                         DayOfWeek = item.DayOfWeek,
-                        Times =ca++ ,
+                        Times = ca++,
                         Week = item.Week,
                         DateBooking = item.DateBooking
                     });
                 }
-               
+
             }
             return convertedList;
         }
@@ -396,11 +457,11 @@ namespace RoomBooking.BLL.Services
                 }
                 var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
                 string jsonDate = JsonConvert.SerializeObject(dateConvert);
-                param.week= jsonDate;
-                var res = await _repository.GetPaging(param,cnn);
-                result = res; 
+                param.week = jsonDate;
+                var res = await _repository.GetPaging(param, cnn);
+                result = res;
             }
-            
+
             return result;
         }
 
@@ -414,7 +475,7 @@ namespace RoomBooking.BLL.Services
         public async Task<object> RequestBookingRoom(Guid requestID, int option)
         {
             object result = null;
-           
+
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
                 using (MySqlTransaction tran = cnn.BeginTransaction())
@@ -425,32 +486,33 @@ namespace RoomBooking.BLL.Services
                         var booking = requests.FirstOrDefault(x => x.BookingRoomID == requestID);
                         booking.StatusBooking = option;
                         //1. Update lại trạng thái đặt phòng trong bảng BookingRoom
-                        var isUpdateBookingRequest =await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
-                      
+                        var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
+
 
                         BookingHistory bookingHistory = new BookingHistory
                         {
-                            BookingRoomID=booking.BookingRoomID,
-                            UserID=booking.UserID,
-                            RoomID=booking.RoomID,
-                            TimeSlotID=booking.TimeSlotID,
-                            WeekID=booking.WeekID,
-                            DateBooking=booking.DateRequest,
-                            Day=booking.Day,
-                            Subject=booking.Subject,
-                            YearPlan=booking.YearPlan,
-                            Description=booking.Description,
-                            StatusRequest=booking.StatusBooking,
-                            DayOfWeek=booking.DayOfWeek
+                            BookingRoomID = booking.BookingRoomID,
+                            UserID = booking.UserID,
+                            RoomID = booking.RoomID,
+                            TimeSlotID = booking.TimeSlotID,
+                            WeekID = booking.WeekID,
+                            DateBooking = booking.DateRequest,
+                            Day = booking.Day,
+                            Subject = booking.Subject,
+                            YearPlan = booking.YearPlan,
+                            Description = booking.Description,
+                            StatusRequest = booking.StatusBooking,
+                            DayOfWeek = booking.DayOfWeek
                         };
-                       // Nếu là trạng thái phê duyệt
-                        if(option== (int)OptionRequest.Approve)
+                        // Nếu là trạng thái phê duyệt
+                        if (option == (int)OptionRequest.Approve)
                         {
                             result = await ApproveRequestBookingRoom(booking, cnn, tran, isUpdateBookingRequest, bookingHistory);
 
                         }
-                        else if(option==(int)OptionRequest.Reject) {
-                            
+                        else if (option == (int)OptionRequest.Reject)
+                        {
+
                             // 2.Thêm vào lịch sử đặt phòng
                             var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
 
@@ -475,8 +537,8 @@ namespace RoomBooking.BLL.Services
                             }
 
                         }
-                       
-                      
+
+
                     }
                     catch (Exception ex)
                     {
@@ -487,7 +549,7 @@ namespace RoomBooking.BLL.Services
                         };
                         tran.Rollback();
                     }
-                   
+
 
                 }
             }
@@ -507,48 +569,48 @@ namespace RoomBooking.BLL.Services
         private async Task<object> ApproveRequestBookingRoom(BookingRoom booking, MySqlConnection cnn, MySqlTransaction tran, bool isUpdateBookingRequest, BookingHistory bookingHistory)
         {
             object result = null;
-           
-                BookingRoom bookingRoom = new BookingRoom
+
+            BookingRoom bookingRoom = new BookingRoom
+            {
+                BookingRoomID = booking.BookingRoomID,
+                UserID = booking.UserID,
+                RoomID = booking.RoomID,
+                TimeSlotID = booking.TimeSlotID,
+                WeekID = booking.WeekID,
+                DateBooking = booking.DateRequest,
+                Day = booking.Day,
+                Subject = booking.Subject,
+                YearPlan = booking.YearPlan,
+                Description = booking.Description,
+                DayOfWeek = booking.DayOfWeek
+            };
+            // 3. Thêm mới phòng
+            var isInsertBookingRoom = await _repository.Insert(bookingRoom, cnn, tran);
+            // 4. Thêm vào lịch sử 
+            var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
+
+            // Kiểm tra update, thêm mới có lỗi gì không, nếu có:
+            if (!isUpdateBookingRequest || !isInsertHistory || isInsertBookingRoom)
+            {
+                result = new
                 {
-                    BookingRoomID = booking.BookingRoomID,
-                    UserID = booking.UserID,
-                    RoomID = booking.RoomID,
-                    TimeSlotID = booking.TimeSlotID,
-                    WeekID = booking.WeekID,
-                    DateBooking = booking.DateRequest,
-                    Day = booking.Day,
-                    Subject = booking.Subject,
-                    YearPlan = booking.YearPlan,
-                    Description = booking.Description,
-                    DayOfWeek = booking.DayOfWeek
+                    IsSucces = false,
+                    StatusRoom = StatusRoom.Empty,
+                    Description = "Có lỗi xảy ra"
                 };
-                // 3. Thêm mới phòng
-                var isInsertBookingRoom = await _repository.Insert(bookingRoom, cnn, tran);
-                // 4. Thêm vào lịch sử 
-                var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
+                tran.Rollback();
 
-                // Kiểm tra update, thêm mới có lỗi gì không, nếu có:
-                if (!isUpdateBookingRequest || !isInsertHistory || isInsertBookingRoom)
+            }
+            else
+            {
+                result = new
                 {
-                    result = new
-                    {
-                        IsSucces = false,
-                        StatusRoom = StatusRoom.Empty,
-                        Description = "Có lỗi xảy ra"
-                    };
-                    tran.Rollback();
-
-                }
-                else
-                {
-                    result = new
-                    {
-                        IsSucces = true,
-                        StatusRoom = StatusRoom.Empty,
-                        Description = "Thành công"
-                    };
-                    tran.Commit();
-                }
+                    IsSucces = true,
+                    StatusRoom = StatusRoom.Empty,
+                    Description = "Thành công"
+                };
+                tran.Commit();
+            }
 
 
             return result;
@@ -561,12 +623,12 @@ namespace RoomBooking.BLL.Services
         /// PTTAM 04.01.2023
         public async Task<object> GetPagingRequest(PagingParam param)
         {
-           
+
 
             object res = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-                res = await _repository.GetPagingRequest(param,cnn);
+                res = await _repository.GetPagingRequest(param, cnn);
 
             }
             return res;
