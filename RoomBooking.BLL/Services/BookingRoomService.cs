@@ -1,15 +1,18 @@
 ﻿using Dapper;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
+using RoomBooking.Common.Resources;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Formats.Asn1;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,20 +76,6 @@ namespace RoomBooking.BLL.Services
                 }
             }
             List<Week> weeks = new List<Week>();
-            // int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
-            // var dates = new List<DateTime>();
-            //foreach (var weekday in weekDays)
-            //{
-            //    // Tính ngày bắt đầu và kết thúc của tuần
-
-            //    var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-            //    var weekEnd = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[1], "dd/MM/yyyy", null);
-
-            //    // Tìm ngày trong tuần tương ứng với ngày thứ weekday
-            //    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
-            //    var date = weekStart.AddDays(diff);
-            //    dates.Add(date);
-            //}
             // Thực hiện convert lại dữ liệu
             List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
 
@@ -200,6 +189,22 @@ namespace RoomBooking.BLL.Services
             }
 
             // Thực hiện kiểm tra phòng đã được đặt chưa
+            checkRoom = await CheckRoomIsUsed(lst, cnn, tran, errors);
+            return checkRoom;
+        }
+
+        /// <summary>
+        ///  Thực hiện kiểm tra phòng đã được đặt chưa
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <param name="cnn"></param>
+        /// <param name="tran"></param>
+        /// <param name="errors"></param>
+        /// <param name="checkRoom"></param>
+        /// <returns></returns>
+        private static async Task<bool> CheckRoomIsUsed(List<BookingRoom> lst, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        {
+            bool checkRoom = true;
             List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
             foreach (BookingRoom room in lst)
             {
@@ -218,8 +223,10 @@ namespace RoomBooking.BLL.Services
                 }
 
             }
+
             return checkRoom;
         }
+
         /// <summary>
         /// Thực hiện convert lại dữ liệu
         /// </summary>
@@ -636,6 +643,69 @@ namespace RoomBooking.BLL.Services
 
             }
             return res;
+        }
+
+        /// <summary>
+        /// Thực hiện thêm mới yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<object> InsertBookingRequest(BookingRoom booking)
+        {
+            object result = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                       
+                        List<BookingRoom> bookings = new List<BookingRoom>();
+                        List<TimeSlot> listTime = new();
+                        // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
+                        foreach(var item in booking.TimeSlots)
+                        {
+                            booking.TimeSlotID = item;
+                            bookings.Add(booking);
+                        }
+                        List<BookingError> errors = new List<BookingError>();
+                        //2. Check phòng đã được sử dụng hay chưa
+                        bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
+                        //2.1. Nếu phòng chưa được sử dụng
+                        if(checkRoom)
+                        {
+                            // Thực hiện insert
+                            var res = await _repository.InsertMulti(bookings, tran, cnn);
+                            if (res)
+                            {
+                                result = new
+                                {
+                                    IsSusses=res,
+                                    Data= errors
+                                };
+                                tran.Commit();
+                            }
+                        }
+                        //2.2. Nếu phòng đã được sử dùng
+                        else
+                        {
+                            result = new
+                            {
+                                IsSusses = false,
+                                Data = errors
+                            };
+
+                        }
+
+                    }
+                    catch { tran.Rollback(); }
+                }
+
+
+            }
+            return result;
         }
     }
 }

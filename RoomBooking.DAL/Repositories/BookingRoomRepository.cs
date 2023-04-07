@@ -74,7 +74,7 @@ namespace RoomBooking.DAL.Repositories
         }
 
         /// <summary>
-        /// Thực hiện việc thêm nhiều người dùng
+        /// Thực hiện việc thêm nhiều lịch đặt phog
         /// </summary>
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
