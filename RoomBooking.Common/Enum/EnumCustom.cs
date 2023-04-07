@@ -56,7 +56,9 @@ namespace RoomBooking.Common.Enum
         // Đồng ý
         Approve=2,
         // Từ chối
-        Reject=3
+        Reject=3,
+        //Hủy
+        Cancel=4
     }
 
     public enum StatusRoom

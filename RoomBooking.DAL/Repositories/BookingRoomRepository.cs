@@ -74,7 +74,7 @@ namespace RoomBooking.DAL.Repositories
         }
 
         /// <summary>
-        /// Thực hiện việc thêm nhiều người dùng
+        /// Thực hiện việc thêm nhiều lịch đặt phog
         /// </summary>
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
@@ -120,7 +120,7 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PageSize", param.pageSize); //input: Số bản ghi/trang
             dynamicParameters.Add("@PageIndex", param.pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@WeekID", param.weekID); //input: Khóa chính phòng học
+            dynamicParameters.Add("@UserID", param.userID); //input: Khóa chính phòng học
             dynamicParameters.Add("@KeyWord", param.keyWord); //input: Khóa chính phòng học
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang

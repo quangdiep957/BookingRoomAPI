@@ -86,6 +86,10 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public DateTime DateBooking { get; set; }
+
+        [ForGetting]
+        [ForBinding]
+        public DateTime DateRequest { get; set; }
         /// <summary>
         /// Nội dung
         /// </summary>
@@ -106,7 +110,7 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public int StatusRequest { get; set; }
+        public int StatusBooking { get; set; }
         public string Building { get; set; }
         public string Time { get; set; }
 

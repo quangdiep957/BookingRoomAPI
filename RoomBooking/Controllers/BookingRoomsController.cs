@@ -87,5 +87,16 @@ namespace RoomBooking.API.Controllers
             return StatusCode(200, res);
 
         }
+        /// <summary>
+        /// Thực hiện gửi yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpPost("insertBookingRequest")]
+        public async Task<IActionResult> InsertBookingRequest(BookingRoom bookingRoom)
+        {
+            var res = await _scheduleService.InsertBookingRequest(bookingRoom);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
     }
 }
