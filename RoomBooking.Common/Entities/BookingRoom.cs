@@ -19,6 +19,7 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         [NotEmpty]
+        [KeyDelete]
         public Guid BookingRoomID { get; set; }
         /// <summary>
         /// Khóa ngoại người dùng

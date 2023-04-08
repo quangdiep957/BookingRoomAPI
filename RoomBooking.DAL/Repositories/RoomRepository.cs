@@ -126,7 +126,7 @@ namespace RoomBooking.DAL.Repositories
             bool isSucess = true;
             try
             {
-                var storeDelete = "Proc_Delete1";
+                var storeDelete = "Proc_Delete_Record";
                 var properties = typeof(RoomEquipment).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
                 DynamicParameters paramId = new DynamicParameters();
                 paramId.Add("@EntityId", entityId);

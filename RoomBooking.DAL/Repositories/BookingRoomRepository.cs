@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
+using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.DAL.Interfaces;
@@ -106,6 +107,36 @@ namespace RoomBooking.DAL.Repositories
 
 
 
+        }
+        /// <summary>
+        /// Thực hiện xóa đối tượng theo khóa chính
+        /// </summary>
+        /// <param name="entityId">Khóa chính đối tượng</param>
+        /// <returns>Xóa thành công || Xóa thất bại</returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public override async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        {
+            bool isSucess = true;
+            try
+            {
+                var storeDelete = "Proc_Delete_Record";
+                var properties = typeof(TimeSlot).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
+                DynamicParameters paramId = new DynamicParameters();
+                paramId.Add("@EntityId", entityId);
+                paramId.Add("@TableName", "timeslot");
+                paramId.Add("@Property", properties.Name);
+
+                var res = await cnn.ExecuteAsync(storeDelete, paramId, transaction, commandType: System.Data.CommandType.StoredProcedure);
+
+            }
+            catch (Exception)
+            {
+
+                isSucess = false;
+            }
+
+
+            return isSucess;
         }
 
 

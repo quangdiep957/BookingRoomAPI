@@ -707,5 +707,75 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
+
+        public async Task<object> UpdateBookingRequest(Guid BookingRoomID, BookingRoom booking)
+        {
+            object result = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+
+                        List<BookingRoom> bookings = new List<BookingRoom>();
+                        List<TimeSlot> listTime = new();
+                        // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
+                        foreach (var item in booking.TimeSlots)
+                        {
+                            booking.TimeSlotID = item;
+                            bookings.Add(booking);
+                        }
+                        List<BookingError> errors = new List<BookingError>();
+                        //2. Check phòng đã được sử dụng hay chưa
+                        bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
+                        //2.1. Nếu phòng chưa được sử dụng
+                        if (checkRoom)
+                        {
+                            // thực hiện xóa hết các ca đi
+                            var del = await _repository.Delete(BookingRoomID, cnn, tran);
+                            // Thực hiện insert lại
+                            var res = await _repository.InsertMulti(bookings, tran, cnn);
+                            if (res)
+                            {
+                                result = new
+                                {
+                                    IsSusses = res,
+                                    Data = errors
+                                };
+                                tran.Commit();
+                            }
+                        }
+                        //2.2. Nếu phòng đã được sử dùng
+                        else
+                        {
+                            result = new
+                            {
+                                IsSusses = false,
+                                Data = errors
+                            };
+
+                        }
+
+                    }
+                    catch { tran.Rollback(); }
+                }
+
+
+            }
+            return result;
+        }
+
+        //public byte[] GenerateReport(DataTable dataSource)
+        //{
+        //    // Load report from file
+        //    var report = new StiReport();
+        //    report.Load("path/to/your/report.mrt");
+
+        //    // Assign data source to report
+        //    report.RegData("DataSourceName", dataSource);
+
+        //}
     }
 }

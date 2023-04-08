@@ -56,5 +56,19 @@ namespace RoomBooking.BLL.Interfaces
         /// <returns></returns>
         public Task<object> InsertBookingRequest(BookingRoom bookings);
 
+        /// <summary>
+        /// Thực hiện sửa yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<object> UpdateBookingRequest(Guid BookingRoomID,BookingRoom bookings);
+
+        /// <summary>
+        /// in đơn xin phòng học
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        //public byte[] GenerateReport(DataTable bookings);
+
     }
 }
