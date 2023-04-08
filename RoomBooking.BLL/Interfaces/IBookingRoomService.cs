@@ -24,7 +24,6 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="pageSize"></param>
         /// <param name="pageIndex"></param>
         /// <param name="Type"></param>
-        /// <param name="Week"></param>
         /// <param name="keyWord"></param>
         /// <param name="RoomID"></param>
         /// <param name="BuildingID"></param>

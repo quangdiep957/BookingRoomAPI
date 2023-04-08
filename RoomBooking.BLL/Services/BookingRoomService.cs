@@ -75,7 +75,6 @@ namespace RoomBooking.BLL.Services
                     }
                 }
             }
-            List<Week> weeks = new List<Week>();
             // Thực hiện convert lại dữ liệu
             List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
 
@@ -461,24 +460,23 @@ namespace RoomBooking.BLL.Services
         public async Task<object> GetPaging(PagingParam param)
         {
             object result = null;
-            // List<Week> weeks = new List<Week>();
             int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
             var datetimes = new List<DateTime>();
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-                var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
-                var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
+              //  var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
+             //   var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
                 foreach (var weekday in weekDays)
                 {
                     // Tính ngày bắt đầu và kết thúc của tuần
                     //var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-                    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
-                    var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+                //    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+               //     var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
 
                     // Tìm ngày trong tuần tương ứng với ngày thứ weekday
-                    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
-                    var date = weekStart.AddDays(diff);
-                    datetimes.Add(date);
+                //    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
+                //    var date = weekStart.AddDays(diff);
+                //    datetimes.Add(date);
                 }
                 var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
                 string jsonDate = JsonConvert.SerializeObject(dateConvert);
