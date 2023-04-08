@@ -28,14 +28,6 @@ namespace RoomBooking.DAL.Interfaces
         /// Created by: PTTAM (07/03/2023)
         public Task<string> GetNewUserCode();
 
-        /// <summary>
-        /// Thực hiên sửa vai trò của nhân viên
-        /// </summary>
-        /// <param name="roleList">Mảng vai trò của nhân viên</param>
-        /// <returns>Sửa thành công || Sửa thất bại</returns>
-        /// Created by: PTTAM (07/03/2023)
-        public Task<string> UpdateUserRole(Guid userId, List<UserRole> roleList);
-
 
     }
 }

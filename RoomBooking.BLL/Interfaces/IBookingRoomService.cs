@@ -49,5 +49,12 @@ namespace RoomBooking.BLL.Interfaces
         /// <returns></returns>
         public Task<object> GetPagingRequest(PagingParam param);
 
+        /// <summary>
+        /// Thực hiện gửi yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<object> InsertBookingRequest(BookingRoom bookings);
+
     }
 }

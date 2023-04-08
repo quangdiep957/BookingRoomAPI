@@ -60,7 +60,6 @@ namespace RoomBooking.Common.Entities
         [DataLength(36)]
         [ForGetting]
         [ForBinding]
-        [Ambiguous]
         [NotEmpty]
 
         public Guid WeekID { get; set; }
@@ -89,7 +88,7 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public DateTime DateRequest { get; set; }
+        public DateTime DateRequest { get; set; } = DateTime.Now;
         /// <summary>
         /// Nội dung
         /// </summary>
@@ -101,7 +100,7 @@ namespace RoomBooking.Common.Entities
         public int YearPlan { get; set; }
         [ForGetting]
         [ForBinding]
-        public int StatusBooking { get; set; }
+        public int StatusBooking { get; set; } = (int)OptionRequest.Await;
 
         public string Room { get; set; }
         [ForGetting]
@@ -119,6 +118,13 @@ namespace RoomBooking.Common.Entities
         public int Day { get; set; }
         public string SlotTime { get; set; }
         public int Times { get; set; }
+        public List<Guid> TimeSlots { get; set; }
 
+    }
+
+    public class BookingError
+    {
+        public string Error { get; set; }
+        public string DescriptionError { get; set; }
     }
 }

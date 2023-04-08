@@ -44,7 +44,7 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
            
             //2. Lấy dữ liệu
-            var employees = await cnn.QueryAsync<BookingRoom>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var employees = await cnn.QueryAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
@@ -74,7 +74,7 @@ namespace RoomBooking.DAL.Repositories
         }
 
         /// <summary>
-        /// Thực hiện việc thêm nhiều người dùng
+        /// Thực hiện việc thêm nhiều lịch đặt phog
         /// </summary>
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
@@ -86,27 +86,6 @@ namespace RoomBooking.DAL.Repositories
             int countRoom = 0; // biến đếm khi thực hiện thêm người dùng
             string sqlQuery = GetAllBindingNames(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
             DynamicParameters dynamicParameters = new DynamicParameters();
-
-
-            List<Room> dataRoom = (List<Room>)await _sqlConnection.QueryAsync<Room>("SELECT * FROM Room;", transaction: transaction);
-            List<Week> dataWeek = (List<Week>)await _sqlConnection.QueryAsync<Week>("SELECT * FROM Week;", transaction: transaction);
-            List<TimeSlot> slotTime = (List<TimeSlot>)await _sqlConnection.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: transaction);
-           Guid weekID= dataWeek.Where(x=> x.WeekCode== listRoom[0].Week).Select(x=>x.WeekID).FirstOrDefault();
-            foreach (BookingRoom room in listRoom)
-            {
-                var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
-                var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
-                room.BookingRoomID = Guid.NewGuid();
-                room.RoomID = itemRoom.RoomID;
-                room.TimeSlotID = itemTimeSlot.TimeSlotID;
-                room.WeekID = weekID;
-                room.Subject = "Lịch học tuần " + room.Week;
-                room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
-                room.YearPlan = room.DateBooking.Year;
-                room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
-                
-
-            }
 
             for (int i = 0; i < listRoom.Count; i++)
             {
@@ -129,39 +108,6 @@ namespace RoomBooking.DAL.Repositories
 
         }
 
-        /// <summary>
-        /// Kiểm tra phòng trong dữ liệu 
-        /// </summary>
-        /// <param name="listRoom"></param>
-        /// <returns></returns>
-        /// PTTAM
-        public async Task<List<string>> CheckRoom(List<BookingRoom> listRoom)
-        {
-
-            base._sqlConnection.Open();
-            string sqlQuery = GetAllBindingNames(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
-            DynamicParameters dynamicParameters = new DynamicParameters();
-            MySqlTransaction transaction = _sqlConnection.BeginTransaction();
-
-
-            List<Room> dataRoom = (List<Room>)await _sqlConnection.QueryAsync<Room>("SELECT * FROM Room;", transaction: transaction);
-
-            List<BookingRoom> listRoomNotIn = new();
-            foreach (BookingRoom room in listRoom)
-            {
-                 
-                var itemRoom = dataRoom.Where(x => x.RoomCode == room.Room).FirstOrDefault();
-               
-                if (itemRoom == null)
-                {
-                    listRoomNotIn.Add(room);
-                }
-
-            }
-           var res= listRoomNotIn.Select(x=>x.Room).Distinct().ToList();
-           CloseConnection();
-            return res;
-        }
 
         /// <summary>
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt
@@ -174,7 +120,7 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PageSize", param.pageSize); //input: Số bản ghi/trang
             dynamicParameters.Add("@PageIndex", param.pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@WeekID", param.weekID); //input: Khóa chính phòng học
+            dynamicParameters.Add("@UserID", param.userID); //input: Khóa chính phòng học
             dynamicParameters.Add("@KeyWord", param.keyWord); //input: Khóa chính phòng học
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
