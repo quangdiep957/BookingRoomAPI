@@ -37,6 +37,7 @@ builder.Services.AddScoped<IWeekRepository, WeekRepository>();
 builder.Services.AddScoped<IBookingRoomRepository, BookingRoomRepository>();
 builder.Services.AddScoped<IBookingHistoryRepository, BookingHistoryRepository>();
 builder.Services.AddScoped<ITimeSlotRepository, TimeSlotRepository>();
+builder.Services.AddScoped<ITimeBookingRepository, TimeBookingRepository>();
 
 
 builder.Services.AddScoped<IUserService, UserService>();

@@ -25,11 +25,11 @@ namespace RoomBooking.BLL.Services
     {
         IBookingRoomRepository _repository;
         IBookingHistoryRepository _historyRepository;
-        IWeekRepository _repoWeek;
-        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek, IBookingHistoryRepository historyRepository) : base(repository)
+        ITimeBookingRepository _repoTimeBooking;
+        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IBookingHistoryRepository historyRepository) : base(repository)
         {
             _repository = repository;
-            _repoWeek = repoWeek;
+            _repoTimeBooking = repoTimeBooking;
             _historyRepository = historyRepository;
         }
 
@@ -94,11 +94,14 @@ namespace RoomBooking.BLL.Services
                     try
                     {
                         List<BookingError> errors = new List<BookingError>();
+                        List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;
-                        bool checkRoom = await CheckRoom(lst, cnn, tran, errors);
+                        bool checkRoom = await CheckRoom(lst, cnn, tran, errors, lstTimeBooking);
                         if (checkRoom) {
-                            var res = await _repository.InsertMulti(lst, tran, cnn);
+                            var resBookingRoom = await _repository.InsertMulti(lst, tran, cnn);
+                            var resTimeBooking= await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             tran.Commit();
+                            var res= (resBookingRoom==true&&resTimeBooking==true)?true:false;
                             result = new
                             {
 
@@ -146,12 +149,13 @@ namespace RoomBooking.BLL.Services
         /// <param name="errors"></param>
         /// <returns></returns>
         /// PTTAM 04/06/2023
-        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors,List<TimeBooking> lstTimeBooking)
         {
             // Thực hiện kiểm tra phòng đã được đặt chưa
             bool checkRoom = true;
             List<Room> dataRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
             List<TimeSlot> slotTime = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
+            List<TimeBooking> timeBookings= (List<TimeBooking>)await cnn.QueryAsync<TimeBooking>("SELECT * FROM TimeBooking;", transaction: tran);
             List<BookingRoom> listRoomNotIn = new();
 
             foreach (BookingRoom room in lst)
@@ -167,12 +171,18 @@ namespace RoomBooking.BLL.Services
                     var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
                     room.BookingRoomID = Guid.NewGuid();
                     room.RoomID = itemRoom.RoomID;
-                    //room.TimeSlotID = itemTimeSlot.TimeSlotID;
                     room.Subject = "Lịch học tuần " + room.Week;
-                    room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
+                    room.UserID = Guid.Empty;
                     room.YearPlan = room.DateBooking.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
+                    room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
+                    lstTimeBooking.Add(new TimeBooking
+                    {
+                        BookingRoomID = room.BookingRoomID,
+                        TimeSlotID = itemTimeSlot.TimeSlotID
+                    }) ;
                 }
+
             }
 
             if (listRoomNotIn != null && listRoomNotIn.Any())
@@ -206,21 +216,28 @@ namespace RoomBooking.BLL.Services
         {
             bool checkRoom = true;
             List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
-            foreach (BookingRoom room in lst)
+            var data = lst.Where(x => x.BookingRoomID != Guid.Empty).ToList();
+            foreach (BookingRoom room in data)
             {
-
-                //var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking);
-                var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID  && x.DateBooking == room.DateBooking);
-
-                if (itemRoom != null)
+                // Tách chuỗi TimeSlotID
+                string[] timeIDs = room.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                // For từng dòng
+                foreach (var item in timeIDs)
                 {
+                    var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && timeIDs.Contains(item) && x.DateBooking == room.DateBooking);
 
-                    errors.Add(new BookingError
+
+                    if (itemRoom != null)
                     {
-                        Error = "Đã có dữ liệu",
-                        DescriptionError = $"Phòng {room.Room} ca {room.Times} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
-                    });
-                    checkRoom = false;
+
+                        errors.Add(new BookingError
+                        {
+                            Error = "Đã có dữ liệu",
+                            DescriptionError = $"Phòng {room.Room} ca {room.Times} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
+                        });
+                        checkRoom = false;
+                    }
+
                 }
 
             }

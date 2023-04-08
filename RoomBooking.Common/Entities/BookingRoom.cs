@@ -86,6 +86,9 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public string Week { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public string TimeSlots { get; set; }
         public string Building { get; set; }
         public string Time { get; set; }
         public string MorningFreePeriod { get; set; }
@@ -95,7 +98,7 @@ namespace RoomBooking.Common.Entities
         public int Day { get; set; }
         public string SlotTime { get; set; }
         public int Times { get; set; }
-        public List<Guid> TimeSlots { get; set; }
+     
 
     }
 
