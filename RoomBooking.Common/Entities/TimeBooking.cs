@@ -14,12 +14,14 @@ namespace RoomBooking.Common.Entities
         /// Khóa chính vai trò
         /// </summary>
         [ForGetting]
+        [ForBinding]
         public Guid TimeSlotID { get; set; }
 
         /// <summary>
         /// Khóa chính nhân viên
         /// </summary>
         [ForGetting]
+        [ForBinding]
         public Guid BookingRoomID { get; set; }
 
       
