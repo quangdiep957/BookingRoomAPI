@@ -209,7 +209,7 @@ namespace RoomBooking.BLL.Services
             foreach (BookingRoom room in lst)
             {
 
-                var itemRoom = lstBookingRoom.Where(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking).FirstOrDefault();
+                var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking);
 
                 if (itemRoom != null)
                 {
