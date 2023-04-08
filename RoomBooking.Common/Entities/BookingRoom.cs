@@ -11,11 +11,11 @@ namespace RoomBooking.Common.Entities
     public class BookingRoom : BaseEntity
     {
         /// <summary>
-        /// Khóa ngoại người dùng
+        /// Khóa chính đặt phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [DataLength(36)]
-        [PropertyNameDisplay(propName: "Mã người dùng")]
+        [PropertyNameDisplay(propName: "Mã đặt phòng")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
@@ -33,7 +33,7 @@ namespace RoomBooking.Common.Entities
 
         public Guid UserID { get; set; }
         /// <summary>
-        /// Khóa chính phòng
+        /// Khóa ngoại phòng
         /// </summary>
         [DataLength(36)]
         [ForGetting]
@@ -43,30 +43,7 @@ namespace RoomBooking.Common.Entities
 
         public Guid RoomID { get; set; }
 
-        /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [ForBinding]
-        [Ambiguous]
-        [NotEmpty]
 
-        public Guid TimeSlotID { get; set; }
-
-        /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [ForBinding]
-        [NotEmpty]
-
-        public Guid WeekID { get; set; }
-
-        /// <summary>
-        /// Khóa chính kì học
-        /// </summary> }
 
         /// <summary>
         /// Chủ đề

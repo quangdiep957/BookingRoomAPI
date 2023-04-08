@@ -167,7 +167,7 @@ namespace RoomBooking.BLL.Services
                     var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
                     room.BookingRoomID = Guid.NewGuid();
                     room.RoomID = itemRoom.RoomID;
-                    room.TimeSlotID = itemTimeSlot.TimeSlotID;
+                    //room.TimeSlotID = itemTimeSlot.TimeSlotID;
                     room.Subject = "Lịch học tuần " + room.Week;
                     room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
                     room.YearPlan = room.DateBooking.Year;
@@ -209,7 +209,8 @@ namespace RoomBooking.BLL.Services
             foreach (BookingRoom room in lst)
             {
 
-                var itemRoom = lstBookingRoom.Where(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking).FirstOrDefault();
+                //var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking);
+                var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID  && x.DateBooking == room.DateBooking);
 
                 if (itemRoom != null)
                 {
@@ -503,8 +504,7 @@ namespace RoomBooking.BLL.Services
                             BookingRoomID = booking.BookingRoomID,
                             UserID = booking.UserID,
                             RoomID = booking.RoomID,
-                            TimeSlotID = booking.TimeSlotID,
-                            WeekID = booking.WeekID,
+                            //TimeSlotID = booking.TimeSlotID,
                             DateBooking = booking.DateBooking,
                             Day = booking.Day,
                             Subject = booking.Subject,
@@ -586,8 +586,8 @@ namespace RoomBooking.BLL.Services
                 BookingRoomID = booking.BookingRoomID,
                 UserID = booking.UserID,
                 RoomID = booking.RoomID,
-                TimeSlotID = booking.TimeSlotID,
-                WeekID = booking.WeekID,
+                //TimeSlotID = booking.TimeSlotID,
+                //WeekID = booking.WeekID,
                 DateBooking = booking.DateRequest,
                 Day = booking.Day,
                 Subject = booking.Subject,
@@ -667,7 +667,7 @@ namespace RoomBooking.BLL.Services
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
                         foreach(var item in booking.TimeSlots)
                         {
-                            booking.TimeSlotID = item;
+                            //booking.TimeSlotID = item;
                             bookings.Add(booking);
                         }
                         List<BookingError> errors = new List<BookingError>();

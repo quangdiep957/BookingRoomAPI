@@ -8,30 +8,20 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class Room_Equipment:BaseEntity
+    public class TimeBooking:BaseEntity
     {
         /// <summary>
         /// Khóa chính vai trò
         /// </summary>
         [ForGetting]
-        public Guid RoomID { get; set; }
+        public Guid TimeSlotID { get; set; }
 
         /// <summary>
         /// Khóa chính nhân viên
         /// </summary>
         [ForGetting]
-        public Guid EquipmentID { get; set; }
+        public Guid BookingRoomID { get; set; }
 
-        /// <summary>
-        /// Tên vai trò
-        /// </summary>
-        [ForGetting]
-        public string EquipmentName { get; set; }
-
-        /// <summary>
-        /// Trạng thái khi sửa
-        /// </summary>
-        [ForGetting]
-        public UpdateMode State { get; set; }
+      
     }
 }
