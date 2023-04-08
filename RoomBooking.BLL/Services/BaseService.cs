@@ -41,7 +41,7 @@ namespace RoomBooking.BLL.Services
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// <exception cref="ValidateException"></exception>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<bool> InsertService(Entity entity)
+        public virtual async Task<bool> InsertService(Entity entity)
         {
          
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -91,7 +91,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng</param>
         /// <returns>Cập nhật thành công || Cập nhật thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<bool> UpdateService(Guid entityId, Entity entity)
+        public virtual async Task<bool> UpdateService(Guid entityId, Entity entity)
         {
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
@@ -256,7 +256,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng cần validare</param>
         /// <param name="id">Khóa chính</param>
         /// Created by: PTTAM (07/03/2023)
-        private void ValidateError(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
+        public void ValidateError(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
         {
             // thực hiện validate Dữ liệu
             //1. Check các trường trống

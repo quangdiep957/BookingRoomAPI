@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using RoomBooking.Common.AttributeCustom;
+using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,7 +148,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        public virtual async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSucess = true;
             try
@@ -333,7 +336,7 @@ namespace RoomBooking.DAL.Repositories
             }
             return true;
         }
-
+    
         /// <summary>
         /// Thực hiện kiểm tra trường phải là duy nhất
         /// </summary>
@@ -357,8 +360,7 @@ namespace RoomBooking.DAL.Repositories
 
             return res != null;
         }
-
-        public async Task<Object> GetEntityPaging(PagingParam param )
+        public virtual async Task<Object> GetEntityPaging(PagingParam param )
         {
             if(_sqlConnection.State!= ConnectionState.Open)
             {
@@ -404,7 +406,6 @@ namespace RoomBooking.DAL.Repositories
                 Data = data
             };
         }
-
         public MySqlConnection GetOpenConnection()
         {
             _sqlConnection.Open();

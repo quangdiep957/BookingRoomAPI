@@ -88,11 +88,16 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public int StatusRoom { get; set; }
+        public int RoomStatus { get; set; }
 
         [ForBinding]
         [ForGetting]
         [DataLength(36)]
         public Guid UserID { get; set; }
+
+        /// <summary>
+        /// Danh sách thiết bị
+        /// </summary>
+        public List<RoomEquipment> RoomEquipment { get; set; }
     }
 }

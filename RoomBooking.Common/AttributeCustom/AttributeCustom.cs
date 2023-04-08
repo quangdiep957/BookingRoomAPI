@@ -38,6 +38,15 @@ namespace RoomBooking.Common.AttributeCustom
 
     }
     /// <summary>
+    /// Attribute dùng để xóa theo key
+    /// </summary>
+    ///  created by: PTTAM (08/03/2023)
+    [AttributeUsage(AttributeTargets.Property)]
+    public class KeyDelete : Attribute
+    {
+
+    }
+    /// <summary>
     /// Attribute dùng để lấy trường dữ liệu là khóa ngoại
     /// </summary>
     ///  created by: PTTAM (08/03/2023)
