@@ -53,7 +53,7 @@ namespace RoomBooking.BLL.Interfaces
         /// </summary>
         /// <param name="bookings"></param>
         /// <returns></returns>
-        public Task<object> InsertBookingRequest(BookingRoom bookings);
+        public Task<object> InsertBookingRequest(BookingRoom bookings,Guid userID);
 
     }
 }

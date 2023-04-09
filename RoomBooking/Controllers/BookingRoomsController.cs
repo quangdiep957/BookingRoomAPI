@@ -93,9 +93,9 @@ namespace RoomBooking.API.Controllers
         /// <param name="bookingRoom"></param>
         /// <returns></returns>
         [HttpPost("insertBookingRequest")]
-        public async Task<IActionResult> InsertBookingRequest(BookingRoom bookingRoom)
+        public async Task<IActionResult> InsertBookingRequest( BookingRoomParam param )
         {
-            var res = await _scheduleService.InsertBookingRequest(bookingRoom);
+            var res = await _scheduleService.InsertBookingRequest(param.booking,param.userID);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
     }
