@@ -77,7 +77,7 @@ namespace RoomBooking.Common.Entities
         public int YearPlan { get; set; }
         [ForGetting]
         [ForBinding]
-        public int StatusBooking { get; set; } = (int)OptionRequest.Await;
+        public int StatusBooking { get; set; } = (int)OptionRequest.Approve;
 
         public string Room { get; set; }
         [ForGetting]

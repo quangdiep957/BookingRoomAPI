@@ -50,7 +50,10 @@ namespace RoomBooking.Common.Entities
         public string RoleName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tên vai trò
+        /// Giá trị vai trò
+        /// 1- chuyên viên, giảng viên
+        /// 2 - Admin
+        /// 3- Phụ trách phòng-
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [PropertyNameDisplay(propName: "Giá trị vai trò")]
