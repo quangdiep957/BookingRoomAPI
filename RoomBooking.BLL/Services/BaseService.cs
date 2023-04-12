@@ -230,11 +230,15 @@ namespace RoomBooking.BLL.Services
                         if (!res)
                         {
                             isSucess = false;
+                               
                         }
+                        tran.Commit() ;
                     }
                     catch (Exception)
                     {
                         isSucess = false;
+                        tran.Rollback();
+
 
                     }
                     finally
