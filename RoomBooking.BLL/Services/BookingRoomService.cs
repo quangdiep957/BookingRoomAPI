@@ -25,7 +25,6 @@ namespace RoomBooking.BLL.Services
     {
         IBookingRoomRepository _repository;
         IBookingHistoryRepository _historyRepository;
-        IWeekRepository _repoWeek;
         const int cancel = 4;
         ITimeBookingRepository _repoTimeBooking;
         public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IBookingHistoryRepository historyRepository) : base(repository)
@@ -618,8 +617,8 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-            List<User> listUser = (List<User>)await cnn.QueryAsync<User>("SELECT * FROM User;", transaction: tran);
-            List<Role> listRole = (List<Role>)await cnn.QueryAsync<Role>("SELECT * FROM Role;", transaction: tran);
+                        List<User> listUser = (List<User>)await cnn.QueryAsync<User>("SELECT * FROM User;", transaction: tran);
+                        List<Role> listRole = (List<Role>)await cnn.QueryAsync<Role>("SELECT * FROM Role;", transaction: tran);
 
                         var user = listUser.FirstOrDefault(x=>x.UserID==userID);
                         var role = listRole.FirstOrDefault(x => x.RoleID == user.RoleID);
@@ -701,13 +700,14 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-
+                        // Tách chuỗi TimeSlotID
+                        string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         List<BookingRoom> bookings = new List<BookingRoom>();
                         List<TimeSlot> listTime = new();
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
-                        foreach (var item in booking.TimeSlots)
+                        foreach (var item in timeIDs)
                         {
-                            booking.TimeSlotID = item;
+                            booking.TimeSlotID = new Guid(item);
                             bookings.Add(booking);
                         }
                         List<BookingError> errors = new List<BookingError>();
@@ -738,11 +738,11 @@ namespace RoomBooking.BLL.Services
                                 // Thực hiện insert lại các ca
                                 // Tạo dữ liệu insert 
                                 var timeBookings = new List<TimeBooking>();
-                                foreach (var item in booking.TimeSlots)
+                                foreach (var item in timeIDs)
                                 {
                                     var timeBooking = new TimeBooking();
                                     timeBooking.BookingRoomID = BookingRoomID;
-                                    timeBooking.TimeSlotID = item;
+                                    timeBooking.TimeSlotID = new Guid(item);
                                     timeBookings.Add(timeBooking);
                                 }
                                 var res = await _repository.InsertMultiTimeBooking(timeBookings, tran, cnn);
