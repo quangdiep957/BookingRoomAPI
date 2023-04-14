@@ -26,7 +26,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// Created by: PTTAM (07/03/2023)
         public Task<bool> DeleteMulti(List<Guid> entityId, MySqlConnection cnn, MySqlTransaction transaction);
-        
+
 
 
     }

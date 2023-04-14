@@ -17,6 +17,7 @@ namespace RoomBooking.Common.Entities
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã người dùng")]
         [ForGetting]
+        [PrimaryKey]
         [ForBinding]
         [NotEmpty]
         [KeyDelete]
@@ -49,7 +50,6 @@ namespace RoomBooking.Common.Entities
         /// </summary>
         [DataLength(36)]
         [ForGetting]
-        [ForBinding]
         [Ambiguous]
         [NotEmpty]
 
@@ -60,7 +60,6 @@ namespace RoomBooking.Common.Entities
         /// </summary>
         [DataLength(36)]
         [ForGetting]
-        [ForBinding]
         [NotEmpty]
 
         public Guid WeekID { get; set; }
@@ -121,6 +120,8 @@ namespace RoomBooking.Common.Entities
         public int Times { get; set; }
         public List<Guid> TimeSlots { get; set; }
 
+        [ForGetting]
+        public TimeSpan StartTime { get; set; }
     }
 
     public class BookingError

@@ -90,7 +90,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entity">Đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Insert(Entity entity,MySqlConnection cnn, MySqlTransaction transaction)
+        public virtual async Task<bool> Insert(Entity entity,MySqlConnection cnn, MySqlTransaction transaction)
         {
 
             bool isSuccess = true;
@@ -132,7 +132,7 @@ namespace RoomBooking.DAL.Repositories
 
 
             DynamicParameters dynamicParameters = new DynamicParameters();
-            string sqlQuery = GetAllBindingUpdate(entity, dynamicParameters);
+            string sqlQuery = GetAllBindingUpdate(entityId,entity, dynamicParameters);
 
             var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
             if (rowEffect == 0)
@@ -214,7 +214,7 @@ namespace RoomBooking.DAL.Repositories
             return allNames;
         }
 
-        protected string GetAllBindingUpdate(Entity entity, DynamicParameters parameters)
+        protected string GetAllBindingUpdate(Guid entityId,Entity entity, DynamicParameters parameters)
         {
             // lấy tất cả cá properties ForBinding
 
@@ -236,12 +236,12 @@ namespace RoomBooking.DAL.Repositories
             allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
                                        // Lấy ra attribute có tên PrimaryKey
             var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
-            Guid key = Guid.Empty;
-            foreach (var prop in primaryKey)
-            {
-                key = (Guid)prop.GetValue(entity);
+            Guid key = entityId;
+            //foreach (var prop in primaryKey)
+            //{
+            //    key = (Guid)prop.GetValue(entity);
 
-            }
+            //}
             allNames += $" WHERE {typeof(Entity).Name}ID = @{typeof(Entity).Name}ID0;";
             parameters.Add($"@{typeof(Entity).Name}ID" + 0, key);
             return allNames;

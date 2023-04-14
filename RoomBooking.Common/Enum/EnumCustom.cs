@@ -70,4 +70,13 @@ namespace RoomBooking.Common.Enum
         // Bảo trì
         Maintenance=3
     }
+    public enum StatusBookingRoom 
+    {
+        // chờ duyệt
+        Pending = 1,
+        // dã duyệt
+        Browse = 2,
+        // từ chối
+        Miss = 3
+    }
 }

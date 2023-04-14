@@ -24,9 +24,7 @@ namespace RoomBooking.BLL.Services
         protected List<object> errorList = new List<object>();// Danh sách lỗi
         protected bool isValidCustom = true; // Biến check validate của lớp kế thừa lại BaseService
         bool isValidLength = true; // Biến check độ dài
-        protected Dictionary<string, object> errors = new Dictionary<string, object>(); // Dictionary chứa lỗi
-
-        /// <summary>
+        protected Dictionary<string, object> errors = new Dictionary<string, object>(); // Dictionary chứa lỗi        /// <summary>
         /// Hàm tạo
         /// </summary>
         /// <param name="repository"></param>

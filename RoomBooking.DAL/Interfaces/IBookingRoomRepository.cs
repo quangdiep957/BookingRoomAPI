@@ -14,6 +14,9 @@ namespace RoomBooking.DAL.Interfaces
         public Task<object> GetPaging(PagingParam param, MySqlConnection cnn);
         public Task<Object> GetPagingRequest(PagingParam param, MySqlConnection cnn);
 
+        public Task<bool> InsertMultiTimeBooking(List<TimeBooking> listRoom, MySqlTransaction transaction, MySqlConnection cnn);
+
+        public Task<bool> DeleteRecord(Guid entityId, string tablename, MySqlConnection cnn, MySqlTransaction transaction);
     }
 
 }

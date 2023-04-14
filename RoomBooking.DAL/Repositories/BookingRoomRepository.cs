@@ -73,7 +73,104 @@ namespace RoomBooking.DAL.Repositories
             };
 
         }
+        /// <summary>
+        /// Thực hiện lấy giá trị của đối tượng và add vào parameter
+        /// </summary>
+        /// <param name="entity">Đối tượng</param>
+        /// <param name="index">Vị trí của đối tượng</param>
+        /// <param name="parameters">Parameter</param>
+        /// <returns>Chuỗi paramerter</returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public string GetAllBindingValue(TimeBooking entity, int index, DynamicParameters parameters)
+        {
+            // lấy tất cả cá properties
 
+            var properties = typeof(TimeBooking).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(ForBinding)));
+            // Buid 
+            var allValuesParam = "( ";
+            foreach (var property in properties)
+            {
+                // lấy giá trị
+                allValuesParam += "@" + property.Name + index + " ,";
+
+
+            }
+            allValuesParam = allValuesParam[..^1];
+            allValuesParam += " ),";
+            foreach (var property in properties)
+            {
+
+                // lấy giá trị
+                var currentValue = property.GetValue(entity);
+                parameters.Add($"@{property.Name}" + index, currentValue);
+
+
+            }
+
+            // bỏ kí tự ',' cuối cùng
+            return allValuesParam;
+
+        }
+
+        /// <summary>
+        /// Thực hiện lấy tên trường của đối tượng khi thêm mới
+        /// </summary>
+        /// <param name="entity">Đối tượng</param>
+        /// <returns>Chuỗi chứa câu lệnh insert chứa tên các trường</returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        protected string GetAllBindingName(TimeBooking entity)
+        {
+            // lấy tất cả cá properties ForBinding
+
+            var properties = typeof(TimeBooking).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(ForBinding)));
+            // Buid câu truy vấn
+            var allNames = $"INSERT INTO {typeof(TimeBooking).Name}(";
+            foreach (var property in properties)
+            {
+                // lấy tên của prop 
+                allNames += property.Name + " ,";
+
+            }
+
+            allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
+
+            allNames += " )Values";
+            return allNames;
+        }
+        /// <summary>
+        /// Thực hiện việc thêm nhiều lịch đặt phog
+        /// </summary>
+        /// <param name="listRoom">Danh sách người dùng</param>
+        /// <returns></returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public async Task<bool> InsertMultiTimeBooking(List<TimeBooking> listRoom, MySqlTransaction transaction, MySqlConnection cnn)
+        {
+            bool isSuccess = true;
+            //1. Thực hiện insert Room
+            int countRoom = 0; // biến đếm khi thực hiện thêm người dùng
+            string sqlQuery = GetAllBindingName(listRoom[0]); // câu truy vấn lấy ra tên trường của Room
+            DynamicParameters dynamicParameters = new DynamicParameters();
+
+            for (int i = 0; i < listRoom.Count; i++)
+            {
+                sqlQuery += GetAllBindingValue(listRoom[i], i, dynamicParameters); // Thực hiện buid câu truy vấn 
+                countRoom++;
+            }
+            sqlQuery = sqlQuery[..^1]; // bỏ dấu ',' cuối cùng
+            var rowEffect = cnn.Execute(sqlQuery, dynamicParameters, transaction: transaction);
+
+            // nếu số bản ghi thay đổi < countRoom
+            if (rowEffect < countRoom)
+            {
+
+                isSuccess = false; // thêm thất bại
+            }
+
+            return isSuccess;
+
+
+
+        }
         /// <summary>
         /// Thực hiện việc thêm nhiều lịch đặt phog
         /// </summary>
@@ -114,16 +211,16 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        public async Task<bool> DeleteRecord(Guid entityId, string tablename ,MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSucess = true;
             try
             {
                 var storeDelete = "Proc_Delete_Record";
-                var properties = typeof(TimeSlot).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
+                var properties = typeof(TimeBooking).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
                 DynamicParameters paramId = new DynamicParameters();
                 paramId.Add("@EntityId", entityId);
-                paramId.Add("@TableName", "timeslot");
+                paramId.Add("@TableName", tablename);
                 paramId.Add("@Property", properties.Name);
 
                 var res = await cnn.ExecuteAsync(storeDelete, paramId, transaction, commandType: System.Data.CommandType.StoredProcedure);
@@ -182,6 +279,77 @@ namespace RoomBooking.DAL.Repositories
                 StartRecord = startRecord,
                 EndRecord = endRecord,
                 Data = employees
+            };
+        }
+
+        /// <summary>
+        /// hàm getpaging lịch sử đặt phòng
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public override async Task<Object> GetEntityPaging(PagingParam param)
+        {
+            if (_sqlConnection.State != ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
+            var orConditions = new List<string>();
+            string whereClause = $"u.UserID = '{param.userID}'";
+            // Kiểm tra xem có lấy theo chi tiết theo BookingRoomID không
+            if(param != null && param.bookingRoomID != Guid.Empty)
+            {
+                whereClause = whereClause + $" AND b.BookingRoomID = '{param.bookingRoomID}'";
+            }    
+
+            if (param.keyWord != null)
+            {
+                orConditions.Add($"u.FullName LIKE '%{param.keyWord}%'");
+                orConditions.Add($"r.RoomName LIKE '%{param.keyWord}%'");
+                orConditions.Add($"b.Description LIKE '%{param.keyWord}%'");
+            }
+
+            if (orConditions.Count > 0)
+            {
+                whereClause = $"({string.Join(" OR ", orConditions)})";
+            }
+            var parameters = new DynamicParameters();
+            parameters.Add("@v_Offset", (param.pageIndex - 1) * param.pageSize);
+            parameters.Add("@v_Limit", param.pageSize);
+            parameters.Add("@v_Sort", "r.ModifiedDate DESC");
+            parameters.Add("@v_Where", whereClause);
+            var sqlCommand = "Proc_History_Booking_GetPaging";
+            var data = await _sqlConnection.QueryAsync(sqlCommand, param: parameters, commandType: System.Data.CommandType.StoredProcedure);
+            int totalRecords = 0;
+            int totalPages = 0;
+            int startRecord = 0;
+            int endRecord = 0;
+            if (data != null && data.Count() > 0)
+            {
+                totalRecords = data.Count();
+                totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
+                startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
+                endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+
+                if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
+                {
+                    endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
+                }
+
+                // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
+                if (startRecord > endRecord)
+                {
+                    startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
+                }
+            }
+            CloseMyConnection();
+            return new
+            {
+                TotalPage = totalPages,
+                TotalRecord = totalRecords,
+                CurrentPage = param.pageIndex,
+                StartRecord = startRecord,
+                EndRecord = endRecord,
+                Data = data
             };
         }
     }

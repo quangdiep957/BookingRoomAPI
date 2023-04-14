@@ -64,6 +64,13 @@ namespace RoomBooking.BLL.Interfaces
         public Task<object> UpdateBookingRequest(Guid BookingRoomID,BookingRoom bookings);
 
         /// <summary>
+        /// Thực hiện hủy yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<object> CancelBookingRoom(Guid BookingRoomID);
+
+        /// <summary>
         /// in đơn xin phòng học
         /// </summary>
         /// <param name="bookings"></param>

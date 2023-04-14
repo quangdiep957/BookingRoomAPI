@@ -107,9 +107,34 @@ namespace RoomBooking.API.Controllers
         [HttpPut("updateBookingRequest")]
         public async Task<IActionResult> UpdateBookingRequest(Guid BookingID,BookingRoom bookingRoom)
         {
-            var res = await _scheduleService.InsertBookingRequest(bookingRoom);
+            var res = await _scheduleService.UpdateBookingRequest(BookingID,bookingRoom);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
+
+        /// <summary>
+        /// Thực hiện hủy yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpGet("cancelBookingRequest")]
+        public async Task<IActionResult> CancelBookingRequest(Guid BookingID)
+        {
+            var res = await _scheduleService.CancelBookingRoom(BookingID);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
+
+        /// <summary>
+        /// Thực hiện lấy danh sach lịch sử đặt phòng
+        /// </summary>
+        /// <param name="BookingID"></param>
+        /// <returns></returns>
+        [HttpPost("historyBookingRoom")]
+        public async Task<IActionResult> HistoryBookingRoom(PagingParam param)
+        {
+            var res = await _scheduleService.GetEntityPaging(param);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
 
     }
+
 }
