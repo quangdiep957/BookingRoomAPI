@@ -1,4 +1,6 @@
-﻿using MySqlConnector;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using MySqlConnector;
+using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using System;
 using System.Collections.Generic;
@@ -85,5 +87,7 @@ namespace RoomBooking.DAL.Interfaces
         public Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn,MySqlTransaction tran,Guid? entityId = null);
         public MySqlConnection GetOpenConnection();
         public void CloseMyConnection();
+
+
     }
 }

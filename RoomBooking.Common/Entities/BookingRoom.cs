@@ -17,8 +17,10 @@ namespace RoomBooking.Common.Entities
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã đặt phòng")]
         [ForGetting]
+        [PrimaryKey]
         [ForBinding]
         [NotEmpty]
+        [KeyDelete]
         public Guid BookingRoomID { get; set; }
         /// <summary>
         /// Khóa ngoại người dùng
@@ -43,7 +45,28 @@ namespace RoomBooking.Common.Entities
 
         public Guid RoomID { get; set; }
 
+        /// <summary>
+        /// Khóa chính thời gian
+        /// </summary>
+        [DataLength(36)]
+        [ForGetting]
+        [Ambiguous]
+        [NotEmpty]
 
+        public Guid TimeSlotID { get; set; }
+
+        /// <summary>
+        /// Khóa chính thời gian
+        /// </summary>
+        [DataLength(36)]
+        [ForGetting]
+        [NotEmpty]
+
+        public Guid WeekID { get; set; }
+
+        /// <summary>
+        /// Khóa chính kì học
+        /// </summary> }
 
         /// <summary>
         /// Chủ đề
@@ -106,6 +129,8 @@ namespace RoomBooking.Common.Entities
         public int Times { get; set; }
      
 
+        [ForGetting]
+        public TimeSpan StartTime { get; set; }
     }
 
     public class BookingError

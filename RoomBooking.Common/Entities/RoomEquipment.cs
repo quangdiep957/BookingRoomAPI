@@ -14,14 +14,34 @@ namespace RoomBooking.Common.Entities
         /// Khóa chính vai trò
         /// </summary>
         [ForGetting]
+        [ForBinding]
+        [KeyDelete]
         public Guid RoomID { get; set; }
 
         /// <summary>
         /// Khóa chính nhân viên
         /// </summary>
+        [ForBinding]
         [ForGetting]
         public Guid EquipmentID { get; set; }
 
- 
+        /// <summary>
+        /// Số lượng
+        /// </summary>
+        [ForBinding]
+        [ForGetting]
+        public int Quatily { get; set; }
+
+        /// <summary>
+        /// Tên vai trò
+        /// </summary>
+        [ForGetting]
+        public string EquipmentName { get; set; }
+
+        /// <summary>
+        /// Trạng thái khi sửa
+        /// </summary>
+        [ForGetting]
+        public UpdateMode State { get; set; }
     }
 }

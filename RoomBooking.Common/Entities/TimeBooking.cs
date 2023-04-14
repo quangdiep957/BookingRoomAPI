@@ -8,22 +8,35 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class TimeBooking:BaseEntity
+    /// <summary>
+    /// Thông tin tòa nhà
+    /// </summary>
+    ///  Created by: PTTAM (07/03/2023)
+    public class TimeBooking : BaseEntity
     {
         /// <summary>
-        /// Khóa chính vai trò
+        /// Khóa chính tòa nhà
         /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [DataLength(36)]
         [ForGetting]
+        [PrimaryKey]
         [ForBinding]
+        [NotEmpty]
+        [Unique]
         public Guid TimeSlotID { get; set; }
-
         /// <summary>
-        /// Khóa chính nhân viên
+        /// Khóa chính tòa nhà
         /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [DataLength(36)]
         [ForGetting]
         [ForBinding]
+        [NotEmpty]
+        [Unique]
+        [KeyDelete]
         public Guid BookingRoomID { get; set; }
 
-      
+
     }
 }

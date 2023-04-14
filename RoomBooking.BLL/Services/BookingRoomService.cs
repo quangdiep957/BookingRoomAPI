@@ -25,6 +25,8 @@ namespace RoomBooking.BLL.Services
     {
         IBookingRoomRepository _repository;
         IBookingHistoryRepository _historyRepository;
+        IWeekRepository _repoWeek;
+        const int cancel = 4;
         ITimeBookingRepository _repoTimeBooking;
         public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IBookingHistoryRepository historyRepository) : base(repository)
         {
@@ -244,6 +246,41 @@ namespace RoomBooking.BLL.Services
             return checkRoom;
         }
 
+        /// <summary>
+        /// thực hiện kiểm tra phòng trước 30 phút
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <param name="cnn"></param>
+        /// <param name="tran"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        private static async Task<BookingRoom> BookingRoomTime(Guid BookingRoomID, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        {
+            bool checkTime = false;
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", BookingRoomID);
+            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM bookingroom b INNER JOIN timebooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN timeslot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters ,transaction: tran);
+            
+
+            return bookingRoom;
+        }
+
+        /// <summary>
+        /// Kiểm tra xem phòng đã được duyệt chưa
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <param name="cnn"></param>
+        /// <param name="tran"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        private static async Task<int> CheckRoomIsStatus( Guid BookingRoomID, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", BookingRoomID);
+            int lstBookingRoom =(await cnn.QueryFirstOrDefaultAsync<int>("SELECT StatusBooking FROM BookingRoom where BookingRoomID = @Id ;", parameters, transaction: tran));
+              
+            return lstBookingRoom;
+        }
         /// <summary>
         /// Thực hiện convert lại dữ liệu
         /// </summary>
@@ -653,5 +690,178 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
+
+        public async Task<object> UpdateBookingRequest(Guid BookingRoomID, BookingRoom booking)
+        {
+            object result = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+
+                        List<BookingRoom> bookings = new List<BookingRoom>();
+                        List<TimeSlot> listTime = new();
+                        // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
+                        foreach (var item in booking.TimeSlots)
+                        {
+                            booking.TimeSlotID = item;
+                            bookings.Add(booking);
+                        }
+                        List<BookingError> errors = new List<BookingError>();
+                        //2. Check phòng đã được sử dụng hay chưa
+                        bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
+                        //2.1. Nếu phòng chưa được sử dụng
+                        if (checkRoom)
+                        {
+                            bool resUpdate = false;
+                            // Kiểm tra xem phòng đã được duyệt chưa
+                            int status = await CheckRoomIsStatus(BookingRoomID, cnn, tran, errors);
+                            // nếu đang chờ duyệt thì update luôn
+                            if(status == (int)StatusBookingRoom.Pending)
+                            {
+                                resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
+                            }
+                            else
+                            {
+                                // cập nhập lại status 
+                                booking.StatusBooking = 1;
+                                // Thông báo email cho khách hàng
+                                resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
+                            }
+                            if(resUpdate)
+                            {
+                                // thực hiện xóa hết các ca đi
+                                var del = await _repository.DeleteRecord(BookingRoomID,"timebooking", cnn, tran);
+                                // Thực hiện insert lại các ca
+                                // Tạo dữ liệu insert 
+                                var timeBookings = new List<TimeBooking>();
+                                foreach (var item in booking.TimeSlots)
+                                {
+                                    var timeBooking = new TimeBooking();
+                                    timeBooking.BookingRoomID = BookingRoomID;
+                                    timeBooking.TimeSlotID = item;
+                                    timeBookings.Add(timeBooking);
+                                }
+                                var res = await _repository.InsertMultiTimeBooking(timeBookings, tran, cnn);
+                                if (res)
+                                {
+                                    result = new
+                                    {
+                                        IsSusses = res,
+                                        Data = errors
+                                    };
+                                    tran.Commit();
+                                }
+                            }
+                            else
+                            {
+                                result = new
+                                {
+                                    IsSusses = false,
+                                    Data = errors
+                                };
+                            }
+                        }
+                        //2.2. Nếu phòng đã được sử dùng
+                        else
+                        {
+                            result = new
+                            {
+                                IsSusses = false,
+                                Data = errors
+                            };
+
+                        }
+
+                    }
+                    catch { tran.Rollback(); }
+                }
+
+
+            }
+            return result;
+        }
+
+        public async Task<object> CancelBookingRoom(Guid BookingRoomID)
+        {
+            object result = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        List<BookingError> errors = new List<BookingError>();
+                        //1. Check thời gian đặt phòng trước 30p hay không
+                        BookingRoom bookingTime = await BookingRoomTime(BookingRoomID, cnn, tran, errors);
+                        bool checkTimeBooking = false;
+                        BookingRoom a = new BookingRoom();
+                        if (bookingTime != null)
+                        {
+                            TimeSpan currentTime = DateTime.Now.TimeOfDay.Subtract(TimeSpan.FromMinutes(30));
+                            checkTimeBooking  =  (bookingTime.DateBooking < DateTime.Now && bookingTime.StartTime < currentTime) ? false : true;     
+                        }  
+                        //1.1. Nếu thời gian bắt đầu vào phòng sớm hơn 30p thì cho phép hủy
+                        if (checkTimeBooking)
+                        {
+                            // cập nhật trạng thái về hủy (4)
+                            
+                            bookingTime.StatusBooking = cancel;
+                            bool resUpdate = await _repository.Update(bookingTime, BookingRoomID, cnn, tran);
+                            // Cập nhật vào bảng history
+                            // 
+                            if (resUpdate)
+                            {
+                                    result = new
+                                    {
+                                        IsSusses = resUpdate,
+                                        Data = errors
+                                    };
+                                    tran.Commit();
+                            }
+                            else
+                            {
+                                result = new
+                                {
+                                    IsSusses = false,
+                                    Data = errors
+                                };
+                            }
+                        }
+                        //1.2. Nếu phòng đã gần đến thời gian 
+                        else
+                        {
+                            result = new
+                            {
+                                IsSusses = false,
+                                Data = errors
+                            };
+
+                        }
+
+                    }
+                    catch { tran.Rollback(); }
+                }
+
+
+            }
+            return result;
+        }
+
+
+        //public byte[] GenerateReport(DataTable dataSource)
+        //{
+        //    // Load report from file
+        //    var report = new StiReport();
+        //    report.Load("path/to/your/report.mrt");
+
+        //    // Assign data source to report
+        //    report.RegData("DataSourceName", dataSource);
+
+        //}
     }
 }

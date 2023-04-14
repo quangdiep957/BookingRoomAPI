@@ -94,5 +94,10 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [DataLength(36)]
         public Guid UserID { get; set; }
+
+        /// <summary>
+        /// Danh sách thiết bị
+        /// </summary>
+        public List<RoomEquipment> RoomEquipment { get; set; }
     }
 }

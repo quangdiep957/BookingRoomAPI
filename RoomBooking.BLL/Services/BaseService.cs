@@ -24,9 +24,7 @@ namespace RoomBooking.BLL.Services
         protected List<object> errorList = new List<object>();// Danh sách lỗi
         protected bool isValidCustom = true; // Biến check validate của lớp kế thừa lại BaseService
         bool isValidLength = true; // Biến check độ dài
-        protected Dictionary<string, object> errors = new Dictionary<string, object>(); // Dictionary chứa lỗi
-
-        /// <summary>
+        protected Dictionary<string, object> errors = new Dictionary<string, object>(); // Dictionary chứa lỗi        /// <summary>
         /// Hàm tạo
         /// </summary>
         /// <param name="repository"></param>
@@ -42,7 +40,7 @@ namespace RoomBooking.BLL.Services
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// <exception cref="ValidateException"></exception>
         /// Created by: PTTAM (07/03/2023)
-        public async virtual Task<bool> InsertService(Entity entity)
+        public virtual async Task<bool> InsertService(Entity entity)
         {
          
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -92,7 +90,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng</param>
         /// <returns>Cập nhật thành công || Cập nhật thất bại</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<bool> UpdateService(Guid entityId, Entity entity)
+        public virtual async Task<bool> UpdateService(Guid entityId, Entity entity)
         {
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
@@ -261,7 +259,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity">Đối tượng cần validare</param>
         /// <param name="id">Khóa chính</param>
         /// Created by: PTTAM (07/03/2023)
-        protected void ValidateError(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
+        public void ValidateError(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
         {
             // thực hiện validate Dữ liệu
             //1. Check các trường trống
