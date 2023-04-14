@@ -79,4 +79,16 @@ namespace RoomBooking.Common.Enum
         // từ chối
         Miss = 3
     }
+    /// <summary>
+    /// Enum giá trị vai trò người dùng
+    /// </summary>
+    public enum RoleOption
+    {
+        // Người dùng
+        User = 1,
+        // Admin
+        Admin = 2,
+        // Người phụ trách phòng
+        Supporter = 3
+    }
 }

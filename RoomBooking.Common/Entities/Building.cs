@@ -23,7 +23,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
-        public Guid BuildingID { get; set; }
+        public Guid BuildingID { get; set; } 
 
         /// <summary>
         /// Mã tòa nhà

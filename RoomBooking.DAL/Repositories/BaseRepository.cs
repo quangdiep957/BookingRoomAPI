@@ -132,7 +132,7 @@ namespace RoomBooking.DAL.Repositories
 
 
             DynamicParameters dynamicParameters = new DynamicParameters();
-            string sqlQuery = GetAllBindingUpdate(entityId,entity, dynamicParameters);
+            string sqlQuery = GetAllBindingUpdate(entity, entityId, dynamicParameters);
 
             var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
             if (rowEffect == 0)
@@ -214,7 +214,7 @@ namespace RoomBooking.DAL.Repositories
             return allNames;
         }
 
-        protected string GetAllBindingUpdate(Guid entityId,Entity entity, DynamicParameters parameters)
+        protected string GetAllBindingUpdate(Entity entity, Guid entityId, DynamicParameters parameters)
         {
             // lấy tất cả cá properties ForBinding
 
@@ -235,15 +235,9 @@ namespace RoomBooking.DAL.Repositories
             }
             allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
                                        // Lấy ra attribute có tên PrimaryKey
-            var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
-            Guid key = entityId;
-            //foreach (var prop in primaryKey)
-            //{
-            //    key = (Guid)prop.GetValue(entity);
-
-            //}
+          
             allNames += $" WHERE {typeof(Entity).Name}ID = @{typeof(Entity).Name}ID0;";
-            parameters.Add($"@{typeof(Entity).Name}ID" + 0, key);
+            parameters.Add($"@{typeof(Entity).Name}ID" + 0, entityId);
             return allNames;
         }
 
@@ -280,7 +274,7 @@ namespace RoomBooking.DAL.Repositories
 
 
             }
-
+            
             // bỏ kí tự ',' cuối cùng
             return allValuesParam;
 
@@ -309,6 +303,13 @@ namespace RoomBooking.DAL.Repositories
             allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
 
             allNames += " )Values";
+            var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
+            Guid key = Guid.NewGuid();
+            foreach (var prop in primaryKey)
+            {
+                prop.SetValue(entity, key);
+
+            }
             return allNames;
         }
 
@@ -362,26 +363,36 @@ namespace RoomBooking.DAL.Repositories
         }
         public virtual async Task<Object> GetEntityPaging(PagingParam param )
         {
-            if(_sqlConnection.State!= ConnectionState.Open)
-            {
-                _sqlConnection.Open();
+                if(_sqlConnection.State!= ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
             }
-            DynamicParameters dynamicParameters = new DynamicParameters();
             var storeName = $"Proc_GetEntityPaging";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+               
             var fields = GetAllRequestValues<Entity>();
+            var sql = $"SELECT {fields} from {_className} WHERE {_className}.{_className}Name LIKE @FilterName";
+
             dynamicParameters.Add("@TableName", _className);
-            dynamicParameters.Add("@Properties", fields);
-            dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(param.keyWord) ? param.keyWord : "");
-            dynamicParameters.Add("@PageSize", param.pageSize);
-            dynamicParameters.Add("@PageIndex", param.pageIndex);
-            var data = await _sqlConnection.QueryAsync(storeName, param: dynamicParameters, commandType: System.Data.CommandType.StoredProcedure);
+                dynamicParameters.Add("@Properties", fields);
+                dynamicParameters.Add("@FilterName", !String.IsNullOrEmpty(param.keyWord) ? $"%{param.keyWord}%" : $"%{""}%");
+                dynamicParameters.Add("@PageSize", param.pageSize);
+                dynamicParameters.Add("@PageIndex", param.pageIndex);
+
+           
+            var res = await _sqlConnection.QueryAsync(sql, param: dynamicParameters);
             int totalRecords = 0;
             int totalPages = 0;
-            if (data != null)
+            if (res != null)
             {
-                totalRecords = data.Count();
+                totalRecords = res.Count();
                 totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
             }
+            int offset = param.pageSize *( param.pageIndex - 1);
+            sql += $" LIMIT {offset},{param.pageSize}";
+            var data = await _sqlConnection.QueryAsync(sql, param: dynamicParameters);
+           
+          
             int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
             int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
 

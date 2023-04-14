@@ -27,10 +27,11 @@ namespace RoomBooking.BLL.Services
         IBookingHistoryRepository _historyRepository;
         IWeekRepository _repoWeek;
         const int cancel = 4;
-        public BookingRoomService(IBookingRoomRepository repository, IWeekRepository repoWeek, IBookingHistoryRepository historyRepository) : base(repository)
+        ITimeBookingRepository _repoTimeBooking;
+        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IBookingHistoryRepository historyRepository) : base(repository)
         {
             _repository = repository;
-            _repoWeek = repoWeek;
+            _repoTimeBooking = repoTimeBooking;
             _historyRepository = historyRepository;
         }
 
@@ -76,14 +77,8 @@ namespace RoomBooking.BLL.Services
                     }
                 }
             }
-            List<Week> weeks = new List<Week>();
             // Thực hiện convert lại dữ liệu
             List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
-
-
-            // Thực hiện thêm tuần vào db
-            var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-            var weekEnd = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[1], "dd/MM/yyyy", null);
 
 
             Object result = new();
@@ -95,11 +90,14 @@ namespace RoomBooking.BLL.Services
                     try
                     {
                         List<BookingError> errors = new List<BookingError>();
+                        List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;
-                        bool checkRoom = await CheckRoom(lst, cnn, tran, errors);
+                        bool checkRoom = await CheckRoom(lst, cnn, tran, errors, lstTimeBooking);
                         if (checkRoom) {
-                            var res = await _repository.InsertMulti(lst, tran, cnn);
+                            var resBookingRoom = await _repository.InsertMulti(lst, tran, cnn);
+                            var resTimeBooking= await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             tran.Commit();
+                            var res= (resBookingRoom==true&&resTimeBooking==true)?true:false;
                             result = new
                             {
 
@@ -147,12 +145,13 @@ namespace RoomBooking.BLL.Services
         /// <param name="errors"></param>
         /// <returns></returns>
         /// PTTAM 04/06/2023
-        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors,List<TimeBooking> lstTimeBooking)
         {
             // Thực hiện kiểm tra phòng đã được đặt chưa
             bool checkRoom = true;
             List<Room> dataRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
             List<TimeSlot> slotTime = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
+            List<TimeBooking> timeBookings= (List<TimeBooking>)await cnn.QueryAsync<TimeBooking>("SELECT * FROM TimeBooking;", transaction: tran);
             List<BookingRoom> listRoomNotIn = new();
 
             foreach (BookingRoom room in lst)
@@ -168,12 +167,18 @@ namespace RoomBooking.BLL.Services
                     var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
                     room.BookingRoomID = Guid.NewGuid();
                     room.RoomID = itemRoom.RoomID;
-                    room.TimeSlotID = itemTimeSlot.TimeSlotID;
                     room.Subject = "Lịch học tuần " + room.Week;
-                    room.UserID = new Guid("1283753d-5374-5932-8ffd-ed7281085324");
+                    room.UserID = Guid.Empty;
                     room.YearPlan = room.DateBooking.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
+                    room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
+                    lstTimeBooking.Add(new TimeBooking
+                    {
+                        BookingRoomID = room.BookingRoomID,
+                        TimeSlotID = itemTimeSlot.TimeSlotID
+                    }) ;
                 }
+
             }
 
             if (listRoomNotIn != null && listRoomNotIn.Any())
@@ -207,20 +212,33 @@ namespace RoomBooking.BLL.Services
         {
             bool checkRoom = true;
             List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
-            foreach (BookingRoom room in lst)
+            List<Room> listRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
+            List<TimeSlot> lstTimeSlot = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
+            var data = lst.Where(x => x.BookingRoomID != Guid.Empty).ToList();
+            string roomName = "";
+            int timeName =0;
+            foreach (BookingRoom room in data)
             {
-
-                var itemRoom = lstBookingRoom.Where(x => x.RoomID == room.RoomID && room.TimeSlotID == x.TimeSlotID && x.DateBooking == room.DateBooking).FirstOrDefault();
-
-                if (itemRoom != null)
+                // Tách chuỗi TimeSlotID
+                string[] timeIDs = room.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                // For từng dòng
+                foreach (var item in timeIDs)
                 {
+                    var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && timeIDs.Contains(item) && x.DateBooking.ToString("yyyy/MM/dd") == room.DateBooking.ToString("yyyy/MM/dd"));
+                    
 
-                    errors.Add(new BookingError
+                    if (itemRoom != null)
                     {
-                        Error = "Đã có dữ liệu",
-                        DescriptionError = $"Phòng {room.Room} ca {room.Times} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
-                    });
-                    checkRoom = false;
+                        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoom.RoomID).RoomName;
+                        timeName = lstTimeSlot.FirstOrDefault(x => item==x.TimeSlotID.ToString()).TimeSlotName;
+                        errors.Add(new BookingError
+                        {
+                            Error = "Đã có dữ liệu",
+                            DescriptionError = $"{roomName} ca {timeName} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
+                        });
+                        checkRoom = false;
+                    }
+
                 }
 
             }
@@ -302,7 +320,7 @@ namespace RoomBooking.BLL.Services
                 foreach (var weekday in weekDays)
                 {
                     // Tính ngày bắt đầu và kết thúc của tuần
-                    var weekStart = DateTime.ParseExact(scheduleList[i].Time.Split('-')[0], "dd/MM/yyyy", null);
+                    var weekStart = DateTime.ParseExact(scheduleList[i].Time.Split('-')[0], "dd/MM", null);
                     var weekEnd = DateTime.ParseExact(scheduleList[i].Time.Split('-')[1], "dd/MM/yyyy", null);
 
                     // Tìm ngày trong tuần tương ứng với ngày thứ weekday
@@ -479,24 +497,23 @@ namespace RoomBooking.BLL.Services
         public async Task<object> GetPaging(PagingParam param)
         {
             object result = null;
-            // List<Week> weeks = new List<Week>();
             int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
             var datetimes = new List<DateTime>();
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-                var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
-                var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
+              //  var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
+             //   var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
                 foreach (var weekday in weekDays)
                 {
                     // Tính ngày bắt đầu và kết thúc của tuần
                     //var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-                    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
-                    var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+                //    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+               //     var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
 
                     // Tìm ngày trong tuần tương ứng với ngày thứ weekday
-                    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
-                    var date = weekStart.AddDays(diff);
-                    datetimes.Add(date);
+                //    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
+                //    var date = weekStart.AddDays(diff);
+                //    datetimes.Add(date);
                 }
                 var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
                 string jsonDate = JsonConvert.SerializeObject(dateConvert);
@@ -515,7 +532,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="option"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> RequestBookingRoom(Guid requestID, int option)
+        public async Task<object> RequestBookingRoom(BookingRoomParam param)
         {
             object result = null;
 
@@ -525,65 +542,31 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-                        var requests = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
+                        var requests = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom",transaction:tran);
                         //1. Lấy ra yêu cầu của người dùng gửi lên
-                        var booking = requests.FirstOrDefault(x => x.BookingRoomID == requestID);
+                        var booking = requests.FirstOrDefault(x => x.BookingRoomID == param.bookingRoomID);
                         //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
-                        booking.StatusBooking = option;
+                        booking.StatusBooking = param.option;
+                        booking.RefusalReason=param.refusalReason;
                         //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
 
-
-                        BookingHistory bookingHistory = new BookingHistory
+                        if (!isUpdateBookingRequest)
                         {
-                            BookingRoomID = booking.BookingRoomID,
-                            UserID = booking.UserID,
-                            RoomID = booking.RoomID,
-                            TimeSlotID = booking.TimeSlotID,
-                            WeekID = booking.WeekID,
-                            DateBooking = booking.DateBooking,
-                            Day = booking.Day,
-                            Subject = booking.Subject,
-                            YearPlan = booking.YearPlan,
-                            Description = booking.Description,
-                            StatusBooking = booking.StatusBooking,
-                            DayOfWeek = booking.DayOfWeek,
-                            DateRequest=booking.DateRequest
-                        };
-                        //2. Nếu là trạng thái phê duyệt
-                        if (option == (int)OptionRequest.Approve)
-                        {
-                            result = await ApproveRequestBookingRoom(booking, cnn, tran, isUpdateBookingRequest, bookingHistory);
-
-                        }
-                        //3. Nếu là trạng thái từ chối 
-                        else if (option == (int)OptionRequest.Reject)
-                        {
-
-                            // 3.1.Thêm vào lịch sử đặt phòng
-                            var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
-
-                            if (!isUpdateBookingRequest || !isInsertHistory)
+                            result = new
                             {
-                                result = new
-                                {
-                                    IsSucces = false,
-                                    StatusRoom = (int)StatusRoom.Active,
-                                    Description = "Có lỗi xảy ra"
-                                };
-                                tran.Rollback();
-                            }
-                            else
-                            {
-                                result = new
-                                {
-                                    IsSucces = true,
-                                    StatusRoom = (int)StatusRoom.Active
-                                };
-                                tran.Commit();
-                            }
-
+                                IsSucces = false,
+                            };
                         }
+                        else
+                        {
+                            result = new
+                            {
+                                IsSucces = true,
+                            };
+                            tran.Commit();
+                        }
+                      
 
 
                     }
@@ -604,74 +587,12 @@ namespace RoomBooking.BLL.Services
         }
 
         /// <summary>
-        /// Nhấn đồng ý phê duyệt
-        /// </summary>
-        /// <param name="booking"></param>
-        /// <param name="result"></param>
-        /// <param name="cnn"></param>
-        /// <param name="tran"></param>
-        /// <param name="isUpdateBookingRequest"></param>
-        /// <param name="bookingHistory"></param>
-        /// <returns></returns>
-        private async Task<object> ApproveRequestBookingRoom(BookingRoom booking, MySqlConnection cnn, MySqlTransaction tran, bool isUpdateBookingRequest, BookingHistory bookingHistory)
-        {
-            object result = null;
-
-            BookingRoom bookingRoom = new BookingRoom
-            {
-                BookingRoomID = booking.BookingRoomID,
-                UserID = booking.UserID,
-                RoomID = booking.RoomID,
-                TimeSlotID = booking.TimeSlotID,
-                WeekID = booking.WeekID,
-                DateBooking = booking.DateRequest,
-                Day = booking.Day,
-                Subject = booking.Subject,
-                YearPlan = booking.YearPlan,
-                Description = booking.Description,
-                DayOfWeek = booking.DayOfWeek
-            };
-            // 2.1. Thêm mới phòng
-            var isInsertBookingRoom = await _repository.Insert(bookingRoom, cnn, tran);
-            // 2.2. Thêm vào lịch sử 
-            var isInsertHistory = await _historyRepository.Insert(bookingHistory, cnn, tran);
-
-            //2.3. Kiểm tra update, thêm mới có lỗi gì không, nếu có:
-            if (!isUpdateBookingRequest || !isInsertHistory || isInsertBookingRoom)
-            {
-                result = new
-                {
-                    IsSucces = false,
-                    StatusRoom = StatusRoom.Empty,
-                    Description = "Có lỗi xảy ra"
-                };
-                tran.Rollback();
-
-            }
-            else
-            {
-                result = new
-                {
-                    IsSucces = true,
-                    StatusRoom = StatusRoom.Empty,
-                    Description = "Thành công"
-                };
-                tran.Commit();
-            }
-
-
-            return result;
-        }
-
-        /// <summary>
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt
         /// </summary>
         /// <param name="param"></param>
         /// PTTAM 04.01.2023
         public async Task<object> GetPagingRequest(PagingParam param)
         {
-
-
             object res = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
@@ -687,7 +608,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="bookings"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> InsertBookingRequest(BookingRoom booking)
+        public async Task<object> InsertBookingRequest(BookingRoom booking,Guid userID)
         {
             object result = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -697,23 +618,49 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-                       
-                        List<BookingRoom> bookings = new List<BookingRoom>();
-                        List<TimeSlot> listTime = new();
-                        // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
-                        foreach(var item in booking.TimeSlots)
+            List<User> listUser = (List<User>)await cnn.QueryAsync<User>("SELECT * FROM User;", transaction: tran);
+            List<Role> listRole = (List<Role>)await cnn.QueryAsync<Role>("SELECT * FROM Role;", transaction: tran);
+
+                        var user = listUser.FirstOrDefault(x=>x.UserID==userID);
+                        var role = listRole.FirstOrDefault(x => x.RoleID == user.RoleID);
+                        if (role.RoleValue ==(int) RoleOption.Admin)
                         {
-                            booking.TimeSlotID = item;
-                            bookings.Add(booking);
+                            booking.StatusBooking =(int) OptionRequest.Approve;
                         }
+                        else { 
+                        booking.StatusBooking = (int)OptionRequest.Await;
+                        }
+                        List<BookingRoom> bookings = new List<BookingRoom>();
+                       
+                        bookings.Add(booking);
                         List<BookingError> errors = new List<BookingError>();
                         //2. Check phòng đã được sử dụng hay chưa
                         bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
+                        
+                      
                         //2.1. Nếu phòng chưa được sử dụng
-                        if(checkRoom)
+                        if (checkRoom)
                         {
+                            
                             // Thực hiện insert
-                            var res = await _repository.InsertMulti(bookings, tran, cnn);
+                            var resBooking = await _repository.Insert(booking, cnn,tran);
+                            // thực hiện insert ca học
+                            List<TimeBooking> lstTimeBooking = new();
+                            // Tách chuỗi TimeSlotID
+                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            // For từng dòng 
+                            foreach (var item in timeIDs)
+                            {
+                                lstTimeBooking.Add(new TimeBooking
+                                {
+                                    BookingRoomID = booking.BookingRoomID,
+                                    TimeSlotID = new Guid(item)
+                                }) ;
+
+                            }
+                            var resTimeBooking = await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
+                            var res =( resBooking == true && resTimeBooking == true)?true: false ;
+
                             if (res)
                             {
                                 result = new

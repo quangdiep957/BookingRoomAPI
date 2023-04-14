@@ -24,7 +24,6 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="pageSize"></param>
         /// <param name="pageIndex"></param>
         /// <param name="Type"></param>
-        /// <param name="Week"></param>
         /// <param name="keyWord"></param>
         /// <param name="RoomID"></param>
         /// <param name="BuildingID"></param>
@@ -40,7 +39,7 @@ namespace RoomBooking.BLL.Interfaces
         /// 2.Từ chối
         /// </param>
         /// <returns></returns>
-        public Task<object> RequestBookingRoom(Guid requestID, int option);
+        public Task<object> RequestBookingRoom(BookingRoomParam param);
 
         /// <summary>
         /// Gọi phân trang cho các yêu cầu chờ duyệt
@@ -54,7 +53,7 @@ namespace RoomBooking.BLL.Interfaces
         /// </summary>
         /// <param name="bookings"></param>
         /// <returns></returns>
-        public Task<object> InsertBookingRequest(BookingRoom bookings);
+        public Task<object> InsertBookingRequest(BookingRoom bookings,Guid userID);
 
         /// <summary>
         /// Thực hiện sửa yêu cầu đặt phòng

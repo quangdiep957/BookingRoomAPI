@@ -11,11 +11,11 @@ namespace RoomBooking.Common.Entities
     public class BookingRoom : BaseEntity
     {
         /// <summary>
-        /// Khóa ngoại người dùng
+        /// Khóa chính đặt phòng
         /// </summary>
         ///  Created by: PTTAM (07/03/2023)
         [DataLength(36)]
-        [PropertyNameDisplay(propName: "Mã người dùng")]
+        [PropertyNameDisplay(propName: "Mã đặt phòng")]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
@@ -35,7 +35,7 @@ namespace RoomBooking.Common.Entities
 
         public Guid UserID { get; set; }
         /// <summary>
-        /// Khóa chính phòng
+        /// Khóa ngoại phòng
         /// </summary>
         [DataLength(36)]
         [ForGetting]
@@ -95,12 +95,18 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public string Description { get; set; } = string.Empty;
+        /// <summary>
+        /// Lý do từ chối
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public string RefusalReason { get; set; } = string.Empty;
         [ForGetting]
         [ForBinding]
         public int YearPlan { get; set; }
         [ForGetting]
         [ForBinding]
-        public int StatusBooking { get; set; } = (int)OptionRequest.Await;
+        public int StatusBooking { get; set; } = (int)OptionRequest.Approve;
 
         public string Room { get; set; }
         [ForGetting]
@@ -109,6 +115,9 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public string Week { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public string TimeSlots { get; set; }
         public string Building { get; set; }
         public string Time { get; set; }
         public string MorningFreePeriod { get; set; }
@@ -118,7 +127,7 @@ namespace RoomBooking.Common.Entities
         public int Day { get; set; }
         public string SlotTime { get; set; }
         public int Times { get; set; }
-        public List<Guid> TimeSlots { get; set; }
+     
 
         [ForGetting]
         public TimeSpan StartTime { get; set; }

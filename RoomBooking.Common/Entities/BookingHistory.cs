@@ -44,28 +44,6 @@ namespace RoomBooking.Common.Entities
         public Guid RoomID { get; set; }
 
         /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [ForBinding]
-        [Ambiguous]
-        [NotEmpty]
-
-        public Guid TimeSlotID { get; set; }
-
-        /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [ForBinding]
-        [Ambiguous]
-        [NotEmpty]
-
-        public Guid WeekID { get; set; }
-
-        /// <summary>
         /// Khóa chính kì học
         /// </summary> }
 
