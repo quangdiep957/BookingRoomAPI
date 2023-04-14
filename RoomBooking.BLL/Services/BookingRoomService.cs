@@ -692,12 +692,13 @@ namespace RoomBooking.BLL.Services
         }
 
         public async Task<object> UpdateBookingRequest(Guid BookingRoomID, BookingRoom booking)
-        {
+        { 
             object result = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
 
                 using (MySqlTransaction tran = cnn.BeginTransaction())
+
                 {
                     try
                     {
