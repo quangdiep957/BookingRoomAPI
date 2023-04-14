@@ -129,7 +129,7 @@ namespace RoomBooking.DAL.Repositories
 
 
             DynamicParameters dynamicParameters = new DynamicParameters();
-            string sqlQuery = GetAllBindingUpdate(entity, dynamicParameters);
+            string sqlQuery = GetAllBindingUpdate(entity, entityId, dynamicParameters);
 
             var rowEffect = await cnn.ExecuteAsync(sqlQuery, dynamicParameters, transaction: transaction);
             if (rowEffect == 0)
@@ -211,7 +211,7 @@ namespace RoomBooking.DAL.Repositories
             return allNames;
         }
 
-        protected string GetAllBindingUpdate(Entity entity, DynamicParameters parameters)
+        protected string GetAllBindingUpdate(Entity entity, Guid entityId, DynamicParameters parameters)
         {
             // lấy tất cả cá properties ForBinding
 
@@ -232,15 +232,9 @@ namespace RoomBooking.DAL.Repositories
             }
             allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
                                        // Lấy ra attribute có tên PrimaryKey
-            var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
-            Guid key = Guid.Empty;
-            foreach (var prop in primaryKey)
-            {
-                key = (Guid)prop.GetValue(entity);
-
-            }
+          
             allNames += $" WHERE {typeof(Entity).Name}ID = @{typeof(Entity).Name}ID0;";
-            parameters.Add($"@{typeof(Entity).Name}ID" + 0, key);
+            parameters.Add($"@{typeof(Entity).Name}ID" + 0, entityId);
             return allNames;
         }
 
@@ -277,7 +271,7 @@ namespace RoomBooking.DAL.Repositories
 
 
             }
-
+            
             // bỏ kí tự ',' cuối cùng
             return allValuesParam;
 
@@ -306,6 +300,13 @@ namespace RoomBooking.DAL.Repositories
             allNames = allNames[..^1]; // loại bỏ kí tự ',' cuối cùng
 
             allNames += " )Values";
+            var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
+            Guid key = Guid.NewGuid();
+            foreach (var prop in primaryKey)
+            {
+                prop.SetValue(entity, key);
+
+            }
             return allNames;
         }
 

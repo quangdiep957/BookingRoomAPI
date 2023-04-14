@@ -72,6 +72,12 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public string Description { get; set; } = string.Empty;
+        /// <summary>
+        /// Lý do từ chối
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public string RefusalReason { get; set; } = string.Empty;
         [ForGetting]
         [ForBinding]
         public int YearPlan { get; set; }
