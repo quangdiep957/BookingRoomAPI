@@ -10,5 +10,8 @@ namespace RoomBooking.Common.Entities.Params
     {
         public BookingRoom booking;
         public Guid userID;
+        public Guid bookingRoomID;
+        public int option;
+        public string refusalReason;
     }
 }

@@ -495,7 +495,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="option"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> RequestBookingRoom(Guid requestID, int option)
+        public async Task<object> RequestBookingRoom(BookingRoomParam param)
         {
             object result = null;
 
@@ -505,67 +505,31 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-                        var requests = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
+                        var requests = await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom",transaction:tran);
                         //1. Lấy ra yêu cầu của người dùng gửi lên
-                        var booking = requests.FirstOrDefault(x => x.BookingRoomID == requestID);
+                        var booking = requests.FirstOrDefault(x => x.BookingRoomID == param.bookingRoomID);
                         //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
-                        booking.StatusBooking = option;
+                        booking.StatusBooking = param.option;
+                        booking.RefusalReason=param.refusalReason;
                         //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
 
-                        //2. Nếu là trạng thái phê duyệt
-                        if (option == (int)OptionRequest.Approve)
+                        if (!isUpdateBookingRequest)
                         {
-                            var isInsertBookingRoom = await _repository.Insert(booking, cnn, tran);
-
-                            //2.3. Kiểm tra update, thêm mới có lỗi gì không, nếu có:
-                            if (!isUpdateBookingRequest || isInsertBookingRoom)
+                            result = new
                             {
-                                result = new
-                                {
-                                    IsSucces = false,
-                                    StatusRoom = StatusRoom.Empty,
-                                    Description = "Có lỗi xảy ra"
-                                };
-                                tran.Rollback();
-
-                            }
-                            else
-                            {
-                                result = new
-                                {
-                                    IsSucces = true,
-                                    StatusRoom = StatusRoom.Empty,
-                                    Description = "Thành công"
-                                };
-                                tran.Commit();
-                            }
-
+                                IsSucces = false,
+                            };
                         }
-                        //3. Nếu là trạng thái từ chối 
-                        else if (option == (int)OptionRequest.Reject)
+                        else
                         {
-                            if (!isUpdateBookingRequest )
+                            result = new
                             {
-                                result = new
-                                {
-                                    IsSucces = false,
-                                    StatusRoom = (int)StatusRoom.Active,
-                                    Description = "Có lỗi xảy ra"
-                                };
-                                tran.Rollback();
-                            }
-                            else
-                            {
-                                result = new
-                                {
-                                    IsSucces = true,
-                                    StatusRoom = (int)StatusRoom.Active
-                                };
-                                tran.Commit();
-                            }
-
+                                IsSucces = true,
+                            };
+                            tran.Commit();
                         }
+                      
 
 
                     }
