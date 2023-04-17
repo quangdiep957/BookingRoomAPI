@@ -92,7 +92,7 @@ namespace RoomBooking.BLL.Services
                         List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;
                         bool checkRoom = await CheckRoom(lst, cnn, tran, errors, lstTimeBooking);
-                        if (checkRoom) {
+                        if (checkRoom && !errors.Any()) {
                             var resBookingRoom = await _repository.InsertMulti(lst, tran, cnn);
                             var resTimeBooking= await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             tran.Commit();
@@ -168,7 +168,7 @@ namespace RoomBooking.BLL.Services
                     room.RoomID = itemRoom.RoomID;
                     room.Subject = "Lịch học tuần " + room.Week;
                     room.UserID = Guid.Empty;
-                    room.YearPlan = room.DateBooking.Year;
+                    room.YearPlan = room.StartDate.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                     room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
                     lstTimeBooking.Add(new TimeBooking
@@ -223,20 +223,50 @@ namespace RoomBooking.BLL.Services
                 // For từng dòng
                 foreach (var item in timeIDs)
                 {
-                    var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID && timeIDs.Contains(item) && x.DateBooking.ToString("yyyy/MM/dd") == room.DateBooking.ToString("yyyy/MM/dd"));
-                    
+                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                    timeIDs.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                   timeIDs.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
-                    if (itemRoom != null)
-                    {
-                        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoom.RoomID).RoomName;
-                        timeName = lstTimeSlot.FirstOrDefault(x => item==x.TimeSlotID.ToString()).TimeSlotName;
-                        errors.Add(new BookingError
+                    if (room.StartDate == room.EndDate) {
+                        if (itemRoomStartDate != null)
                         {
-                            Error = "Đã có dữ liệu",
-                            DescriptionError = $"{roomName} ca {timeName} ngày {room.DateBooking.ToString("dd/MM/yyyy")} đã được đặt."
-                        });
-                        checkRoom = false;
+                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
+                            timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                            errors.Add(new BookingError
+                            {
+                                Error = "Đã có dữ liệu",
+                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                            });
+                            checkRoom = false;
+                        }
                     }
+                    else
+                    {
+                        if (itemRoomStartDate != null)
+                        {
+                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
+                            timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                            errors.Add(new BookingError
+                            {
+                                Error = "Đã có dữ liệu",
+                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                            });
+                            checkRoom = false;
+                        }
+                        else if (itemRoomEndDate != null)
+                        {
+                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomEndDate.RoomID).RoomName;
+                            timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                            errors.Add(new BookingError
+                            {
+                                Error = "Đã có dữ liệu",
+                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                            });
+                            checkRoom = false;
+                        }
+                    }
+                   
 
                 }
 
@@ -348,7 +378,8 @@ namespace RoomBooking.BLL.Services
                         AfternoonFreePeriod = afternoonFreePeriod.ToString(),
                         EveningFreePeriod = eveningFreePeriod.ToString(),
                         Week = scheduleList[i].Week,
-                        DateBooking = date,
+                        StartDate = date,
+                        EndDate= date
                     };
                     newScheduleList.Add(newSchedule);
                 }
@@ -367,7 +398,8 @@ namespace RoomBooking.BLL.Services
                     SlotTime = item.MorningFreePeriod,
                     Week = item.Week,
                     Times = 1,
-                    DateBooking = item.DateBooking
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
                 });
                 convertedList.Add(new BookingRoom
                 {
@@ -377,7 +409,9 @@ namespace RoomBooking.BLL.Services
                     SlotTime = item.AfternoonFreePeriod,
                     Week = item.Week,
                     Times = 3,
-                    DateBooking = item.DateBooking
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
+
 
                 });
                 convertedList.Add(new BookingRoom
@@ -388,7 +422,8 @@ namespace RoomBooking.BLL.Services
                     SlotTime = item.EveningFreePeriod,
                     Week = item.Week,
                     Times = 5,
-                    DateBooking = item.DateBooking
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
 
                 });
 
@@ -459,7 +494,8 @@ namespace RoomBooking.BLL.Services
                     DayOfWeek = item.DayOfWeek,
                     Times = int.Parse(ca.ToString()),
                     Week = item.Week,
-                    DateBooking = item.DateBooking
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate
                 });
 
             }
@@ -477,7 +513,8 @@ namespace RoomBooking.BLL.Services
                         DayOfWeek = item.DayOfWeek,
                         Times = ca++,
                         Week = item.Week,
-                        DateBooking = item.DateBooking
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
                     });
                 }
 
@@ -531,9 +568,9 @@ namespace RoomBooking.BLL.Services
         /// <param name="option"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> RequestBookingRoom(BookingRoomParam param)
+        public async Task<bool> RequestBookingRoom(BookingRoomParam param)
         {
-            object result = null;
+            bool isSuccess = true;
 
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
@@ -552,17 +589,13 @@ namespace RoomBooking.BLL.Services
 
                         if (!isUpdateBookingRequest)
                         {
-                            result = new
-                            {
-                                IsSucces = false,
-                            };
+
+                            isSuccess = false;
+                            
                         }
                         else
                         {
-                            result = new
-                            {
-                                IsSucces = true,
-                            };
+                            isSuccess = true;
                             tran.Commit();
                         }
                       
@@ -572,17 +605,14 @@ namespace RoomBooking.BLL.Services
                     catch (Exception ex)
                     {
 
-                        result = new
-                        {
-                            IsSucces = false,
-                        };
+                        isSuccess = false;
                         tran.Rollback();
                     }
 
 
                 }
             }
-            return result;
+            return isSuccess;
         }
 
         /// <summary>
@@ -708,7 +738,7 @@ namespace RoomBooking.BLL.Services
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
                         foreach (var item in timeIDs)
                         {
-                            booking.TimeSlotID = new Guid(item);
+                            //booking.TimeSlotID = new Guid(item);
                             bookings.Add(booking);
                         }
                         List<BookingError> errors = new List<BookingError>();
@@ -804,7 +834,7 @@ namespace RoomBooking.BLL.Services
                         if (bookingTime != null)
                         {
                             TimeSpan currentTime = DateTime.Now.TimeOfDay.Subtract(TimeSpan.FromMinutes(30));
-                            checkTimeBooking  =  (bookingTime.DateBooking < DateTime.Now && bookingTime.StartTime < currentTime) ? false : true;     
+                            //checkTimeBooking  =  (bookingTime.DateBooking < DateTime.Now && bookingTime.StartTime < currentTime) ? false : true;     
                         }  
                         //1.1. Nếu thời gian bắt đầu vào phòng sớm hơn 30p thì cho phép hủy
                         if (checkTimeBooking)
