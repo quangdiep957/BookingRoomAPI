@@ -493,6 +493,7 @@ namespace RoomBooking.BLL.Services
                     Room = item.Room,
                     DayOfWeek = item.DayOfWeek,
                     Times = int.Parse(ca.ToString()),
+                    TimeSlotName=$"Ca {ca}",
                     Week = item.Week,
                     StartDate = item.StartDate,
                     EndDate = item.EndDate
@@ -512,6 +513,7 @@ namespace RoomBooking.BLL.Services
                         Room = item.Room,
                         DayOfWeek = item.DayOfWeek,
                         Times = ca++,
+                        TimeSlotName = $"Ca {ca}",
                         Week = item.Week,
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
