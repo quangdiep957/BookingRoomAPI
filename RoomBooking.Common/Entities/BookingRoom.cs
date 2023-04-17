@@ -68,6 +68,10 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public DateTime EndDate { get; set; }
+
+        /// <summary>
+        /// Ngày gửi yêu cầu
+        /// </summary>
         [ForGetting]
         [ForBinding]
         public DateTime DateRequest { get; set; } = DateTime.Now;
@@ -90,6 +94,12 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         public int StatusBooking { get; set; } = (int)OptionRequest.Approve;
 
+        /// <summary>
+        /// Tên ca 
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public string TimeSlotName { get; set; } = string.Empty;
         public string Room { get; set; }
         public string DayOfWeek { get; set; }
         
