@@ -36,6 +36,14 @@ namespace RoomBooking.Common.Entities
         [NotEmpty]
 
         public int TimeSlotName { get; set; }
+        [ForGetting]
+        [ForBinding]
+        [NotEmpty]
+        public TimeSpan StartTime { get; set; }
+        [ForGetting]
+        [ForBinding]
+        [NotEmpty]
+        public TimeSpan EndTime { get; set; }
 
     }
 }
