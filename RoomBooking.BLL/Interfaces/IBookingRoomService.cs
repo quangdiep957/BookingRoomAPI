@@ -39,7 +39,7 @@ namespace RoomBooking.BLL.Interfaces
         /// 2.Từ chối
         /// </param>
         /// <returns></returns>
-        public Task<object> RequestBookingRoom(BookingRoomParam param);
+        public Task<bool> RequestBookingRoom(BookingRoomParam param);
 
         /// <summary>
         /// Gọi phân trang cho các yêu cầu chờ duyệt

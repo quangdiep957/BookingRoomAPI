@@ -37,7 +37,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại phòng
         /// </summary>
-        [DataLength(36)]
+        [DataLength(36)] 
         [ForGetting]
         [ForBinding]
         [Ambiguous]
@@ -45,28 +45,7 @@ namespace RoomBooking.Common.Entities
 
         public Guid RoomID { get; set; }
 
-        /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [Ambiguous]
-        [NotEmpty]
-
-        public Guid TimeSlotID { get; set; }
-
-        /// <summary>
-        /// Khóa chính thời gian
-        /// </summary>
-        [DataLength(36)]
-        [ForGetting]
-        [NotEmpty]
-
-        public Guid WeekID { get; set; }
-
-        /// <summary>
-        /// Khóa chính kì học
-        /// </summary> }
+ 
 
         /// <summary>
         /// Chủ đề
@@ -76,16 +55,19 @@ namespace RoomBooking.Common.Entities
         public string Subject { get; set; } = string.Empty;
 
         /// <summary>
-        /// BBC tới 
+        /// Ngày bắt đầu 
         /// </summary>
         [ForGetting]
         [ForBinding]
-        public string CCTo { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
 
+
+        /// <summary>
+        /// Ngày kết thúc
+        /// </summary>
         [ForGetting]
         [ForBinding]
-        public DateTime DateBooking { get; set; }
-
+        public DateTime EndDate { get; set; }
         [ForGetting]
         [ForBinding]
         public DateTime DateRequest { get; set; } = DateTime.Now;
@@ -109,11 +91,8 @@ namespace RoomBooking.Common.Entities
         public int StatusBooking { get; set; } = (int)OptionRequest.Approve;
 
         public string Room { get; set; }
-        [ForGetting]
-        [ForBinding]
         public string DayOfWeek { get; set; }
-        [ForGetting]
-        [ForBinding]
+        
         public string Week { get; set; }
         [ForGetting]
         [ForBinding]
