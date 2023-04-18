@@ -248,6 +248,17 @@ namespace RoomBooking.BLL.Services
             // So sánh hai mã băm
             return hashedPasswordToCheck == hashedPassword;
         }
-
+        /// <summary>
+        /// Thay đổi mật khẩu
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<bool> ChangePass(User user)
+        {
+            // mã hóa mật khẩu 
+            user.Password = HashPassword(user.Password);
+            user.PasswordNew = HashPassword(user.PasswordNew);
+            return await _repository.ChangePass(user);
+        }
     }
 }

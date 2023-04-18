@@ -28,6 +28,11 @@ namespace RoomBooking.DAL.Interfaces
         /// Created by: PTTAM (07/03/2023)
         public Task<string> GetNewUserCode();
 
-
+        /// <summary>
+        /// Thay đổi mật khẩu
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<bool> ChangePass(User user);
     }
 }

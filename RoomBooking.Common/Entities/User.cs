@@ -72,6 +72,8 @@ namespace RoomBooking.Common.Entities
 
         public string Password { get; set; } = string.Empty;
 
+        public string? PasswordNew { get; set; } = string.Empty;
+
         /// <summary>
         /// Email
         /// </summary>

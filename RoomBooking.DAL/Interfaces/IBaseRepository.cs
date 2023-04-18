@@ -87,7 +87,5 @@ namespace RoomBooking.DAL.Interfaces
         public Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn,MySqlTransaction tran,Guid? entityId = null);
         public MySqlConnection GetOpenConnection();
         public void CloseMyConnection();
-
-
     }
 }
