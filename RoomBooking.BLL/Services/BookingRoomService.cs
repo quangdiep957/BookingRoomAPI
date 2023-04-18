@@ -436,7 +436,7 @@ namespace RoomBooking.BLL.Services
                 string[] periods = item.SlotTime.Split(',');
                 if (periods.Length < 4)
                 {
-                    list.AddRange(ConverDataToTimeSlot(item, periods, item.Times));
+                    list.AddRange(ConverDataToTimeSlot(item, periods, (int)item.Times));
                 }
 
             }
@@ -464,7 +464,7 @@ namespace RoomBooking.BLL.Services
                 int ca = 0;
                 if (item.Times == 5)
                 {
-                    ca = item.Times;
+                    ca = (int)item.Times;
 
                 }
                 else
@@ -494,6 +494,7 @@ namespace RoomBooking.BLL.Services
                     Room = item.Room,
                     DayOfWeek = item.DayOfWeek,
                     Times = int.Parse(ca.ToString()),
+                    TimeSlotName=$"Ca {ca}",
                     Week = item.Week,
                     StartDate = item.StartDate,
                     EndDate = item.EndDate
@@ -502,7 +503,7 @@ namespace RoomBooking.BLL.Services
             }
             else
             {
-                int ca = item.Times;
+                int ca = (int)item.Times;
                 int j = ca - 1;
                 for (int i = ca - 1; i <= item.Times; i++)
                 {
@@ -513,6 +514,7 @@ namespace RoomBooking.BLL.Services
                         Room = item.Room,
                         DayOfWeek = item.DayOfWeek,
                         Times = ca++,
+                        TimeSlotName = $"Ca {ca}",
                         Week = item.Week,
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
