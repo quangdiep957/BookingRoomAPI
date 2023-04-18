@@ -27,15 +27,7 @@ namespace RoomBooking.API.Controllers
         public bool SendEmail(EmailData emailData)
         {
             var emailSettings = new EmailSettings();
-
-            // Gán giá trị cho các thuộc tính của đối tượng
-            emailSettings.EmailId = "quangdiep957@gmail.com";
-            emailSettings.Name = "Support - Pro Code Guide";
-            emailSettings.Password = "jkzrfapsjgwbjrih";
-            emailSettings.Host = "smtp.gmail.com";
-            emailSettings.Port = 465;
-            emailSettings.UseSSL = true;
-            return _emailService.SendEmail(emailData, emailSettings);
+            return _emailService.SendEmail(emailData);
         }
 
 

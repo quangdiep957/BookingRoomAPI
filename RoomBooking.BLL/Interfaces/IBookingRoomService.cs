@@ -70,11 +70,12 @@ namespace RoomBooking.BLL.Interfaces
         public Task<object> CancelBookingRoom(Guid BookingRoomID);
 
         /// <summary>
-        /// in đơn xin phòng học
+        /// Xem báo cáo theo id
         /// </summary>
-        /// <param name="bookings"></param>
+        /// <param name="entityId"></param>
         /// <returns></returns>
-        //public byte[] GenerateReport(DataTable bookings);
+        public Task<ParamReport> PrintReport(Guid entityId);
+
 
     }
 }

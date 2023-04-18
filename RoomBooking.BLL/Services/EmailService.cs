@@ -13,10 +13,18 @@ namespace RoomBooking.BLL.Services
 {
     public class EmailService : IEmailService
     {
-        public bool SendEmail(EmailData emailData,EmailSettings _emailSettings)
+        public bool SendEmail(EmailData emailData)
         {
             try
             {
+                EmailSettings _emailSettings = new EmailSettings();
+                // Gán giá trị cho các thuộc tính của đối tượng
+                _emailSettings.EmailId = "quangdiep957@gmail.com";
+                _emailSettings.Name = "Support - Pro Code Guide";
+                _emailSettings.Password = "jkzrfapsjgwbjrih";
+                _emailSettings.Host = "smtp.gmail.com";
+                _emailSettings.Port = 465;
+                _emailSettings.UseSSL = true;
                 MimeMessage emailMessage = new MimeMessage();
                 MailboxAddress emailFrom = new MailboxAddress(_emailSettings.Name, _emailSettings.EmailId);
                 emailMessage.From.Add(emailFrom);

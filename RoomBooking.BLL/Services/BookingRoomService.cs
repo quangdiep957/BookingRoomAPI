@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using XAct;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RoomBooking.BLL.Services
@@ -707,7 +708,7 @@ namespace RoomBooking.BLL.Services
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
                         foreach (var item in timeIDs)
                         {
-                            booking.TimeSlotID = new Guid(item);
+                          //  booking.TimeSlotID = new Guid(item);
                             bookings.Add(booking);
                         }
                         List<BookingError> errors = new List<BookingError>();
@@ -754,6 +755,16 @@ namespace RoomBooking.BLL.Services
                                         Data = errors
                                     };
                                     tran.Commit();
+                                    // Gửi email thông báo thành công
+                                    var emailFrom = new EmailData();
+                                    var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
+                                    // lấy dữ liệu đổ vào email
+                                    emailFrom.EmailToId = "quangdiep967@gmail.com";
+                                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                                    emailFrom.EmailSubject = "BQDIEP";
+                                    emailFrom.EmailToName = "BQDIEp";
+                                    SendEmail(emailFrom);
+                                    
                                 }
                             }
                             else
@@ -783,6 +794,24 @@ namespace RoomBooking.BLL.Services
 
             }
             return result;
+        }
+        /// <summary>
+        /// sinh ra đoạn mã để trả về email
+        /// </summary>
+        /// <returns></returns>
+        public string CreateFormHTML(ParamReport param)
+        {
+            string html = "";
+            // đọc file template
+            html =File.ReadAllText("D:/Do An/RoomBooking/RoomBooking.BLL/HTML/templateHTML.txt");
+            html = html.Replace("{{param.FullName}}", param.FullName);
+            html = html.Replace("{{param.RoomName}}", param.RoomName);
+            html = html.Replace("{{param.BuildingName}}", param.BuildingName);
+            html = html.Replace("{{param.DateBooking}}", param.DateBooking);
+            html = html.Replace("{{param.DateMiss}}", param.DateMiss);
+            html = html.Replace("{{param.Capacity}}", param.Capacity.ToString());
+            html = html.Replace("{{param.StatusBooking}}", param.StatusBooking.ToString());
+            return html;
         }
 
         public async Task<object> CancelBookingRoom(Guid BookingRoomID)
@@ -852,16 +881,20 @@ namespace RoomBooking.BLL.Services
             return result;
         }
 
-
-        //public byte[] GenerateReport(DataTable dataSource)
-        //{
-        //    // Load report from file
-        //    var report = new StiReport();
-        //    report.Load("path/to/your/report.mrt");
-
-        //    // Assign data source to report
-        //    report.RegData("DataSourceName", dataSource);
-
-        //}
+        /// <summary>
+        /// Xem báo cáo theo booking ID
+        /// </summary>
+        /// <param name="entityId">Khóa chính đối tượng</param>
+        ///  Created by: PTTAM (07/03/2023)
+        public async Task<ParamReport> PrintReport(Guid id)
+        {
+            var res = new ParamReport();
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                res = await _repository.GetParamReport(id, cnn);
+                _repository.CloseMyConnection();
+            }
+            return res;
+        }
     }
 }

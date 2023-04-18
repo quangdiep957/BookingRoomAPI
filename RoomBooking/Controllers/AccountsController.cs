@@ -64,6 +64,24 @@ namespace RoomBooking.API.Controllers
             return Ok(new { message = "Logout successful" });
         }
 
+        /// <summary>
+        /// Thực hiện đổi mật khẩu
+        /// </summary>
+        /// PTTAM 
+        [HttpPost("changepass")]
+        public IActionResult ChangePass(User user)
+        {
+            var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required" });
+            }
+            _userService.ChangePass(user);
+
+            return Ok(new { message = "Change PassWord successful" });
+        }
+
         [Authorize]
         [HttpGet("check")]
         public IActionResult Check()

@@ -352,5 +352,27 @@ namespace RoomBooking.DAL.Repositories
                 Data = data
             };
         }
+
+        /// <summary>
+        /// Thực hiện việc phân trang
+        /// </summary>
+        /// <param name="pageSize">Số bản ghi/ 1 trang</param>
+        /// <param name="pageIndex">Trang số bao nhiêu</param>
+        /// <param name="keyWord">Điều kiện lọc dữ liệu/param>
+        /// <param name="roleId">Khóa chính của vai trò /param>
+        /// <returns>Object chứa những thông tin cần thiết</returns>
+        /// Created by: PTTAM (07/03/2023)
+        public async Task<ParamReport> GetParamReport(Guid id, MySqlConnection cnn)
+        {
+
+            var storeName = "Proc_GetReportBookingRoom"; // Tên của thủ thục
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@BookingRoomID", id);
+
+            //2. Lấy dữ liệu
+            var bookingRoom = await cnn.QueryFirstOrDefaultAsync<ParamReport>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            return bookingRoom;
+
+        }
     }
 }

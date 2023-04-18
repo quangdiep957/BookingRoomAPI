@@ -138,4 +138,26 @@ namespace RoomBooking.Common.Entities
         public string Error { get; set; }
         public string DescriptionError { get; set; }
     }
+    public class ParamReport
+    {
+        public string FullName { get; set; }
+
+        public string PhoneNumber { get; set; }
+        public Guid BookingRoomID { get; set; }
+
+        public string DateBooking { get; set; }
+
+        public string RoomName { get; set; }
+        public string EquipmentName { get; set; }
+
+        public string TimeSlotName { get; set; }
+
+
+        public string BuildingName { get; set; }
+
+        public string DateMiss { get; set; }
+        public int Capacity { get; set; }
+
+        public int StatusBooking { get; set; }
+    }
 }
