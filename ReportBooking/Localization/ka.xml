@@ -614,6 +614,7 @@
     <StiDashboard>Dashboard</StiDashboard>
     <StiDataBand>მონაცემები</StiDataBand>
     <StiDatePicker>თარიღის ასარჩევი</StiDatePicker>
+    <StiElectronicSignature>ელექტრონული ხელმოწერა</StiElectronicSignature>
     <StiEmptyBand>ცარიელი მონაცემები</StiEmptyBand>
     <StiFooterBand>ქვედა კოლონტიტული</StiFooterBand>
     <StiGauge>ინდიკატორი</StiGauge>
@@ -633,6 +634,7 @@
     <StiPageFooterBand>გვერდის ქვედა კოლონტიტული</StiPageFooterBand>
     <StiPageHeaderBand>გვერდის სათაური</StiPageHeaderBand>
     <StiPanel>პანელი</StiPanel>
+    <StiPdfDigitalSignature>PDF-ის ელექტრონული ხელმოწერა</StiPdfDigitalSignature>
     <StiPivot>პივოტ</StiPivot>
     <StiPivotColumn>Pivot სვეტი</StiPivotColumn>
     <StiPivotRow>Pivot სტრიქონი</StiPivotRow>
@@ -1103,7 +1105,6 @@
     <BusinessIntelligence>Business Intelligence (*.sbi)|*.sbi</BusinessIntelligence>
     <CalcFiles>OpenDocument Calc ფაილი (*.ods)|*.ods</CalcFiles>
     <CsvFiles>CSV ფაილი (*.csv)|*.csv</CsvFiles>
-    <DashboardTemplates>Dashboard შაბლონები (*.sbi)|*.sbi</DashboardTemplates>
     <DataSetXmlData>DataSet XML ფაილი (*.xml)|*.xml</DataSetXmlData>
     <DataSetXmlSchema>DataSet XML სქემის ფაილი(*.xsd)|*.xsd</DataSetXmlSchema>
     <DbfFiles>DBF ფაილი (*.dbf)|*.dbf</DbfFiles>
@@ -1161,18 +1162,19 @@
     <custom04>F</custom04>
     <custom05>dd/MM/yy</custom05>
     <custom06>dd/MM/yyyy</custom06>
-    <custom07>G</custom07>
-    <custom08>$0.00</custom08>
-    <custom09>$0</custom09>
-    <custom10>c</custom10>
-    <custom11>c1</custom11>
-    <custom12>c2</custom12>
-    <custom13>#.00</custom13>
-    <custom14>#,#</custom14>
-    <custom15>n</custom15>
-    <custom16>n1</custom16>
-    <custom17>n2</custom17>
-    <custom18>(###) ### - ####</custom18>
+    <custom07>[green]+0.00;[red]-0.00;[blue](0)</custom07>
+    <custom08>G</custom08>
+    <custom09>$0.00</custom09>
+    <custom10>$0</custom10>
+    <custom11>c</custom11>
+    <custom12>c1</custom12>
+    <custom13>c2</custom13>
+    <custom14>#.00</custom14>
+    <custom15>#,#</custom15>
+    <custom16>n</custom16>
+    <custom17>n1</custom17>
+    <custom18>n2</custom18>
+    <custom19>(###) ### - ####</custom19>
     <date01>*d</date01>
     <date02>*D</date02>
     <date03>dd.M</date03>
@@ -1339,6 +1341,7 @@
     <ColumnsThree>სამი</ColumnsThree>
     <ColumnsTwo>ორი</ColumnsTwo>
     <CompilingReport>რეპორტის კომპილაცია</CompilingReport>
+    <CopyPropertyName>თვისების დასახელების კოპირება</CopyPropertyName>
     <DockingPanels>პანელები</DockingPanels>
     <HtmlPreview>HTML წინასწარი დათვალიერება</HtmlPreview>
     <JsPreview>JS წინასწარი დათვალიერება </JsPreview>
@@ -1384,6 +1387,7 @@
     <CsvSeparatorTab>ტაბულაცია</CsvSeparatorTab>
     <DatabaseEdit>მონაცემთა ბაზის შეცვლა</DatabaseEdit>
     <DatabaseNew>ახალი მონაცემთა ბაზა</DatabaseNew>
+    <DataMonitor>მონაცემთა მონიტორინგი</DataMonitor>
     <DataParameterEdit>პარამეტრის რედაქტირება</DataParameterEdit>
     <DataParameterNew>ახალი პარამეტრი</DataParameterNew>
     <DataSetToBusinessObjects>DataSet-ის გადაყვანა "Business Objects"-ში</DataSetToBusinessObjects>
@@ -1401,6 +1405,7 @@
     <DragNewDataSource>ჩააგდეთ თქვენი მონაცემი პირდაპირ ამ პანელში</DragNewDataSource>
     <DragNewReport>ჩააგდეთ თქვენი რეპორტი პირდაპირ ამ პანელში</DragNewReport>
     <EditQuery>მოთხოვნის შეცვლა</EditQuery>
+    <EnableDataMonitor>მონაცემთა მონიტორინგის ჩართვა</EnableDataMonitor>
     <ExecutedSQLStatementSuccessfully>SQL მოთხოვნა წარმატებულად შესრულებულია</ExecutedSQLStatementSuccessfully>
     <ExpressionNew>ახალი გამოთქმა</ExpressionNew>
     <GetColumnsFromAssembly>მონაცემთა კრებულიდან სვეტების აღება</GetColumnsFromAssembly>
@@ -1853,6 +1858,7 @@
     <cust_pm_stytextonly>მხოლოდ ტექსტი (ყოველთვის)</cust_pm_stytextonly>
     <cust_tab_commands>ბრძანებები</cust_tab_commands>
     <cust_tab_options>პარამეტრები</cust_tab_options>
+    <cust_tab_toolbar_alignment>ინსტრუმენტთა პანელის სწორება</cust_tab_toolbar_alignment>
     <cust_tab_toolbars>პანელები</cust_tab_toolbars>
     <mdisysmenu_close>დახურვა</mdisysmenu_close>
     <mdisysmenu_maximize>გაშლა</mdisysmenu_maximize>
@@ -1929,6 +1935,7 @@
     <StiRoundedRectanglePrimitive>ამ კომპონენტის მეშვეობით შეგიძლიათ გამოიტანოთ მომრგვალებული მართკუთხედი.</StiRoundedRectanglePrimitive>
     <StiShape>ამ კომპონენტის მეშვეობით შეგიძლიათ გამოიტანოთ ისეთი ფიგურები როგორიცაა ისარი, დიაგონალური ხაზი, ჰორიზონტალური ხაზი, ელიპსი, სამკუთხედი, მართკუთხედი და ა.შ.</StiShape>
     <StiShapeElement>ელემენტი გამოიყენება მზა ფიგურების ჩასასმელად, ისეთების როგორიცაა ისრები, დიაგონალური, ვერტიკალური და ჰორიზონტალური ხაზები, ოვალი, მართკუთხედი, მომრგვალებულკუთხებიანი მართკუთხედი.</StiShapeElement>
+    <StiSignature>ეს კომპონენტი გამოიყენება რეპორტში ელექტრონული ან ციფრული ხელმოწერის დასამატებლად.</StiSignature>
     <StiSparkline>ეს კომპონენტი გამოიყენება ანგარიშში მიკროგრაფიკების შესაქმნელად. ეს გაძლევთ საშუალებას თვალყური ადევნოთ დინამიურად ცვალებად მონაცემებს ჰისტოგრამების, ხაზების, უბნების, მოგება / წაგების სახით. </StiSparkline>
     <StiSubReport>ამ კომპონენტის მეშვეობით შეგიძლიათ გამოიტანოთ დამატებითი მონაცემები რეპორტის სხვადასხვა ადგილებში.</StiSubReport>
     <StiTable>ამ კომპონენტის მეშვეობით შეგიძლიათ გამოიტანოთ Microsoft Excel მაგვარი ცხრილი.</StiTable>
@@ -2268,6 +2275,7 @@
     <menuFileExit>გამოსვლა</menuFileExit>
     <menuFileExportXMLSchema>XML სქემის ექსპორტი...</menuFileExportXMLSchema>
     <menuFileFormNew>ფორმის შექმნა</menuFileFormNew>
+    <menuFileFormOpen>ფორმის გახსნა</menuFileFormOpen>
     <menuFileImportXMLSchema>XML სქემის იმპორტი...</menuFileImportXMLSchema>
     <menuFileMerge>დამატება...</menuFileMerge>
     <menuFileMergeXMLSchema>XML სქემის დამატება...</menuFileMergeXMLSchema>
@@ -2370,6 +2378,7 @@
     <ShareURLOfTheItemHasBeenUpdated>ობიექტის გაზიარების URL განახლდა!</ShareURLOfTheItemHasBeenUpdated>
     <ShareYourReportYouShouldSave>რეპორტის გასაზიარებლად საჭიროა რეპორტის შენახვა "Stimulsoft Cloud"-ში!</ShareYourReportYouShouldSave>
     <SwitchingBetweenModes>რეჟიმებს შორის გადართვა გამოიწვევს ცვლილებების დაკარგავს. ნამდვილად გსურთ განაგრძოთ?</SwitchingBetweenModes>
+    <SwitchParametersOrientation>რეპორტის თვისების 'პარამეტრების განლაგება'-ს შეცვლა {0}-ზე იმისათვის, რომ აღნიშნული კატეგორია გამოჩნდეს პარამეტრების პანელზე.</SwitchParametersOrientation>
     <TextRegistrationSuccessfully>თქვენწარმატებით გაიარეთ რეგისტრაცია!
 
 წერილი გამოგზავნილია "{0}"-ზე.
@@ -2608,6 +2617,7 @@
     <ItemDataSources>მონაცემთა წყაროები</ItemDataSources>
     <ItemFiles>ფაილები</ItemFiles>
     <ItemFolders>საქაღალდეები</ItemFolders>
+    <ItemForms>ფორმები</ItemForms>
     <ItemReportSnapshots>რეპორტის Snapshot-ები</ItemReportSnapshots>
     <ItemReportTemplates>რეპორტის შაბლონები</ItemReportTemplates>
     <ItemSchedulers>დამგეგმავები</ItemSchedulers>
@@ -3049,6 +3059,9 @@
     <StiColorScaleTypeColor3>3-ფერიანი გამა</StiColorScaleTypeColor3>
     <StiColumnDirectionAcrossThenDown>მარჯვნივ შემდეგ ქვემოთ</StiColumnDirectionAcrossThenDown>
     <StiColumnDirectionDownThenAcross>ქვემოთ შემდეგ მარჯვნივ</StiColumnDirectionDownThenAcross>
+    <StiColumnShape3DBox>მარტკუთხედი</StiColumnShape3DBox>
+    <StiColumnShape3DPartialPyramid>მოკვეთილი პირამიდა</StiColumnShape3DPartialPyramid>
+    <StiColumnShape3DPyramid>პირამიდა</StiColumnShape3DPyramid>
     <StiCrossHorAlignmentCenter>ცენტრში</StiCrossHorAlignmentCenter>
     <StiCrossHorAlignmentLeft>მარცხნივ</StiCrossHorAlignmentLeft>
     <StiCrossHorAlignmentNone>None</StiCrossHorAlignmentNone>
@@ -3803,6 +3816,7 @@
     <ColumnHeaderForeColor>სვეტის სათაურის ტექსტის ფერი</ColumnHeaderForeColor>
     <ColumnHeadersVisible>ზედა კოლონტიტულების გამოჩენა</ColumnHeadersVisible>
     <Columns>სვეტები</Columns>
+    <ColumnShape>ჰისტოგრამის ფიგურა</ColumnShape>
     <ColumnWidth>სვეტის სიგანე</ColumnWidth>
     <CommandTimeout>ბრძანების შესრულების მაქსიმალური დრო</CommandTimeout>
     <CompanyPrefix>კომპანიის პრეფიქსი</CompanyPrefix>
@@ -3852,6 +3866,7 @@
     <DataType>მონაცემთა ტიპი</DataType>
     <DataUrl>მონაცემთა URL</DataUrl>
     <DateInfo>ინფორმაცია თარიღების შესახებ</DateInfo>
+    <DateTimeMode>DateTime რეჟიმი</DateTimeMode>
     <DateTimeStep>დროის ბიჯი</DateTimeStep>
     <Default>ნაგულისხმევი</Default>
     <DefaultColor>ნაგულისხმები ფერი</DefaultColor>
@@ -3994,6 +4009,7 @@
     <GroupMeter>ჯგუფი</GroupMeter>
     <GrowToHeight>სიმაღლეში გაზრდა</GrowToHeight>
     <Header>სათაური</Header>
+    <HeaderAlignment>ზედა კოლონტიტულის სწორება</HeaderAlignment>
     <HeaderBackColor>წარწერის ფერი</HeaderBackColor>
     <HeaderCanBreak>სათაურს შეუძლია წყვეტა</HeaderCanBreak>
     <HeaderCanGrow>სათაურს შეუძლია ზრდა</HeaderCanGrow>
@@ -4210,6 +4226,7 @@
     <Move>გადაადგილება</Move>
     <Multiline>მრავალსტრიქონიანი</Multiline>
     <MultipleFactor>ჯერადი კოეფიციენტი</MultipleFactor>
+    <MultipleInitialization>მრავლობითი ინიციალიზაცია</MultipleInitialization>
     <Name>დასახელება</Name>
     <NameDataColumn>დასახელებების მონაცეთა სვეტი</NameDataColumn>
     <NameInSource>წყაროში არსებული დასახელება</NameInSource>
@@ -4264,6 +4281,7 @@
     <Parameters>პარამეტრები</Parameters>
     <ParametersDateFormat>თარიღის პარამეტრების ფორმატი</ParametersDateFormat>
     <ParametersOrientation>პარამეტრების ორიენტაცია</ParametersOrientation>
+    <ParameterWidth>პარამეტრის სიგანე</ParameterWidth>
     <ParentColumns>მშობლის სვეტები</ParentColumns>
     <ParentSource>მშობლის მონაცემთა წყარო</ParentSource>
     <ParentValue>მშობლის მნიშვნელობა</ParentValue>
@@ -4273,6 +4291,7 @@
     <PathData>მონაცემთა მისამართი</PathData>
     <PathSchema>სქემის მისამართი</PathSchema>
     <Pattern>შაბლონი</Pattern>
+    <Placeholder>მნიშვნელობათა შაბლონი</Placeholder>
     <Placement>განლაგება</Placement>
     <PlaceOnToolbox>განლაგება პანელზე</PlaceOnToolbox>
     <PointAtCenter>წერტილი ცენტრში</PointAtCenter>
@@ -4345,6 +4364,7 @@
     <ReportUnit>ზომის ერთეული</ReportUnit>
     <RequestFromUser>მომხმარებლის მოთხოვნა</RequestFromUser>
     <RequestParameters>მოთხოვნის პარამეტრები</RequestParameters>
+    <ResetAllFilters>ყველა ფილტრის გაუქმება</ResetAllFilters>
     <ResetDataSource>მონაცემთა გაუქმება</ResetDataSource>
     <ResetPageNumber>ფურცლის ნომრის გაუქმება</ResetPageNumber>
     <Resize>ზომების შეცვლა</Resize>
@@ -4453,6 +4473,7 @@
     <ShrinkFontToFit>ფონტის შემცირება ჩატევამდე</ShrinkFontToFit>
     <ShrinkFontToFitMinimumSize>ფონტის შემცირება მინიმალური ზომის ჩასატევად</ShrinkFontToFitMinimumSize>
     <Side>გვერდი</Side>
+    <SideBySide>გვერდიგვერდ</SideBySide>
     <Sides>გვრდები</Sides>
     <SignatureType>ტიპი</SignatureType>
     <Simple>მარტივი</Simple>
@@ -4746,6 +4767,7 @@
   </QueryBuilder>
   <Questions>
     <qnConfiguration>გთხოვთ აირჩიოთ თვისებების პანელის კონფიგურაცია. არჩეული კონფიგურაცია იმოქმედებს ხელმისაწვდომ თვისებებზე და მათ ჩაშლებზე. შემდგომში თქვენ შეგიძლიათ შეცვალოთ კონფიგურაციის ტიპი თვისებების პანელის კონტექსტური მენიუდან.</qnConfiguration>
+    <qnCopyCategory>გსურთ მონიშნული კატეგორიიდან ყველა ცვლადის კოპირება?</qnCopyCategory>
     <qnDictionaryNew>გნებავთ ახალი ლექსიკონის შექმნა?</qnDictionaryNew>
     <qnLanguageNew>თქვენ შეცვალეთ რეპორტის ენა. უნდა დაგენერირდეს ახალი კოდი. გნებავთ ცვლილებების შენახვა?</qnLanguageNew>
     <qnPageDelete>გნებავთ გვერდის წაშლა?</qnPageDelete>
@@ -4763,6 +4785,7 @@
   <RecentFiles>
     <AddAPlace>ადგილმდებარეობის დამატება</AddAPlace>
     <AddAPlaceDesc>თქვენ შეგიძლიათ დაამატოთ ადგილმდებარეობა, რათა გაიმარტივოთ რეპორტების შენახვა ღრუბელში.</AddAPlaceDesc>
+    <ChangeFileType>ფაილის ტიპის შეცვლა</ChangeFileType>
     <ChooseALocation>ადგილმდებარეობის არჩევა</ChooseALocation>
     <ClearUnpinnedItems>მიუმაგრებელი ელემენტების გაწმენდა</ClearUnpinnedItems>
     <CopyPathToClipboard>გზის კოპირება ბუფერში</CopyPathToClipboard>
@@ -4775,12 +4798,18 @@
     <MessageThatNameAlreadyExists>ეს სახელი უკვე არსებობს. გთხოვთ, გამოიყენოთ სხვა სახელი.</MessageThatNameAlreadyExists>
     <MoreLocations>მეტი →</MoreLocations>
     <Older>დიდი ხნის წინ</Older>
+    <OtherLocations>სხვა ადგილები</OtherLocations>
+    <Personal>პერსონალური</Personal>
     <Pinned>ჩამაგრებული</Pinned>
     <PinToList>სიაში ჩამაგრება</PinToList>
     <PinToRecentList>ჩამაგრება უკანასკნელების სიაში</PinToRecentList>
     <RemoveFromList>სიიდან წაშლა</RemoveFromList>
     <ReplaceExistingFile>არსებული ფაილის ჩანაცვლება.</ReplaceExistingFile>
     <SaveChangesWithADifferentName>ცვლილების შენახვა სხვა სახელით.</SaveChangesWithADifferentName>
+    <SaveThisFile>ამ ფაილის შენახვა</SaveThisFile>
+    <SelectToNavigateUpOneLevel>აირჩიეთ ერთი დონით ზევით გადასასვლელად</SelectToNavigateUpOneLevel>
+    <SetAsDefaultLocation>ნაგულისხმევი მისამართის შენახვა</SetAsDefaultLocation>
+    <ThisPC>ეს კომპიუტერი</ThisPC>
     <UnpinFromList>სიიდან ამოგდება</UnpinFromList>
   </RecentFiles>
   <Report>
@@ -4884,6 +4913,7 @@
     <SavingReport>რეპორტის შენახვა</SavingReport>
     <SecondPass>მეორე გავლა</SecondPass>
     <Shapes>საბაზო ფორმები</Shapes>
+    <ShowOnParametersPanel>პარამტრების პანელზე ჩვენება</ShowOnParametersPanel>
     <Standard>სტანდარტული</Standard>
     <StandardConfiguration>ობიექტის მთავარი თვისებები, გარდა იშვიათად გამოყენებულებისა.</StandardConfiguration>
     <StiEmptyBrush>ცარიელი</StiEmptyBrush>

@@ -36,5 +36,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="password"></param>
         /// Created by: PTTAM (02/04/2023)
         public Task<User> Authenticate(string username, string password);
+        public Task<bool> ChangePass(User user);
+
     }
 }

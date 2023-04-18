@@ -5,6 +5,8 @@ using RoomBooking.BLL.Services;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
+using System.Text;
+using System.Text.Json;
 using static Dapper.SqlMapper;
 
 namespace RoomBooking.API.Controllers
@@ -14,10 +16,13 @@ namespace RoomBooking.API.Controllers
     public class BookingRoomsController : ControllerBase
     {
         private readonly IBookingRoomService _scheduleService;
-        public BookingRoomsController(IBookingRoomService scheduleService)
+        private readonly IEmailService _emailService;
+        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService)
         {
             _scheduleService = scheduleService;
-            
+            _emailService = emailService;
+
+
         }
         [HttpPost("excel")]
         public async Task<IActionResult> ReadScheduleFile(IFormFile file)
@@ -107,8 +112,15 @@ namespace RoomBooking.API.Controllers
         [HttpPut("updateBookingRequest")]
         public async Task<IActionResult> UpdateBookingRequest(Guid BookingID,BookingRoom bookingRoom)
         {
-            var res = await _scheduleService.UpdateBookingRequest(BookingID,bookingRoom);
-            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            try
+            {
+                var res = await _scheduleService.UpdateBookingRequest(BookingID, bookingRoom);
+                return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
@@ -134,6 +146,42 @@ namespace RoomBooking.API.Controllers
             var res = await _scheduleService.GetEntityPaging(param);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
+        /// <summary>
+        /// Xem báo cáo theo mã BookingID
+        /// </summary>
+        /// <param name="entities"></param>
+        [HttpGet("PrintReport")]
+        public async Task<IActionResult> PrintReport(Guid id)
+        {
+            var res = await _scheduleService.PrintReport(id);
+            // kiểm tra nếu đã có dữ liệu thì gọi API in báo cáo
+            if(res != null)
+            {
+                // Khởi tạo một đối tượng HttpClient
+                HttpClient client = new HttpClient();
+                var json = JsonSerializer.Serialize(res);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Gửi yêu cầu Post đến API
+               HttpResponseMessage response = await client.PostAsync("https://localhost:44338/Home/ShowReport", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    return new FileStreamResult(stream, "application/pdf");
+                }
+                    else
+                    {
+                        return BadRequest();
+                    }
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
+        }
+
 
     }
 

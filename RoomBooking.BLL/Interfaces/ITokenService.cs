@@ -29,5 +29,12 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="token"></param>
         /// PTTAM 02.04.2023
         public Task InvalidateToken(string token);
+
+        /// <summary>
+        /// Xóa token
+        /// </summary>
+        /// <param name="token"></param>
+        /// PTTAM 02.04.2023
+
     }
 }

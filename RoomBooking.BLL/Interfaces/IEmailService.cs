@@ -15,6 +15,6 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="emailData"></param>
         /// <param name="emailSettings"></param>
         /// <returns></returns>
-        bool SendEmail(EmailData emailData,EmailSettings emailSettings);
+        bool SendEmail(EmailData emailData);
     }
 }

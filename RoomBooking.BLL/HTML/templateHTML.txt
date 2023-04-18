@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <p class="lable">Chào {{param.FullName}},</p>
+    <p>Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được cập nhật thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:</p>
+    <div>
+        <ul>
+            <li>
+                Tên phòng: {{param.RoomName}}
+            </li>
+            <li>
+                Tòa : {{param.BuildingName}}
+            </li>
+            <li>
+                Ngày đặt phòng: {{param.DateBooking}}
+            </li>
+            <li>
+                Ngày hủy phòng: {{param.DateMiss}}
+            </li>
+            <li>
+                Sức chứa: {{param.Capacity}}
+            </li>
+            <li>
+                Trạng thái: {{param.StatusBooking}}
+            </li>
+        </ul>
+    </div>
+    <p>
+        Chúng tôi rất tiếc vì không thể đáp ứng được nhu cầu của bạn lần này. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ.
+    </p>
+    <p>Chân thành cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.</p>
+    <p>Trân trọng.</p>
+</body>
+</html>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .lable {
+        font-size: 18px;
+        font-weight: 600;
+    }
+</style>
