@@ -86,36 +86,48 @@ namespace RoomBooking.Common.Entities
         /// </summary>
         [ForGetting]
         [ForBinding]
-        public string RefusalReason { get; set; } = string.Empty;
+        public string? RefusalReason { get; set; } = string.Empty;
+       
+        /// <summary>
+        /// Năm học
+        /// </summary>
         [ForGetting]
         [ForBinding]
-        public int YearPlan { get; set; }
+        public int? YearPlan { get; set; }
+
+        /// <summary>
+        /// Số lượng
+        /// </summary>
         [ForGetting]
         [ForBinding]
-        public int StatusBooking { get; set; } = (int)OptionRequest.Approve;
+        public int? Quantity { get; set; }
+
+        [ForGetting]
+        [ForBinding]
+        public int? StatusBooking { get; set; } = (int)OptionRequest.Approve;
 
         /// <summary>
         /// Tên ca 
         /// </summary>
         [ForGetting]
         [ForBinding]
-        public string TimeSlotName { get; set; } = string.Empty;
-        public string Room { get; set; }
-        public string DayOfWeek { get; set; }
+        public string? TimeSlotName { get; set; } = string.Empty;
+        public string? Room { get; set; }
+        public string? DayOfWeek { get; set; }
         
-        public string Week { get; set; }
+        public string? Week { get; set; }
         [ForGetting]
         [ForBinding]
-        public string TimeSlots { get; set; }
-        public string Building { get; set; }
-        public string Time { get; set; }
-        public string MorningFreePeriod { get; set; }
-        public string AfternoonFreePeriod { get; set; }
-        public string EveningFreePeriod { get; set; }
+        public string? TimeSlots { get; set; }
+        public string? Building { get; set; }
+        public string? Time { get; set; }
+        public string? MorningFreePeriod { get; set; }
+        public string? AfternoonFreePeriod { get; set; }
+        public string? EveningFreePeriod { get; set; }
 
-        public int Day { get; set; }
-        public string SlotTime { get; set; }
-        public int Times { get; set; }
+        public int? Day { get; set; }
+        public string? SlotTime { get; set; }
+        public int? Times { get; set; }
      
 
         [ForGetting]
