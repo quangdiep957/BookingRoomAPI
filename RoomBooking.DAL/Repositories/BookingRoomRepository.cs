@@ -28,49 +28,22 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<Object> GetPaging(PagingParam param, MySqlConnection cnn)
+        public async Task<List<SchedulerBooking>> GetPaging(PagingParam param, MySqlConnection cnn)
         {
            
-            var storeName = "Proc_GetSchedulerRoomPaging"; // Tên của thủ thục
+            var storeName = "Proc_GetSchedulerBooking"; // Tên của thủ thục
             DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@PageSize", param.pageSize); //input: Số bản ghi/trang
-            dynamicParameters.Add("@PageIndex", param.pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@ListDate", param.week); //input: Mảng ngày
-            dynamicParameters.Add("@RoomFilter", param.keyWord); //input: Từ khóa
+            dynamicParameters.Add("@CapacityMin", param.capacityMin); //input: Số bản ghi/trang
+            dynamicParameters.Add("@CapacityMax", param.capacityMax);//input: Trang hiện tại
+            dynamicParameters.Add("@ListEquipment", param.equipmentIDs); //input: Từ khóa
             dynamicParameters.Add("@RoomID", param.roomID); //input: Khóa chính phòng học
             dynamicParameters.Add("@BuildingID", param.buildingID); //input: Khóa chính tòa
-            dynamicParameters.Add("@TimeSlotID", param.timeSlotID); //input: Khóa chính thời gian
-            dynamicParameters.Add("@Type", param.type); //input: Khóa chính vai trò
-            dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
-            dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
+            dynamicParameters.Add("@UserID", param.userID); //input: Khóa chính thời gian
            
             //2. Lấy dữ liệu
-            var employees = await cnn.QueryAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var data = await cnn.QueryAsync<SchedulerBooking>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
-            int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
-            int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
-            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
-
-            if (endRecord > totalRecord) // nếu bản ghi kết thúc > tổng số bản ghi
-            {
-                endRecord = totalRecord; // gán bản ghi kết thúc = tổng số bản ghi
-            }
-
-            // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
-            if (startRecord > endRecord)
-            {
-                startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
-            }
-            return new
-            {
-                TotalPage = totalPage,
-                TotalRecord = totalRecord,
-                CurrentPage = param.pageIndex,
-                StartRecord = startRecord,
-                EndRecord = endRecord,
-                Data = employees
-            };
+            return (List<SchedulerBooking>)data;
 
         }
         /// <summary>
@@ -258,8 +231,8 @@ namespace RoomBooking.DAL.Repositories
 
             int totalRecord = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
             int totalPage = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang
-            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+            int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
             if (endRecord > totalRecord) // nếu bản ghi kết thúc > tổng số bản ghi
             {
@@ -326,9 +299,9 @@ namespace RoomBooking.DAL.Repositories
             if (data != null && data.Count() > 0)
             {
                 totalRecords = data.Count();
-                totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
-                startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-                endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+                totalPages = (int)Math.Ceiling((decimal)(totalRecords / param.pageSize));
+                startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
+                endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
                 if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
                 {

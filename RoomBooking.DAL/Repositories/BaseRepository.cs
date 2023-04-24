@@ -304,12 +304,12 @@ namespace RoomBooking.DAL.Repositories
 
             allNames += " )Values";
             var primaryKey = typeof(Entity).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PrimaryKey)));
-            Guid key = Guid.NewGuid();
-            foreach (var prop in primaryKey)
-            {
-                prop.SetValue(entity, key);
+            //Guid key = Guid.NewGuid();
+            //foreach (var prop in primaryKey)
+            //{
+            //    prop.SetValue(entity, key);
 
-            }
+            //}
             return allNames;
         }
 
@@ -386,15 +386,15 @@ namespace RoomBooking.DAL.Repositories
             if (res != null)
             {
                 totalRecords = res.Count();
-                totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
+                totalPages = (int)Math.Ceiling((decimal)(totalRecords / param.pageSize));
             }
-            int offset = param.pageSize *( param.pageIndex - 1);
+            int offset = (int)(param.pageSize *( param.pageIndex - 1));
             sql += $" LIMIT {offset},{param.pageSize}";
             var data = await _sqlConnection.QueryAsync(sql, param: dynamicParameters);
            
           
-            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+            int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
             if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
             {

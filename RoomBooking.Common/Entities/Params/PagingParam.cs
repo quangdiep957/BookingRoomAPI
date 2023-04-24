@@ -8,10 +8,9 @@ namespace RoomBooking.Common.Entities.Params
 {
     public class PagingParam
     {
-        public int pageSize;
-        public int pageIndex;
-        public int type;
-        public string week;
+        public int? pageSize;
+        public int? pageIndex;
+        public int? type;
         public string? keyWord;
         public Guid? roomID;
         public Guid? bookingRoomID;
@@ -19,5 +18,7 @@ namespace RoomBooking.Common.Entities.Params
         public Guid? timeSlotID;
         public Guid? userID;
         public string? equipmentIDs;
+        public int? capacityMin;
+        public int? capacityMax;
     }
 }

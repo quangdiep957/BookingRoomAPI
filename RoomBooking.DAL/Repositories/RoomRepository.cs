@@ -220,10 +220,10 @@ namespace RoomBooking.DAL.Repositories
             if (data != null)
             {
                 totalRecords = data.Count();
-                totalPages = (int)Math.Ceiling((double)totalRecords / param.pageSize);
+                totalPages = (int)Math.Ceiling((decimal)(totalRecords / param.pageSize));
             }
-            int startRecord = param.pageSize * (param.pageIndex - 1) + 1; // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = param.pageSize * (param.pageIndex - 1) + param.pageSize; // Bản ghi kết thúc của trang hiện tại
+            int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
+            int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
             if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
             {
