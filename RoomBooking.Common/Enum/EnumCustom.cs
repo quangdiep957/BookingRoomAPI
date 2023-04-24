@@ -60,7 +60,14 @@ namespace RoomBooking.Common.Enum
         //Hủy
         Cancel=4
     }
-
+    public enum OptionPagingScheduler
+    {
+        // Một phòng
+        OneRoom = 1,
+        // Nhiều phòng
+        AnyRoom = 2,
+      
+    }
     public enum StatusRoom
     {
         // Phòng trống

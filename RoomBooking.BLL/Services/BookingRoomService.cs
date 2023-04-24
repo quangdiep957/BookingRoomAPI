@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
@@ -13,11 +15,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Formats.Asn1;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using XAct;
+using XAct.Domain.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RoomBooking.BLL.Services
@@ -25,14 +29,12 @@ namespace RoomBooking.BLL.Services
     public class BookingRoomService : BaseService<BookingRoom>, IBookingRoomService
     {
         IBookingRoomRepository _repository;
-        IBookingHistoryRepository _historyRepository;
         const int cancel = 4;
         ITimeBookingRepository _repoTimeBooking;
-        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IBookingHistoryRepository historyRepository) : base(repository)
+        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking) : base(repository)
         {
             _repository = repository;
             _repoTimeBooking = repoTimeBooking;
-            _historyRepository = historyRepository;
         }
 
 
@@ -151,7 +153,6 @@ namespace RoomBooking.BLL.Services
             bool checkRoom = true;
             List<Room> dataRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
             List<TimeSlot> slotTime = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
-            List<TimeBooking> timeBookings= (List<TimeBooking>)await cnn.QueryAsync<TimeBooking>("SELECT * FROM TimeBooking;", transaction: tran);
             List<BookingRoom> listRoomNotIn = new();
 
             foreach (BookingRoom room in lst)
@@ -514,7 +515,7 @@ namespace RoomBooking.BLL.Services
                         Room = item.Room,
                         DayOfWeek = item.DayOfWeek,
                         Times = ca++,
-                        TimeSlotName = $"Ca {ca}",
+                        TimeSlotName = $"Ca {ca++}",
                         Week = item.Week,
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
@@ -535,32 +536,64 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public async Task<object> GetPaging(PagingParam param)
         {
-            object result = null;
-            int[] weekDays = { 2, 3, 4, 5, 6, 7, 8 };
-            var datetimes = new List<DateTime>();
+            object result=null;
+            int option = 0;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-              //  var lstWeek = await cnn.QueryAsync<Week>("SELECT * FROM Week;");
-             //   var weekCurent = lstWeek.FirstOrDefault(x => x.WeekCode == param.week);
-                foreach (var weekday in weekDays)
-                {
-                    // Tính ngày bắt đầu và kết thúc của tuần
-                    //var weekStart = DateTime.ParseExact(scheduleItems[0].Time.Split('-')[0], "dd/MM/yyyy", null);
-                //    var weekStart = DateTime.ParseExact(weekCurent.StartDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
-               //     var weekEnd = DateTime.ParseExact(weekCurent.EndDate.ToString(), "M/d/yyyy h:mm:ss tt", null);
+             
+                    try
+                    {
+                    List<SchedulerBooking> bookings = await _repository.GetPaging(param, cnn);
+                    var lstRoom=bookings.Select(x => x.RoomID).Distinct().ToList();
+                    List<SchedulerBooking> bookingRooms= new();
+                    if (lstRoom!=null && lstRoom.Any())
+                    {
+                        foreach(var booking in bookings) {
+                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            // For từng dòng 
+                            foreach (var item in timeIDs)
+                            {
+                                var time= await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
+                                var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
+                                var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+                                DateTime startDateConvert = DateTime.ParseExact(startDate.ToString(), "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+                                DateTime utcStartDate = startDateConvert.ToUniversalTime();
+                                DateTime endDateConvert = DateTime.ParseExact(endDate.ToString(), "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+                                DateTime utcEndDate = endDateConvert.ToUniversalTime();
 
-                    // Tìm ngày trong tuần tương ứng với ngày thứ weekday
-                //    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
-                //    var date = weekStart.AddDays(diff);
-                //    datetimes.Add(date);
-                }
-                var dateConvert = datetimes.Select(d => d.ToString("yyyy/dd/MM")).ToList();
-                string jsonDate = JsonConvert.SerializeObject(dateConvert);
-                param.week = jsonDate;
-                var res = await _repository.GetPaging(param, cnn);
-                result = res;
+                                bookingRooms.Add(new SchedulerBooking
+                                {
+                                    BookingRoomID = booking.BookingRoomID,
+                                    AvartarColor = booking.AvartarColor,
+                                    RoomID = booking.RoomID,
+                                    RoomName = booking.RoomName,
+                                    FullName = booking.FullName,
+                                    Quantity = booking.Quantity,
+                                    RoomStatus = booking.RoomStatus,
+                                    EndDate = endDate,
+                                    StartDate = startDate,
+                                    Subject = booking.Subject,
+                                    Description = booking.Description,
+                                    TimeSlotName=  "Ca "+ itemTime.TimeSlotName
+                                });
+
+                            }
+                        }
+                        result = new
+                        {
+                            option = (int)OptionPagingScheduler.OneRoom,
+                            data = bookingRooms
+                        };
+                     }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
+
             }
-
             return result;
         }
 
