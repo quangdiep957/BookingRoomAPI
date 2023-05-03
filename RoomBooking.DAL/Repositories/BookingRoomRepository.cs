@@ -28,7 +28,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
         /// Created by: PTTAM (07/03/2023)
-        public async Task<List<SchedulerBooking>> GetPaging(PagingParam param, MySqlConnection cnn)
+        public async Task<ParamSchedulerBooking> GetPaging(PagingParam param, MySqlConnection cnn)
         {
            
             var storeName = "Proc_GetSchedulerBooking"; // Tên của thủ thục
@@ -41,9 +41,13 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@UserID", param.userID); //input: Khóa chính thời gian
            
             //2. Lấy dữ liệu
-            var data = await cnn.QueryAsync<SchedulerBooking>(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            var data = await cnn.QueryMultipleAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
 
-            return (List<SchedulerBooking>)data;
+            ParamSchedulerBooking result = new();
+
+            result.bookings= (List<SchedulerBooking>)await data.ReadAsync<SchedulerBooking>(); 
+            result.rooms= (List<Room>)await data.ReadAsync<Room>();
+            return result;
 
         }
         /// <summary>

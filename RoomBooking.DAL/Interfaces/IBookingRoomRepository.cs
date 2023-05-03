@@ -11,7 +11,7 @@ namespace RoomBooking.DAL.Interfaces
 {
     public interface IBookingRoomRepository : IBaseRepository<BookingRoom>
     {
-        public Task<List<SchedulerBooking>> GetPaging(PagingParam param, MySqlConnection cnn);
+        public Task<ParamSchedulerBooking> GetPaging(PagingParam param, MySqlConnection cnn);
         public Task<Object> GetPagingRequest(PagingParam param, MySqlConnection cnn);
 
         public Task<bool> InsertMultiTimeBooking(List<TimeBooking> listRoom, MySqlTransaction transaction, MySqlConnection cnn);

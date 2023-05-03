@@ -16,6 +16,7 @@ namespace RoomBooking.Common.Entities.Params
         public Guid? bookingRoomID;
         public Guid? buildingID;
         public Guid? timeSlotID;
+        public Guid? roleID;
         public Guid? userID;
         public string? equipmentIDs;
         public int? capacityMin;
