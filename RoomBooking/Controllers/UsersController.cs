@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
+using RoomBooking.Common.Entities.Params;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -32,11 +33,11 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
         /// Created by: PTTAM (08/03/2023)
-        [HttpGet("filter")]
-        public async Task<IActionResult> FilterUser(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
+        [HttpPost("pagingUser")]
+        public async Task<IActionResult> FilterUser([FromBody]PagingParam param)
         {
 
-            var res =await _service.GetPaging(pageSize, pageIndex, keyWord, roleId);
+            var res =await _service.GetPaging((int)param.pageSize, (int)param.pageIndex, param.keyWord,param.roleID);
 
             return StatusCode(200, res);
 

@@ -122,7 +122,14 @@ namespace RoomBooking.Common.Entities
 
         public string AvartarColor { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Màu avartar người dùng
+        /// </summary>
+        ///  Created by: PTTAM (07/03/2023)
+        [ForGetting]
+        [ForBinding]
 
+        public string PhoneNumber { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -134,7 +141,12 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Loại vai trò
         /// </summary>
-        public int RoleOption { get; set; }
+        public int? RoleOption { get; set; }
+
+        /// <summary>
+        /// Loại vai trò
+        /// </summary>
+        public string? RoleName { get; set; }
 
     }
 }

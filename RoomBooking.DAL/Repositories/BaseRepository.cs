@@ -371,7 +371,7 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
                
             var fields = GetAllRequestValues<Entity>();
-            var sql = $"SELECT {fields} from {_className} WHERE {_className}.{_className}Name LIKE @FilterName";
+            var sql = $"SELECT {fields} from {_className} WHERE {_className}.{_className}Name LIKE @FilterName Order by {_className}.{_className}Name";
 
             dynamicParameters.Add("@TableName", _className);
                 dynamicParameters.Add("@Properties", fields);

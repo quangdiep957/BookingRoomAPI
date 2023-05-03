@@ -543,24 +543,23 @@ namespace RoomBooking.BLL.Services
              
                     try
                     {
-                    List<SchedulerBooking> bookings = await _repository.GetPaging(param, cnn);
-                    var lstRoom=bookings.Select(x => x.RoomID).Distinct().ToList();
+                   
+                    ParamSchedulerBooking scheduler = await _repository.GetPaging(param, cnn);
                     List<SchedulerBooking> bookingRooms= new();
-                    if (lstRoom!=null && lstRoom.Any())
+                    if (scheduler.rooms!= null && scheduler.rooms.Any())
                     {
-                        foreach(var booking in bookings) {
+                      
+                        foreach (var booking in scheduler.bookings)
+                        {
                             string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                             // For từng dòng 
                             foreach (var item in timeIDs)
                             {
-                                var time= await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
+                                var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
                                 var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
                                 var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
                                 var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
-                                DateTime startDateConvert = DateTime.ParseExact(startDate.ToString(), "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
-                                DateTime utcStartDate = startDateConvert.ToUniversalTime();
-                                DateTime endDateConvert = DateTime.ParseExact(endDate.ToString(), "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
-                                DateTime utcEndDate = endDateConvert.ToUniversalTime();
+
 
                                 bookingRooms.Add(new SchedulerBooking
                                 {
@@ -575,16 +574,32 @@ namespace RoomBooking.BLL.Services
                                     StartDate = startDate,
                                     Subject = booking.Subject,
                                     Description = booking.Description,
-                                    TimeSlotName=  "Ca "+ itemTime.TimeSlotName
+                                    TimeSlotName = "Ca " + itemTime.TimeSlotName
                                 });
 
                             }
                         }
-                        result = new
+                        int count = scheduler.rooms.Count();
+                        if (count == 1) {
+
+                            result = new
+                            {
+                                option = (int)OptionPagingScheduler.OneRoom,
+                                dataBooking = bookingRooms,
+                                dataRoom = scheduler.rooms
+                            };
+                        }
+                        else
                         {
-                            option = (int)OptionPagingScheduler.OneRoom,
-                            data = bookingRooms
-                        };
+                            
+                            result = new
+                            {
+                                option = (int)OptionPagingScheduler.AnyRoom,
+                                dataBooking = bookingRooms,
+                                dataRoom = scheduler.rooms
+                            };
+                        }
+                       
                      }
                     }
                     catch (Exception ex)
