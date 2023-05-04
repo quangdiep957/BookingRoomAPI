@@ -13,11 +13,12 @@ namespace RoomBooking.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class BookingRoomsController : ControllerBase
+    public class BookingRoomsController : BasesController<BookingRoom>
     {
         private readonly IBookingRoomService _scheduleService;
         private readonly IEmailService _emailService;
-        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService)
+      
+        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService) : base(scheduleService)
         {
             _scheduleService = scheduleService;
             _emailService = emailService;
