@@ -25,5 +25,6 @@ namespace RoomBooking.Common.Entities
         public string TimeSlotName { get; set; }
         public string endDate { get; set; }
         public string startDate { get; set; }
+        public int StatusBooking { get;set; }
     }
 }

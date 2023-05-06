@@ -278,7 +278,11 @@ namespace RoomBooking.BLL.Services
                     {
                         var userbookings = await cnn.QueryAsync<BookingRoom>("SELECT * From BookingRoom;",transaction:tran);
                         var booking=userbookings.FirstOrDefault(x=> x.UserID==entityId);
-                        if (booking == null)
+                        if (booking != null)
+                        {
+                            isSucess = false;
+                        }
+                        else
                         {
                             var res = await _repository.Delete(entityId, cnn, tran);
                             tran.Commit();
@@ -288,7 +292,6 @@ namespace RoomBooking.BLL.Services
                     }
                     catch (Exception)
                     {
-                        isSucess = false;
                         tran.Rollback();
 
 
