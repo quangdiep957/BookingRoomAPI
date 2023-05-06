@@ -71,19 +71,19 @@ namespace RoomBooking.DAL.Repositories
             };
         }
 
-    
 
-            /// <summary>
-            /// Thực hiện lấy mã người dùng mới
-            /// </summary>
-            /// <returns>Mã người dùng mới</returns>
-            ///  CretedBy: PTTAM (07/03/2023)
-            public async Task<string> GetNewUserCode()
+
+        /// <summary>
+        /// Thực hiện lấy mã người dùng mới
+        /// </summary>
+        /// <returns>Mã người dùng mới</returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public async Task<string> GetNewUserCode()
         {
             var storeName = "Proc_GetNewCode";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@UserNewCode", DbType.String, direction: ParameterDirection.Output);
-           await _sqlConnection.ExecuteAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            await _sqlConnection.ExecuteAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
             string employeeNewCode = dynamicParameters.Get<String>("@UserNewCode");
             return employeeNewCode;
         }
@@ -92,10 +92,10 @@ namespace RoomBooking.DAL.Repositories
         {
             var query = "UPDATE user u SET u.Password = @PassWordNew WHERE u.UserID = @UserID AND u.Password = @PassWord";
             DynamicParameters dynamicParameters = new DynamicParameters();
-            dynamicParameters.Add("@UserID",user.UserID);
+            dynamicParameters.Add("@UserID", user.UserID);
             dynamicParameters.Add("@Password", user.Password);
             dynamicParameters.Add("@PasswordNew", user.PasswordNew);
-            var a =  await _sqlConnection.ExecuteAsync(query,dynamicParameters);
+            var a = await _sqlConnection.ExecuteAsync(query, dynamicParameters);
             if (a > 0) { return true; }
             else
             {
@@ -103,10 +103,40 @@ namespace RoomBooking.DAL.Repositories
             }
 
         }
+        /// <summary>
+        /// Overide hàm cập nhật người dùng
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="entityId"></param>
+        /// <param name="cnn"></param>
+        /// <param name="transaction"></param>
+        /// PTTAM 04.05.2023
+        public override async Task<bool> Update(User entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        {
+            var isSuccess = true;
+            var sql = "Update User SET UserCode = @UserCode," +
+                "FullName = @FullName," +
+                "Address = @Address," +
+                "Email = @Email,DepartmentID = @DepartmentID,RoleID = @RoleID,PhoneNumber = @PhoneNumber WHERE UserID = @UserID;";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add($"@UserCode", entity.UserCode);
+            dynamicParameters.Add($"@FullName", entity.FullName);
+            dynamicParameters.Add($"@Address", entity.Address);
+            dynamicParameters.Add($"@Email", entity.Email);
+            dynamicParameters.Add($"@DepartmentID", entity.DepartmentID);
+            dynamicParameters.Add($"@PhoneNumber", entity.PhoneNumber);
+            dynamicParameters.Add($"@RoleID", entity.RoleID);
+            dynamicParameters.Add($"@UserID", entityId);
+            var  res= await cnn.ExecuteAsync(sql, dynamicParameters,transaction, commandType: System.Data.CommandType.Text);
+            if (res==0)
+            {
+                isSuccess = false;
+            }
+            return isSuccess;
+        }
+
+        
 
 
-       
-
-       
     }
 }

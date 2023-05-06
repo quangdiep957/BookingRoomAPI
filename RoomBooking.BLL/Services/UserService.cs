@@ -260,5 +260,52 @@ namespace RoomBooking.BLL.Services
             user.PasswordNew = HashPassword(user.PasswordNew);
             return await _repository.ChangePass(user);
         }
+
+        /// <summary>
+        /// Overide lại hàm xóa đối tượng
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        public override async Task<bool> DeleteService(Guid entityId)
+        {
+            bool isSucess = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        var userbookings = await cnn.QueryAsync<BookingRoom>("SELECT * From BookingRoom;",transaction:tran);
+                        var booking=userbookings.FirstOrDefault(x=> x.UserID==entityId);
+                        if (booking != null)
+                        {
+                            isSucess = false;
+                        }
+                        else
+                        {
+                            var res = await _repository.Delete(entityId, cnn, tran);
+                            tran.Commit();
+                        }
+                       
+                       
+                    }
+                    catch (Exception)
+                    {
+                        tran.Rollback();
+
+
+                    }
+                    finally
+                    {
+                        cnn.Close();
+                    }
+                }
+            }
+
+
+
+            return isSucess;
+        }
     }
 }

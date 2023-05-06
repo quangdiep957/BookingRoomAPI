@@ -571,7 +571,8 @@ namespace RoomBooking.BLL.Services
                                     StartDate = startDate,
                                     Subject = booking.Subject,
                                     Description = booking.Description,
-                                    TimeSlotName = "Ca " + itemTime.TimeSlotName
+                                    TimeSlotName = "Ca " + itemTime.TimeSlotName,
+                                    StatusBooking = booking.StatusBooking,
                                 });
 
                             }
