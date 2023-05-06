@@ -1,7 +1,13 @@
-﻿using MailKit.Net.Smtp;
+﻿using Firebase.Database;
+using Firebase.Database.Query;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MimeKit;
 using MySqlConnector;
+using Org.BouncyCastle.Asn1.Ocsp;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
@@ -11,11 +17,7 @@ using RoomBooking.Common.Resources;
 using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace RoomBooking.BLL.Services
 {
@@ -465,6 +467,22 @@ namespace RoomBooking.BLL.Services
         }
 
         #endregion
+
+        public async Task SendNotify(string ID,string notify, DateTime time)
+        {
+            var firebaseClient = new FirebaseClient("https://room-90f68-default-rtdb.firebaseio.com/");
+
+            // Define the data to be added
+            var data = new Dictionary<string, object>
+            {
+                { "notify", notify },
+                { "time", time }
+            };
+
+
+            // Add the data to the "collection-name" collection
+            await firebaseClient.Child("notifications").Child(ID).Child(Guid.NewGuid().ToString()).PutAsync(data);
+        }
 
     }
 }

@@ -17,7 +17,7 @@ namespace RoomBooking.API.Controllers
     {
         private readonly IBookingRoomService _scheduleService;
         private readonly IEmailService _emailService;
-        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService)
+        public BookingRoomsController(IBookingRoomService scheduleService, IEmailService emailService)
         {
             _scheduleService = scheduleService;
             _emailService = emailService;
@@ -98,9 +98,14 @@ namespace RoomBooking.API.Controllers
         /// <param name="bookingRoom"></param>
         /// <returns></returns>
         [HttpPost("insertBookingRequest")]
-        public async Task<IActionResult> InsertBookingRequest( BookingRoom param )
+        public async Task<IActionResult> InsertBookingRequest(BookingRoom param)
         {
-            var res = await _scheduleService.InsertBookingRequest(param,param.UserID);
+            var res = await _scheduleService.InsertBookingRequest(param, param.UserID);
+            if(res != null)
+            {
+                var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                await _scheduleService.SendNotify(token, "demo", DateTime.Now);
+            }    
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
 
@@ -110,7 +115,7 @@ namespace RoomBooking.API.Controllers
         /// <param name="bookingRoom"></param>
         /// <returns></returns>
         [HttpPut("updateBookingRequest")]
-        public async Task<IActionResult> UpdateBookingRequest(Guid BookingID,BookingRoom bookingRoom)
+        public async Task<IActionResult> UpdateBookingRequest(Guid BookingID, BookingRoom bookingRoom)
         {
             try
             {
