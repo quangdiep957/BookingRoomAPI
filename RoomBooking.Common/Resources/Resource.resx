@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Browse" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="BrowseColor" xml:space="preserve">
+    <value>#4CAF50</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy bỏ</value>
+  </data>
+  <data name="CancelColor" xml:space="preserve">
+    <value>#E0E0E0</value>
+  </data>
   <data name="DuplicateCode" xml:space="preserve">
     <value>Mã đã tồn tại trong hệ thống.</value>
   </data>
@@ -162,7 +174,19 @@
   <data name="IsNotEmpty" xml:space="preserve">
     <value>{0} không được phép để trống.</value>
   </data>
+  <data name="Miss" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="MissColor" xml:space="preserve">
+    <value>#F44336</value>
+  </data>
   <data name="NotEmprtyEmail" xml:space="preserve">
     <value>{0} không được phép để trống.</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="PendingColor" xml:space="preserve">
+    <value>#FFA07A</value>
   </data>
 </root>

@@ -631,7 +631,7 @@ namespace RoomBooking.BLL.Services
                         //1. Lấy ra yêu cầu của người dùng gửi lên
                         var booking = requests.FirstOrDefault(x => x.BookingRoomID == param.bookingRoomID);
                         //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
-                        booking.StatusBooking = param.option;
+                        booking.StatusBooking = (StatusBookingRoom?)param.option;
                         booking.RefusalReason=param.refusalReason;
                         //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
@@ -703,10 +703,10 @@ namespace RoomBooking.BLL.Services
                         var role = listRole.FirstOrDefault(x => x.RoleID == user.RoleID);
                         if (role.RoleValue ==(int) RoleOption.Admin)
                         {
-                            booking.StatusBooking =(int) OptionRequest.Approve;
+                            booking.StatusBooking = StatusBookingRoom.Browse;
                         }
                         else { 
-                        booking.StatusBooking = (int)OptionRequest.Await;
+                        booking.StatusBooking = StatusBookingRoom.Pending;
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
                        
@@ -807,7 +807,7 @@ namespace RoomBooking.BLL.Services
                             else
                             {
                                 // cập nhập lại status 
-                                booking.StatusBooking = 1;
+                                booking.StatusBooking = StatusBookingRoom.Pending;
                                 // Thông báo email cho khách hàng
                                 resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
                             }
@@ -918,7 +918,7 @@ namespace RoomBooking.BLL.Services
                         {
                             // cập nhật trạng thái về hủy (4)
                             
-                            bookingTime.StatusBooking = cancel;
+                            bookingTime.StatusBooking = StatusBookingRoom.Cancel;
                             bool resUpdate = await _repository.Update(bookingTime, BookingRoomID, cnn, tran);
                             // Cập nhật vào bảng history
                             // 

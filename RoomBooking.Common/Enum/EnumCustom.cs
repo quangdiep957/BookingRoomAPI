@@ -84,7 +84,9 @@ namespace RoomBooking.Common.Enum
         // dã duyệt
         Browse = 2,
         // từ chối
-        Miss = 3
+        Miss = 3,
+        // hủy bỏ
+        Cancel=4
     }
     /// <summary>
     /// Enum giá trị vai trò người dùng
