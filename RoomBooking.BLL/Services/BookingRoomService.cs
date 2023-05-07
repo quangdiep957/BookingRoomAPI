@@ -226,9 +226,9 @@ namespace RoomBooking.BLL.Services
                 foreach (var item in timeIDs)
                 {
                     var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
-                    timeIDs.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+                    x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
                     var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
-                   timeIDs.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+                    x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
                     if (room.StartDate == room.EndDate) {
                         if (itemRoomStartDate != null)
@@ -719,7 +719,7 @@ namespace RoomBooking.BLL.Services
                         //2.1. Nếu phòng chưa được sử dụng
                         if (checkRoom)
                         {
-                            
+                            booking.BookingRoomID = Guid.NewGuid();
                             // Thực hiện insert
                             var resBooking = await _repository.Insert(booking, cnn,tran);
                             // thực hiện insert ca học
@@ -743,7 +743,7 @@ namespace RoomBooking.BLL.Services
                             {
                                 result = new
                                 {
-                                    IsSusses=res,
+                                    IsSucess= res,
                                     Data= errors
                                 };
                                 tran.Commit();
@@ -754,7 +754,7 @@ namespace RoomBooking.BLL.Services
                         {
                             result = new
                             {
-                                IsSusses = false,
+                                IsSucess = false,
                                 Data = errors
                             };
 
