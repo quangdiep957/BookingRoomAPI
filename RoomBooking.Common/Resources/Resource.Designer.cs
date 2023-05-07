@@ -61,6 +61,42 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Đã duyệt.
+        /// </summary>
+        public static string Browse {
+            get {
+                return ResourceManager.GetString("Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #4CAF50.
+        /// </summary>
+        public static string BrowseColor {
+            get {
+                return ResourceManager.GetString("BrowseColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hủy bỏ.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #E0E0E0.
+        /// </summary>
+        public static string CancelColor {
+            get {
+                return ResourceManager.GetString("CancelColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mã đã tồn tại trong hệ thống..
         /// </summary>
         public static string DuplicateCode {
@@ -196,11 +232,47 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Từ chối.
+        /// </summary>
+        public static string Miss {
+            get {
+                return ResourceManager.GetString("Miss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #F44336.
+        /// </summary>
+        public static string MissColor {
+            get {
+                return ResourceManager.GetString("MissColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} không được phép để trống..
         /// </summary>
         public static string NotEmprtyEmail {
             get {
                 return ResourceManager.GetString("NotEmprtyEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chờ duyệt.
+        /// </summary>
+        public static string Pending {
+            get {
+                return ResourceManager.GetString("Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #FFA07A.
+        /// </summary>
+        public static string PendingColor {
+            get {
+                return ResourceManager.GetString("PendingColor", resourceCulture);
             }
         }
     }

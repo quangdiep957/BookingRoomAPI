@@ -110,7 +110,7 @@ namespace RoomBooking.API.Controllers
         /// </summary>
         /// <param name="bookingRoom"></param>
         /// <returns></returns>
-        [HttpPut("updateBookingRequest")]
+        [HttpPut("updateBookingRequest/{BookingID}")]
         public async Task<IActionResult> UpdateBookingRequest(Guid BookingID,BookingRoom bookingRoom)
         {
             try
