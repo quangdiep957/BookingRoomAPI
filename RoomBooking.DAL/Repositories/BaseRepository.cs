@@ -126,7 +126,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> Update(Entity entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        public virtual async Task<bool> Update(Entity entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSuccess = true;
 

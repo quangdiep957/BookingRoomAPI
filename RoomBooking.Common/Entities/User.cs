@@ -56,7 +56,6 @@ namespace RoomBooking.Common.Entities
         [PropertyNameDisplay(propName: "Địa chỉ")]
         [ForGetting]
         [ForBinding]
-        [NotEmpty]
 
         public string Address { get; set; } = string.Empty;
 

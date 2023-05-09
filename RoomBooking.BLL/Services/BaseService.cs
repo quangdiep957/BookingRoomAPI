@@ -254,7 +254,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
         ///  Created by: PTTAM (07/03/2023)
-        public async Task<bool> DeleteService(Guid entityId)
+        public virtual async Task<bool> DeleteService(Guid entityId)
         {
             bool isSucess = true;
             using (MySqlConnection cnn = _repository.GetOpenConnection())

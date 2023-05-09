@@ -351,5 +351,25 @@ namespace RoomBooking.DAL.Repositories
             return bookingRoom;
 
         }
+        /// <summary>
+        /// Thực hiện lấy đối tượng theo khóa chính
+        /// </summary>
+        /// <param name="entityId">Khóa chính của đối tượng</param>
+        /// <returns>Đối tượng cần lấy </returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public override async Task<BookingRoom> GetById(Guid entityId)
+        {
+            BookingRoom booking = new();
+            if (_sqlConnection.State != ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
+            var res = await _sqlConnection.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
+            booking = res.FirstOrDefault(x => x.BookingRoomID == entityId);
+
+            
+
+            return booking;
+        }
     }
 }

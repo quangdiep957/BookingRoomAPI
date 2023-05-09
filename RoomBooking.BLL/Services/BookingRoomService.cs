@@ -365,10 +365,6 @@ namespace RoomBooking.BLL.Services
                 {
                     int day = int.Parse(date.DayOfWeek.ToString("d")) + 1;
                     string dayOfWeek = day.ToString();
-                    if (day == 8)
-                    {
-                        dayOfWeek = "CN";
-                    }
 
                     var newSchedule = new BookingRoom
                     {
@@ -505,7 +501,7 @@ namespace RoomBooking.BLL.Services
             else
             {
                 int ca = (int)item.Times;
-                int j = ca - 1;
+                int j = ca ;
                 for (int i = ca - 1; i <= item.Times; i++)
                 {
                     if (i == 5) { break; }
@@ -514,12 +510,13 @@ namespace RoomBooking.BLL.Services
                         Building = item.Building,
                         Room = item.Room,
                         DayOfWeek = item.DayOfWeek,
-                        Times = ca++,
-                        TimeSlotName = $"Ca {ca++}",
+                        Times = j,
+                        TimeSlotName = $"Ca {j}",
                         Week = item.Week,
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                     });
+                    j++;
                 }
 
             }
@@ -574,7 +571,8 @@ namespace RoomBooking.BLL.Services
                                     StartDate = startDate,
                                     Subject = booking.Subject,
                                     Description = booking.Description,
-                                    TimeSlotName = "Ca " + itemTime.TimeSlotName
+                                    TimeSlotName = "Ca " + itemTime.TimeSlotName,
+                                    StatusBooking = booking.StatusBooking,
                                 });
 
                             }
@@ -977,5 +975,7 @@ namespace RoomBooking.BLL.Services
             }
             return res;
         }
+
+     
     }
 }

@@ -99,5 +99,13 @@ namespace RoomBooking.Common.Entities
         /// Danh sách thiết bị
         /// </summary>
         public List<RoomEquipment> RoomEquipment { get; set; }
+
+
+        [ForBinding]
+        public string ListEquipmentID { get; set; }
+
+        [ForBinding]
+        [ForGetting]
+        public string ListEquipmentName { get; set; }
     }
 }
