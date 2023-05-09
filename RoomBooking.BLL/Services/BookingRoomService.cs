@@ -3,6 +3,7 @@ using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using MySqlConnector;
 using Newtonsoft.Json;
 using RoomBooking.BLL.Interfaces;
@@ -31,10 +32,12 @@ namespace RoomBooking.BLL.Services
         IBookingRoomRepository _repository;
         const int cancel = 4;
         ITimeBookingRepository _repoTimeBooking;
-        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking) : base(repository)
+        private readonly IMemoryCache _cache;
+        public BookingRoomService(IBookingRoomRepository repository, ITimeBookingRepository repoTimeBooking, IMemoryCache cache) : base(repository)
         {
             _repository = repository;
             _repoTimeBooking = repoTimeBooking;
+            _cache = cache;
         }
 
 
@@ -226,8 +229,10 @@ namespace RoomBooking.BLL.Services
                 foreach (var item in timeIDs)
                 {
                     var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                    x.BookingRoomID != room.BookingRoomID&&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
                     var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                    x.BookingRoomID != room.BookingRoomID&&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
                     if (room.StartDate == room.EndDate) {
@@ -782,7 +787,7 @@ namespace RoomBooking.BLL.Services
                     {
                         // Tách chuỗi TimeSlotID
                         string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        List<BookingRoom> bookings = new List<BookingRoom>();
+                         List<BookingRoom> bookings = new List<BookingRoom>();
                         List<TimeSlot> listTime = new();
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
                         foreach (var item in timeIDs)
@@ -838,10 +843,11 @@ namespace RoomBooking.BLL.Services
                                     var emailFrom = new EmailData();
                                     var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
                                     // lấy dữ liệu đổ vào email
-                                    emailFrom.EmailToId = "quangdiep967@gmail.com";
+                                    // lấy email theo user dữ liệu đặt phòng
+                                    emailFrom.EmailToId = emailParam.Email;
                                     emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                    emailFrom.EmailSubject = "BQDIEP";
-                                    emailFrom.EmailToName = "BQDIEp";
+                                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                                    emailFrom.EmailToName = emailParam.FullName;
                                     SendEmail(emailFrom);
                                     
                                 }
@@ -882,11 +888,13 @@ namespace RoomBooking.BLL.Services
         {
             string html = "";
             // đọc file template
-            html =File.ReadAllText("D:/Do An/RoomBooking/RoomBooking.BLL/HTML/templateHTML.txt");
+            string relativePath = @"HTML\templateHTML.txt";
+            string absolutePath = Path.Combine(@"", relativePath);
+             html = File.ReadAllText(absolutePath);
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
             html = html.Replace("{{param.BuildingName}}", param.BuildingName);
-            html = html.Replace("{{param.DateBooking}}", param.DateBooking);
+            html = html.Replace("{{param.DateBooking}}", param.StartDate.ToString());
             html = html.Replace("{{param.DateMiss}}", param.DateMiss);
             html = html.Replace("{{param.Capacity}}", param.Capacity.ToString());
             html = html.Replace("{{param.StatusBooking}}", param.StatusBooking.ToString());
