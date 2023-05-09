@@ -225,9 +225,11 @@ namespace RoomBooking.BLL.Services
                 // For từng dòng
                 foreach (var item in timeIDs)
                 {
-                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                    &&x.BookingRoomID!=room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
+                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                         && x.BookingRoomID != room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
                     if (room.StartDate == room.EndDate) {
@@ -838,12 +840,12 @@ namespace RoomBooking.BLL.Services
                                     var emailFrom = new EmailData();
                                     var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
                                     // lấy dữ liệu đổ vào email
-                                    emailFrom.EmailToId = "quangdiep967@gmail.com";
+                                    emailFrom.EmailToId = "tampham2kk1@gmail.com";
                                     emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                    emailFrom.EmailSubject = "BQDIEP";
-                                    emailFrom.EmailToName = "BQDIEp";
+                                    emailFrom.EmailSubject = "PTTAM";
+                                    emailFrom.EmailToName = "PTTAM";
                                     SendEmail(emailFrom);
-                                    
+
                                 }
                             }
                             else
@@ -882,7 +884,10 @@ namespace RoomBooking.BLL.Services
         {
             string html = "";
             // đọc file template
-            html =File.ReadAllText("D:/Do An/RoomBooking/RoomBooking.BLL/HTML/templateHTML.txt");
+            string relativePath = @"HTML\templateHTML.txt";
+            string absolutePath = Path.Combine(@"", relativePath);
+            html = File.ReadAllText(absolutePath);
+           // html =File.ReadAllText("D:/Do An/RoomBooking/RoomBooking.BLL/HTML/templateHTML.txt");
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
             html = html.Replace("{{param.BuildingName}}", param.BuildingName);
