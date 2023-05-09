@@ -61,5 +61,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// Created by: PTTAM (07/03/2023)
         public  Task<bool> DeleteService(Guid entityId);
+
+        public Task SendNotify(string ID, string notify, DateTime time, bool? admin);
     }
 }

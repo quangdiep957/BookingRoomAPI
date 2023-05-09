@@ -59,7 +59,7 @@ namespace RoomBooking.BLL.Services
             // Lưu token vào cache
             
             _cache.Set( model.UserCode, newtoken.Value, newtoken.Expiration);
-      
+            _cache.Set("userCache", model);
             return newtoken;
         }
 
