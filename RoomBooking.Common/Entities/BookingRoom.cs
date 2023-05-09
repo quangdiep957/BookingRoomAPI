@@ -142,11 +142,12 @@ namespace RoomBooking.Common.Entities
     public class ParamReport
     {
         public string FullName { get; set; }
+        public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
         public Guid BookingRoomID { get; set; }
 
-        public string DateBooking { get; set; }
+        public DateTime StartDate { get; set; }
 
         public string RoomName { get; set; }
         public string EquipmentName { get; set; }

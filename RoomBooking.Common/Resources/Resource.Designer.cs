@@ -203,5 +203,23 @@ namespace RoomBooking.Common.Resources {
                 return ResourceManager.GetString("NotEmprtyEmail", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Đặt phòng thành công! Vui lòng duyệt.
+        /// </summary>
+        public static string Pending {
+            get {
+                return ResourceManager.GetString("Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Đã duyệt phòng .
+        /// </summary>
+        public static string SendPending {
+            get {
+                return ResourceManager.GetString("SendPending", resourceCulture);
+            }
+        }
     }
 }

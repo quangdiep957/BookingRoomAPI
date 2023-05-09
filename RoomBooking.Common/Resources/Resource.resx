@@ -165,4 +165,10 @@
   <data name="NotEmprtyEmail" xml:space="preserve">
     <value>{0} không được phép để trống.</value>
   </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Đặt phòng thành công! Vui lòng duyệt</value>
+  </data>
+  <data name="SendPending" xml:space="preserve">
+    <value>Đã duyệt phòng </value>
+  </data>
 </root>

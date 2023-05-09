@@ -212,6 +212,11 @@ namespace RoomBooking.BLL.Services
             var res = await _repository.GetById(entityId);
             return res;
         }
+        /// <summary>
+        /// Gửi email
+        /// </summary>
+        /// <param name="emailData"></param>
+        /// <returns></returns>
         public bool SendEmail(EmailData emailData)
         {
             try
@@ -468,7 +473,15 @@ namespace RoomBooking.BLL.Services
 
         #endregion
 
-        public async Task SendNotify(string ID,string notify, DateTime time)
+        /// <summary>
+        /// Gửi thông báo lên firebase
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="notify"></param>
+        /// <param name="time"></param>
+        /// <param name="admin"></param>
+        /// <returns></returns>
+        public async Task SendNotify(string ID,string notify, DateTime time , bool? admin)
         {
             var firebaseClient = new FirebaseClient("https://room-90f68-default-rtdb.firebaseio.com/");
 
@@ -479,9 +492,9 @@ namespace RoomBooking.BLL.Services
                 { "time", time }
             };
 
-
+            var node = admin == true ? "notifyAdmin" : "notifications";
             // Add the data to the "collection-name" collection
-            await firebaseClient.Child("notifications").Child(ID).Child(Guid.NewGuid().ToString()).PutAsync(data);
+            await firebaseClient.Child(node).Child(ID).Child(Guid.NewGuid().ToString()).PutAsync(data);
         }
 
     }

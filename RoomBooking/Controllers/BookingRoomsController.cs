@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.BLL.Services;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
+using RoomBooking.Common.Resources;
 using System.Text;
 using System.Text.Json;
 using static Dapper.SqlMapper;
@@ -17,11 +19,13 @@ namespace RoomBooking.API.Controllers
     {
         private readonly IBookingRoomService _scheduleService;
         private readonly IEmailService _emailService;
-      
-        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService) : base(scheduleService)
+        private readonly IMemoryCache _cache;
+
+        public BookingRoomsController(IBookingRoomService scheduleService,IEmailService emailService, IMemoryCache cache) : base(scheduleService)
         {
             _scheduleService = scheduleService;
             _emailService = emailService;
+            _cache = cache;
 
 
         }
@@ -74,6 +78,13 @@ namespace RoomBooking.API.Controllers
         public async Task<IActionResult> RequestBookingRoom(BookingRoomParam param)
         {
             var res = await _scheduleService.RequestBookingRoom(param);
+            if (res == true)
+            {
+                // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                //var user = _cache.Get<User>("userCache").UserID.ToString();
+                if (param.userID != null)
+                    await _scheduleService.SendNotify(param.userID.ToString(), Resource.SendPending, DateTime.Now, false);
+            }
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
 
@@ -104,8 +115,10 @@ namespace RoomBooking.API.Controllers
             var res = await _scheduleService.InsertBookingRequest(param, param.UserID);
             if(res != null)
             {
-                var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                await _scheduleService.SendNotify(token, "demo", DateTime.Now);
+                // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+               var user = _cache.Get<User>("userCache").UserID.ToString();
+                if(user != null)
+                 await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now,true);
             }    
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
@@ -121,6 +134,17 @@ namespace RoomBooking.API.Controllers
             try
             {
                 var res = await _scheduleService.UpdateBookingRequest(BookingID, bookingRoom);
+                if (res != null)
+                {
+                    // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                    var cache = _cache.Get<User>("userCache");
+                    if(cache!= null)
+                    {
+                        var user = _cache.Get<User>("userCache").UserID.ToString();
+                        if (user != null)
+                            await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now, true);
+                    }    
+                }
                 return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
             }
             catch (Exception ex)
