@@ -1,5 +1,6 @@
 ﻿using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Enum;
+using RoomBooking.Common.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,7 +105,7 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public int? StatusBooking { get; set; } = (int)OptionRequest.Approve;
+        public StatusBookingRoom? StatusBooking { get; set; } = StatusBookingRoom.Pending;
 
         /// <summary>
         /// Tên ca 
@@ -129,9 +130,55 @@ namespace RoomBooking.Common.Entities
         public string? SlotTime { get; set; }
         public int? Times { get; set; }
      
-
+        public string? FullName { get; set; }
+        public string? BuildingName { get; set; }
+        public string? RoomName { get; set; }
+        public string? AvartarColor { get; set; }
         [ForGetting]
         public TimeSpan StartTime { get; set; }
+
+        public string? BookingStatusColor
+        {
+
+            get
+            {
+                switch (StatusBooking)
+                {
+                    case StatusBookingRoom.Pending:
+                        return Resource.PendingColor;
+                    case StatusBookingRoom.Browse:
+                        return Resource.BrowseColor;
+                    case StatusBookingRoom.Miss:
+                        return Resource.MissColor;
+                    case StatusBookingRoom.Cancel:
+                        return Resource.CancelColor;
+                    default:
+                        break;
+                }
+                return Resource.Pending;
+            }
+        }
+        public string? BookingStatusName
+        {
+
+            get
+            {
+                switch (StatusBooking)
+                {
+                    case StatusBookingRoom.Pending:
+                        return Resource.Pending;
+                    case StatusBookingRoom.Browse:
+                        return Resource.Browse;
+                    case StatusBookingRoom.Miss:
+                        return Resource.Miss;
+                    case StatusBookingRoom.Cancel:
+                        return Resource.Cancel;
+                    default:
+                        break;
+                }
+                return Resource.Pending;
+            }
+        }
     }
 
     public class BookingError

@@ -45,7 +45,7 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy toàn bộ danh sách
         /// </summary>
         /// CretedBy: PTTAM (07/03/2023)
-        public async Task<IEnumerable<Entity>> GetAll()
+        public virtual async Task<IEnumerable<Entity>> GetAll()
         {
            if(_sqlConnection.State!= ConnectionState.Open)
             {

@@ -135,7 +135,17 @@ namespace RoomBooking.DAL.Repositories
             return isSuccess;
         }
 
-        
+        public override async Task<IEnumerable<User>> GetAll()
+        {
+            if (_sqlConnection.State != ConnectionState.Open)
+            {
+                _sqlConnection.Open();
+            }
+            var sql = "SELECT * FROM User";
+            var res = await _sqlConnection.QueryAsync<User>(sql);
+            return res;
+
+        }
 
 
     }
