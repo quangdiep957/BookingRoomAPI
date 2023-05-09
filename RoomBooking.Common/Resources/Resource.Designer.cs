@@ -273,6 +273,8 @@ namespace RoomBooking.Common.Resources {
         public static string SendPending {
             get {
                 return ResourceManager.GetString("SendPending", resourceCulture);
+            }
+        }
         ///   Looks up a localized string similar to #FFA07A.
         /// </summary>
         public static string PendingColor {
