@@ -62,35 +62,35 @@ namespace RoomBooking.BLL.Services
         /// Created by: PTTAM (07/03/2023)
         public async override Task<bool> InsertService(User entity)
         {
-            var users = await _repository.GetAll();
+            //var users = await _repository.GetAll();
 
-            var email = users.FirstOrDefault(x => x.Email.Equals(entity.Email));
-            if (email != null)
-            {
-                isValidCustom = false;
+            //var email = users.FirstOrDefault(x => x.Email.Equals(entity.Email));
+            //if (email != null)
+            //{
+            //    isValidCustom = false;
 
-                object error = new
-                {
-                    errorTitle = Resource.ErrorDuplicate,
-                    errorName = Resource.DuplicateEmail
+            //    object error = new
+            //    {
+            //        errorTitle = Resource.ErrorDuplicate,
+            //        errorName = Resource.DuplicateEmail
 
-                };
-                errorList.Add(error);
-            }
-            var userCode = users.FirstOrDefault(x => x.UserCode.Equals(entity.UserCode));
+            //    };
+            //    errorList.Add(error);
+            //}
+            //var userCode = users.FirstOrDefault(x => x.UserCode.Equals(entity.UserCode));
 
-            if (userCode != null)
-            {
-                isValidCustom = false;
+            //if (userCode != null)
+            //{
+            //    isValidCustom = false;
 
-                object error = new
-                {
-                    errorTitle = Resource.ErrorDuplicate,
-                    errorName = Resource.DuplicateCode
+            //    object error = new
+            //    {
+            //        errorTitle = Resource.ErrorDuplicate,
+            //        errorName = Resource.DuplicateCode
 
-                };
-                errorList.Add(error);
-            }
+            //    };
+            //    errorList.Add(error);
+            //}
             if(isValidCustom)
             {
                 using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -107,6 +107,7 @@ namespace RoomBooking.BLL.Services
                             if (isValidCustom == true && errorList.Count <= 0)
                             {
                                 entity.Password = HashPassword(entity.Password);
+                                entity.UserID= Guid.NewGuid();
                                 var res = await _repository.Insert(entity, cnn, tran);
                                 if (res == true)
                                 {

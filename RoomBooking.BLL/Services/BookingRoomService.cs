@@ -176,6 +176,7 @@ namespace RoomBooking.BLL.Services
                     room.YearPlan = room.StartDate.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                     room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
+                    room.StatusBooking = StatusBookingRoom.Browse;
                     lstTimeBooking.Add(new TimeBooking
                     {
                         BookingRoomID = room.BookingRoomID,

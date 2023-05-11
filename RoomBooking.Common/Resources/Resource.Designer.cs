@@ -259,7 +259,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Đặt phòng thành công! Vui lòng duyệt.
+        ///   Looks up a localized string similar to Chờ duyệt.
         /// </summary>
         public static string Pending {
             get {
@@ -268,18 +268,20 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Đã duyệt phòng .
-        /// </summary>
-        public static string SendPending {
-            get {
-                return ResourceManager.GetString("SendPending", resourceCulture);
-            }
-        }
         ///   Looks up a localized string similar to #FFA07A.
         /// </summary>
         public static string PendingColor {
             get {
                 return ResourceManager.GetString("PendingColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chờ duyệt.
+        /// </summary>
+        public static string SendPending {
+            get {
+                return ResourceManager.GetString("SendPending", resourceCulture);
             }
         }
     }

@@ -184,10 +184,9 @@
     <value>{0} không được phép để trống.</value>
   </data>
   <data name="Pending" xml:space="preserve">
-    <value>Đặt phòng thành công! Vui lòng duyệt</value>
+    <value>Chờ duyệt</value>
   </data>
   <data name="SendPending" xml:space="preserve">
-    <value>Đã duyệt phòng </value>
     <value>Chờ duyệt</value>
   </data>
   <data name="PendingColor" xml:space="preserve">
