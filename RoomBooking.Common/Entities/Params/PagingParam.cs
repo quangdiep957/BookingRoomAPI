@@ -21,5 +21,6 @@ namespace RoomBooking.Common.Entities.Params
         public string? equipmentIDs;
         public int? capacityMin;
         public int? capacityMax;
+        public int? roleOption;
     }
 }

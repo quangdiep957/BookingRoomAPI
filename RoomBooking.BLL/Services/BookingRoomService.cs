@@ -176,6 +176,7 @@ namespace RoomBooking.BLL.Services
                     room.YearPlan = room.StartDate.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                     room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
+                    room.StatusBooking = StatusBookingRoom.Browse;
                     lstTimeBooking.Add(new TimeBooking
                     {
                         BookingRoomID = room.BookingRoomID,
@@ -228,11 +229,11 @@ namespace RoomBooking.BLL.Services
                 // For từng dòng
                 foreach (var item in timeIDs)
                 {
-                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
-                    x.BookingRoomID != room.BookingRoomID&&
+                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                    &&x.BookingRoomID!=room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID &&
-                    x.BookingRoomID != room.BookingRoomID&&
+                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                         && x.BookingRoomID != room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
                     if (room.StartDate == room.EndDate) {
@@ -849,7 +850,7 @@ namespace RoomBooking.BLL.Services
                                     emailFrom.EmailSubject = "Thông báo đặt phòng";
                                     emailFrom.EmailToName = emailParam.FullName;
                                     SendEmail(emailFrom);
-                                    
+
                                 }
                             }
                             else

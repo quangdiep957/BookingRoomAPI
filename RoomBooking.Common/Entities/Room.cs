@@ -89,11 +89,54 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public int RoomStatus { get; set; }
+        
+        /// <summary>
+        /// Admin duyệt phòng
+        /// </summary>
 
         [ForBinding]
         [ForGetting]
         [DataLength(36)]
-        public Guid UserID { get; set; }
+        public Guid AdminID { get; set; }
+
+      
+        [ForBinding]
+        [ForGetting]
+        [DataLength(100)]
+        public string AdminName { get; set; }
+
+
+        [ForBinding]
+        [ForGetting]
+        [DataLength(50)]
+        public string AdminEmail { get; set; }
+
+
+
+        [ForBinding]
+        [ForGetting]
+        [DataLength(36)]
+        public Guid SupporterID { get; set; }
+
+
+        [ForBinding]
+        [ForGetting]
+        [DataLength(100)]
+        public string SupporterName { get; set; }
+
+
+        [ForBinding]
+        [ForGetting]
+        [DataLength(50)]
+        public string SupporterEmail { get; set; }
+
+        [ForBinding]
+        [ForGetting]
+        public string AvartarAdmin { get; set; }
+
+        [ForBinding]
+        [ForGetting]
+        public string AvartarSupporter { get; set; }
 
         /// <summary>
         /// Danh sách thiết bị
@@ -107,5 +150,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [ForGetting]
         public string ListEquipmentName { get; set; }
+
+
     }
 }
