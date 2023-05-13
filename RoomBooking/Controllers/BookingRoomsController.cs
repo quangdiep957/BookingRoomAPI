@@ -78,12 +78,14 @@ namespace RoomBooking.API.Controllers
         public async Task<IActionResult> RequestBookingRoom(BookingRoomParam param)
         {
             var res = await _scheduleService.RequestBookingRoom(param);
-            if (res == true)
+            if (res != null)
             {
                 // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
                 //var user = _cache.Get<User>("userCache").UserID.ToString();
                 if (param.userID != null)
                     await _scheduleService.SendNotify(param.userID.ToString(), Resource.SendPending, DateTime.Now, false);
+                    // gửi cho người mở cửa
+                    await _scheduleService.SendNotify(res.SupporterID.ToString(), Resource.SendPending, DateTime.Now, false);
             }
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
@@ -118,7 +120,9 @@ namespace RoomBooking.API.Controllers
                 // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
                var user = _cache.Get<User>("userCache").UserID.ToString();
                 if(user != null)
-                 await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now,true);
+                 // gửi cho chính nó
+                 await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now,false);
+                 await _scheduleService.SendNotify(param.AdminID.ToString(), Resource.Pending, DateTime.Now, true);
             }    
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
@@ -142,7 +146,8 @@ namespace RoomBooking.API.Controllers
                     {
                         var user = _cache.Get<User>("userCache").UserID.ToString();
                         if (user != null)
-                            await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now, true);
+                            await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now, false);
+                            await _scheduleService.SendNotify(bookingRoom.AdminID.ToString(), Resource.Pending, DateTime.Now, true);
                     }    
                 }
                 return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);

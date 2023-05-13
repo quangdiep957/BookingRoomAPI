@@ -115,6 +115,60 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ..
+        /// </summary>
+        public static string EmailFooter {
+            get {
+                return ResourceManager.GetString("EmailFooter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chúng tôi rất tiếc vì không thể đáp ứng được nhu cầu của bạn lần này. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ..
+        /// </summary>
+        public static string EmailFooterCancel {
+            get {
+                return ResourceManager.GetString("EmailFooterCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được hủy thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:.
+        /// </summary>
+        public static string EmailHeaderCancel {
+            get {
+                return ResourceManager.GetString("EmailHeaderCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được cập nhật thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:.
+        /// </summary>
+        public static string EmailHeaderInsert {
+            get {
+                return ResourceManager.GetString("EmailHeaderInsert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chúng tôi xin thông báo đơn đặt phòng của bạn đã được .
+        /// </summary>
+        public static string EmailHeaderRequest {
+            get {
+                return ResourceManager.GetString("EmailHeaderRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được đặt thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:.
+        /// </summary>
+        public static string EmailHeaderUpdate {
+            get {
+                return ResourceManager.GetString("EmailHeaderUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Có lỗi xảy ra, vui lòng liên hệ nhân viên kĩ thuật để được hỗ trợ!.
         /// </summary>
         public static string Error {

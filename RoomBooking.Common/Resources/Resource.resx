@@ -192,4 +192,22 @@
   <data name="PendingColor" xml:space="preserve">
     <value>#FFA07A</value>
   </data>
+  <data name="EmailFooter" xml:space="preserve">
+    <value>Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ.</value>
+  </data>
+  <data name="EmailFooterCancel" xml:space="preserve">
+    <value>Chúng tôi rất tiếc vì không thể đáp ứng được nhu cầu của bạn lần này. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ.</value>
+  </data>
+  <data name="EmailHeaderCancel" xml:space="preserve">
+    <value>Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được hủy thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:</value>
+  </data>
+  <data name="EmailHeaderInsert" xml:space="preserve">
+    <value>Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được cập nhật thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:</value>
+  </data>
+  <data name="EmailHeaderRequest" xml:space="preserve">
+    <value>Chúng tôi xin thông báo đơn đặt phòng của bạn đã được </value>
+  </data>
+  <data name="EmailHeaderUpdate" xml:space="preserve">
+    <value>Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được đặt thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:</value>
+  </data>
 </root>
