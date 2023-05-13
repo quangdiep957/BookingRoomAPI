@@ -62,6 +62,6 @@ namespace RoomBooking.BLL.Interfaces
         /// Created by: PTTAM (07/03/2023)
         public  Task<bool> DeleteService(Guid entityId);
 
-        public Task SendNotify(string ID, string notify, DateTime time, bool? admin);
+        public Task SendNotify(string ID, string notify, DateTime time, bool? sendAdmin);
     }
 }

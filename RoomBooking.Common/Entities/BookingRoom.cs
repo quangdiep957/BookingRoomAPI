@@ -38,7 +38,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại phòng
         /// </summary>
-        [DataLength(36)] 
+        [DataLength(36)]
         [ForGetting]
         [ForBinding]
         [Ambiguous]
@@ -46,7 +46,7 @@ namespace RoomBooking.Common.Entities
 
         public Guid RoomID { get; set; }
 
- 
+
 
         /// <summary>
         /// Chủ đề
@@ -88,7 +88,7 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         public string? RefusalReason { get; set; } = string.Empty;
-       
+
         /// <summary>
         /// Năm học
         /// </summary>
@@ -115,7 +115,7 @@ namespace RoomBooking.Common.Entities
         public string? TimeSlotName { get; set; } = string.Empty;
         public string? Room { get; set; }
         public string? DayOfWeek { get; set; }
-        
+
         public string? Week { get; set; }
         [ForGetting]
         [ForBinding]
@@ -129,13 +129,23 @@ namespace RoomBooking.Common.Entities
         public int? Day { get; set; }
         public string? SlotTime { get; set; }
         public int? Times { get; set; }
-     
+
         public string? FullName { get; set; }
         public string? BuildingName { get; set; }
         public string? RoomName { get; set; }
         public string? AvartarColor { get; set; }
         [ForGetting]
         public TimeSpan StartTime { get; set; }
+
+        public string AdminEmail  {get; set;}
+
+        public Guid AdminID { get; set; }
+
+        public string SupporterEmail { get; set; }
+
+        public Guid SupporterID { get; set; }
+
+        public string SupporterName { get; set; }
 
         public string? BookingStatusColor
         {

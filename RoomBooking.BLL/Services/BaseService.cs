@@ -479,9 +479,9 @@ namespace RoomBooking.BLL.Services
         /// <param name="ID"></param>
         /// <param name="notify"></param>
         /// <param name="time"></param>
-        /// <param name="admin"></param>
+        /// <param name="sendAdmin"> gửi cho admin hay người dùng</param>
         /// <returns></returns>
-        public async Task SendNotify(string ID,string notify, DateTime time , bool? admin)
+        public async Task SendNotify(string ID,string notify, DateTime time , bool? sendAdmin)
         {
             var firebaseClient = new FirebaseClient("https://room-90f68-default-rtdb.firebaseio.com/");
 
@@ -492,7 +492,7 @@ namespace RoomBooking.BLL.Services
                 { "time", time }
             };
 
-            var node = admin == true ? "notifyAdmin" : "notifications";
+            var node = sendAdmin == true ? "notifyAdmin" : "notifications";
             // Add the data to the "collection-name" collection
             await firebaseClient.Child(node).Child(ID).Child(Guid.NewGuid().ToString()).PutAsync(data);
         }
