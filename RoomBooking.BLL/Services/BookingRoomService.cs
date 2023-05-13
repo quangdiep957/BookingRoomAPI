@@ -176,7 +176,7 @@ namespace RoomBooking.BLL.Services
                     room.YearPlan = room.StartDate.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
                     room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
-                    room.StatusBooking = StatusBookingRoom.Browse;
+                    room.StatusBooking = (int?)StatusBookingRoom.Browse;
                     lstTimeBooking.Add(new TimeBooking
                     {
                         BookingRoomID = room.BookingRoomID,
@@ -217,6 +217,7 @@ namespace RoomBooking.BLL.Services
         {
             bool checkRoom = true;
             List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
+            lstBookingRoom = lstBookingRoom.Where(x => x.StatusBooking != (int) StatusBookingRoom.Cancel).ToList();
             List<Room> listRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
             List<TimeSlot> lstTimeSlot = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
             var data = lst.Where(x => x.BookingRoomID != Guid.Empty).ToList();
@@ -638,7 +639,7 @@ namespace RoomBooking.BLL.Services
                         var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter, transaction:tran);
 
                         //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
-                        booking.StatusBooking = (StatusBookingRoom?)param.option;
+                        booking.StatusBooking = param.option;
                         booking.RefusalReason=param.refusalReason;
                         //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
@@ -745,10 +746,10 @@ namespace RoomBooking.BLL.Services
                         var role = listRole.FirstOrDefault(x => x.RoleID == user.RoleID);
                         if (role.RoleValue ==(int) RoleOption.Admin)
                         {
-                            booking.StatusBooking = StatusBookingRoom.Browse;
+                            booking.StatusBooking = (int?)StatusBookingRoom.Browse;
                         }
                         else { 
-                        booking.StatusBooking = StatusBookingRoom.Pending;
+                        booking.StatusBooking = (int?)StatusBookingRoom.Pending;
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
                        
@@ -809,7 +810,7 @@ namespace RoomBooking.BLL.Services
                                 emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
                                 emailToAdmin.EmailSubject = "Thông báo đặt phòng";
                                 emailToAdmin.EmailToName = emailParam.FullName;
-                                SendEmail(emailFrom);
+                                SendEmail(emailToAdmin);
                             }
                         }
                         //2.2. Nếu phòng đã được sử dùng
@@ -870,7 +871,7 @@ namespace RoomBooking.BLL.Services
                             else
                             {
                                 // cập nhập lại status 
-                                booking.StatusBooking = StatusBookingRoom.Pending;
+                                booking.StatusBooking = (int?)StatusBookingRoom.Pending;
                                 // Thông báo email cho khách hàng
                                 resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
                             }
@@ -917,7 +918,7 @@ namespace RoomBooking.BLL.Services
                                     emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
                                     emailToAdmin.EmailSubject = "Thông báo đặt phòng";
                                     emailToAdmin.EmailToName = emailParam.FullName;
-                                    SendEmail(emailFrom);
+                                    SendEmail(emailToAdmin);
 
                                 }
                             }
@@ -972,6 +973,11 @@ namespace RoomBooking.BLL.Services
             return html;
         }
 
+        /// <summary>
+        /// Hủy yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="BookingRoomID"></param>
+        /// <returns></returns>
         public async Task<object> CancelBookingRoom(Guid BookingRoomID)
         {
             object result = null;
@@ -991,24 +997,24 @@ namespace RoomBooking.BLL.Services
                         {
                             TimeSpan currentTime = DateTime.Now.TimeOfDay.Subtract(TimeSpan.FromMinutes(30));
                             //checkTimeBooking  =  (bookingTime.DateBooking < DateTime.Now && bookingTime.StartTime < currentTime) ? false : true;     
-                        }  
+                        }
                         //1.1. Nếu thời gian bắt đầu vào phòng sớm hơn 30p thì cho phép hủy
                         if (checkTimeBooking)
                         {
                             // cập nhật trạng thái về hủy (4)
-                            
-                            bookingTime.StatusBooking = StatusBookingRoom.Cancel;
+
+                            bookingTime.StatusBooking = (int?)StatusBookingRoom.Cancel;
                             bool resUpdate = await _repository.Update(bookingTime, BookingRoomID, cnn, tran);
                             // Cập nhật vào bảng history
                             // 
                             if (resUpdate)
                             {
-                                    result = new
-                                    {
-                                        IsSusses = resUpdate,
-                                        Data = errors
-                                    };
-                                    tran.Commit();
+                                result = new
+                                {
+                                    IsSusses = resUpdate,
+                                    Data = errors
+                                };
+                                tran.Commit();
                                 // Gửi email thông báo thành công
                                 var emailFrom = new EmailData();
                                 var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
@@ -1068,6 +1074,58 @@ namespace RoomBooking.BLL.Services
             return res;
         }
 
-     
+        /// <summary>
+        /// Phân trang lịch sử đặt phòng
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public async Task<object> GetPagingHistory(PagingParam param)
+        {
+            object res = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                res = await _repository.GetPagingHistory(param, cnn);
+
+            }
+            return res;
+        }
+        /// <summary>
+        /// Hủy yêu cầu đặt phòng ko tính phút
+        /// </summary>
+        /// <param name="BookingRoomID"></param>
+        /// <returns></returns>
+        /// PTTAM
+        public async Task<object> CancelBookingRoomNomal(Guid BookingRoomID)
+        {
+            object result = null;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                using (MySqlTransaction tran = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        List<BookingRoom> dataBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
+                        var booking= dataBookingRoom.FirstOrDefault(x=>x.BookingRoomID==BookingRoomID);
+                        if(booking!=null)
+                        {
+                            booking.StatusBooking = (int)StatusBookingRoom.Cancel;
+                        }
+                        bool resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
+                        tran.Commit();
+                        result = new
+                        {
+                            IsSusses = resUpdate,
+                        };
+
+                    }
+                    catch { tran.Rollback(); }
+                }
+
+
+            }
+            return result;
+        }
+
     }
 }

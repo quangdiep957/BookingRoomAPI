@@ -1,10 +1,12 @@
-﻿using RoomBooking.Common.AttributeCustom;
+﻿using Newtonsoft.Json.Converters;
+using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Enum;
 using RoomBooking.Common.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
@@ -105,7 +107,8 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public StatusBookingRoom? StatusBooking { get; set; } = StatusBookingRoom.Pending;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public int? StatusBooking { get; set; } = (int?)StatusBookingRoom.Pending;
 
         /// <summary>
         /// Tên ca 
@@ -141,11 +144,11 @@ namespace RoomBooking.Common.Entities
 
         public Guid AdminID { get; set; }
 
-        public string SupporterEmail { get; set; }
+        public string? SupporterEmail { get; set; }
 
-        public Guid SupporterID { get; set; }
+        public Guid? SupporterID { get; set; }
 
-        public string SupporterName { get; set; }
+        public string? SupporterName { get; set; }
 
         public string? BookingStatusColor
         {
@@ -154,13 +157,13 @@ namespace RoomBooking.Common.Entities
             {
                 switch (StatusBooking)
                 {
-                    case StatusBookingRoom.Pending:
+                    case (int?)StatusBookingRoom.Pending:
                         return Resource.PendingColor;
-                    case StatusBookingRoom.Browse:
+                    case (int?)StatusBookingRoom.Browse:
                         return Resource.BrowseColor;
-                    case StatusBookingRoom.Miss:
+                    case (int?)StatusBookingRoom.Miss:
                         return Resource.MissColor;
-                    case StatusBookingRoom.Cancel:
+                    case (int?)StatusBookingRoom.Cancel:
                         return Resource.CancelColor;
                     default:
                         break;
@@ -175,13 +178,13 @@ namespace RoomBooking.Common.Entities
             {
                 switch (StatusBooking)
                 {
-                    case StatusBookingRoom.Pending:
+                    case (int?)StatusBookingRoom.Pending:
                         return Resource.Pending;
-                    case StatusBookingRoom.Browse:
+                    case (int?)StatusBookingRoom.Browse:
                         return Resource.Browse;
-                    case StatusBookingRoom.Miss:
+                    case (int?)StatusBookingRoom.Miss:
                         return Resource.Miss;
-                    case StatusBookingRoom.Cancel:
+                    case (int?)StatusBookingRoom.Cancel:
                         return Resource.Cancel;
                     default:
                         break;
