@@ -656,21 +656,21 @@ namespace RoomBooking.BLL.Services
                             tran.Commit();
                             // Gửi email thông báo thành công
                             var emailFrom = new EmailData();
-                            var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn); ;
+                            var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn); 
                             // lấy dữ liệu đổ vào email
                             // lấy email theo user dữ liệu đặt phòng
                             // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
                             var status = "";
                             if(param.option == (int)(StatusBookingRoom.Browse))
                             {
-                                status = "duyệt thành công!";
+                                emailParam.Header = Resource.AdminBrowser;
+                                
                             }
                             else if(param.option == (int)(StatusBookingRoom.Miss))
                             {
-                                status = "từ chối!";
+                                emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do {emailParam.RefusalReason}. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
                             }
                             var userAdmin = _cache.Get<User>("userCache").FullName;
-                            emailParam.Header = Resource.EmailHeaderRequest + $"{userAdmin }" +$" {status}" + "chi tiết phòng đặt như sau:";
                             emailParam.Footer = Resource.EmailFooter;
                             emailFrom.EmailToId = emailParam.Email;
                             emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
@@ -678,17 +678,19 @@ namespace RoomBooking.BLL.Services
                             emailFrom.EmailToName = emailParam.FullName;
                             SendEmail(emailFrom);
                             // gửi email cho người mở cửa
-                            var emailtoSupport= new EmailData();
-                            // lấy dữ liệu đổ vào email
-                            // lấy email theo user dữ liệu đặt phòng
-                            // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
-                            emailParam.Header = Resource.EmailHeaderRequest + $"{userAdmin}" + $" {status}" + "chi tiết phòng đặt như sau:";
-                            emailParam.Footer = Resource.EmailFooter;
-                            emailFrom.EmailToId = booking.SupporterEmail;
-                            emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                            emailFrom.EmailSubject = "Thông báo mở cửa phòng";
-                            emailFrom.EmailToName = booking.SupporterName;
-                            SendEmail(emailFrom);
+                            if (param.option == (int)(StatusBookingRoom.Browse))
+                            {
+                                emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {booking.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
+                                // lấy dữ liệu đổ vào email
+                                // lấy email theo user dữ liệu đặt phòng
+
+                                emailParam.Footer = Resource.EmailFooter;
+                                emailFrom.EmailToId = booking.SupporterEmail;
+                                emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                                emailFrom.EmailSubject = "Thông báo mở cửa phòng";
+                                emailFrom.EmailToName = booking.SupporterName;
+                                SendEmail(emailFrom);
+                            }
                         }
                       
 
@@ -805,11 +807,11 @@ namespace RoomBooking.BLL.Services
                                 // gửi email cho admin
                                 var emailToAdmin = new EmailData();
                                 emailToAdmin.EmailToId = booking.AdminEmail;
-                                emailParam.Header = Resource.EmailHeaderInsert;
+                                emailParam.Header = $"Giảng viên {emailParam.FullName} đã gửi yêu cầu đặt phòng đến bạn. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
                                 emailParam.Footer = Resource.EmailFooter;
                                 emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
                                 emailToAdmin.EmailSubject = "Thông báo đặt phòng";
-                                emailToAdmin.EmailToName = emailParam.FullName;
+                                emailToAdmin.EmailToName = emailParam.AdminName;
                                 SendEmail(emailToAdmin);
                             }
                         }
@@ -913,12 +915,12 @@ namespace RoomBooking.BLL.Services
                                     // gửi email cho admin
                                     var emailToAdmin = new EmailData();
                                     emailToAdmin.EmailToId = booking.AdminEmail;
-                                    emailParam.Header = Resource.EmailHeaderInsert;
+                                    emailParam.Header = $"Giảng viên {emailParam.FullName} đã cập nhật lại yêu cầu đặt phòng . Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
                                     emailParam.Footer = Resource.EmailFooter;
                                     emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
                                     emailToAdmin.EmailSubject = "Thông báo đặt phòng";
                                     emailToAdmin.EmailToName = emailParam.FullName;
-                                    SendEmail(emailToAdmin);
+                                    SendEmail(emailFrom);
 
                                 }
                             }
@@ -965,10 +967,10 @@ namespace RoomBooking.BLL.Services
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
             html = html.Replace("{{param.BuildingName}}", param.BuildingName);
-            html = html.Replace("{{param.DateBooking}}", param.StartDate.ToString());
+            html = html.Replace("{{param.DateBooking}}", param.StartDate);
             html = html.Replace("{{param.DateMiss}}", param.DateMiss);
-            html = html.Replace("{{param.Capacity}}", param.Capacity.ToString());
-            html = html.Replace("{{param.StatusBooking}}", param.StatusBooking.ToString());
+            html = html.Replace("{{param.Capacity}}", param.Capacity.ToString() + " người");
+            html = html.Replace("{{param.StatusBooking}}", param.StatusBooking == 2 ? "Đã duyệt" : "Từ chối");
             html = html.Replace("{{param.Footer}}", param.Footer);
             return html;
         }
