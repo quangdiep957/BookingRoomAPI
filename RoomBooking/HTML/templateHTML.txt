@@ -2,7 +2,7 @@
 <html>
 <body>
     <p class="lable">Chào {{param.FullName}},</p>
-    <p>Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được cập nhật thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:</p>
+    <p>{{param.Header}}</p>
     <div>
         <ul>
             <li>
@@ -26,7 +26,7 @@
         </ul>
     </div>
     <p>
-        Chúng tôi rất tiếc vì không thể đáp ứng được nhu cầu của bạn lần này. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu hỗ trợ nào, vui lòng liên hệ với chúng tôi để được hỗ trợ.
+       {{param.Footer}}
     </p>
     <p>Chân thành cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.</p>
     <p>Trân trọng.</p>

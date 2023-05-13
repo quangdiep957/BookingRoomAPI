@@ -208,5 +208,7 @@ namespace RoomBooking.Common.Entities
         public int Capacity { get; set; }
 
         public int StatusBooking { get; set; }
+        public string Footer { get; set; }
+        public string Header { get; set; }
     }
 }
