@@ -313,7 +313,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Đặt phòng thành công! Vui lòng duyệt.
+        ///   Looks up a localized string similar to Chờ duyệt.
         /// </summary>
         public static string Pending {
             get {
