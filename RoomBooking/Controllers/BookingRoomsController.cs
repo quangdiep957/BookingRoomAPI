@@ -91,7 +91,7 @@ namespace RoomBooking.API.Controllers
         }
 
         /// <summary>
-        /// Thực hiện phân trang 
+        /// Thực hiện phân trang chờ duyệt
         /// </summary>
         /// <param name="pageSize">Số bản ghi/ 1 trang</param>
         /// <param name="pageIndex">Trang số bao nhiêu</param>
@@ -102,6 +102,23 @@ namespace RoomBooking.API.Controllers
         {
 
             var res = await _scheduleService.GetPagingRequest(param);
+
+            return StatusCode(200, res);
+
+        }
+
+        /// <summary>
+        /// Thực hiện phân trang lịch sử đặt phòng
+        /// </summary>
+        /// <param name="pageSize">Số bản ghi/ 1 trang</param>
+        /// <param name="pageIndex">Trang số bao nhiêu</param>
+        /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
+        /// Created by: PTTAM (08/03/2023)
+        [HttpPost("pagingHistoryBooking")]
+        public async Task<IActionResult> HistoryBooking([FromBody] PagingParam param)
+        {
+
+            var res = await _scheduleService.GetPagingHistory(param);
 
             return StatusCode(200, res);
 
@@ -169,6 +186,18 @@ namespace RoomBooking.API.Controllers
             var res = await _scheduleService.CancelBookingRoom(BookingID);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
+        /// <summary>
+        /// Thực hiện hủy yêu cầu đặt phòng ko tính phút
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpPut("cancelBookingRequestNomal/{id}")]
+        public async Task<IActionResult> cancelBookingRequestNomal(Guid id)
+        {
+            var res = await _scheduleService.CancelBookingRoomNomal(id);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
+
 
         /// <summary>
         /// Thực hiện lấy danh sach lịch sử đặt phòng

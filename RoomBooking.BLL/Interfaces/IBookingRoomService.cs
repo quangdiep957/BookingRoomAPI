@@ -47,6 +47,12 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="param"></param>
         /// <returns></returns>
         public Task<object> GetPagingRequest(PagingParam param);
+        /// <summary>
+        /// Gọi phân trang cho lịch sử đặt phong
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Task<object> GetPagingHistory(PagingParam param);
 
         /// <summary>
         /// Thực hiện gửi yêu cầu đặt phòng
@@ -75,6 +81,13 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="entityId"></param>
         /// <returns></returns>
         public Task<ParamReport> PrintReport(Guid entityId);
+
+        /// <summary>
+        /// Thực hiện hủy yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<object> CancelBookingRoomNomal(Guid BookingRoomID);
 
 
     }
