@@ -137,15 +137,16 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         public TimeSpan StartTime { get; set; }
 
-        public string AdminEmail  {get; set;}
+        public string? AdminEmail  {get; set;}
 
-        public Guid AdminID { get; set; }
+        public Guid? AdminID { get; set; }
 
-        public string SupporterEmail { get; set; }
+        public string? AdminName { get; set; }
+        public string? SupporterEmail { get; set; }
 
-        public Guid SupporterID { get; set; }
+        public Guid? SupporterID { get; set; }
 
-        public string SupporterName { get; set; }
+        public string? SupporterName { get; set; }
 
         public string? BookingStatusColor
         {
@@ -204,7 +205,7 @@ namespace RoomBooking.Common.Entities
         public string PhoneNumber { get; set; }
         public Guid BookingRoomID { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public string StartDate { get; set; }
 
         public string RoomName { get; set; }
         public string EquipmentName { get; set; }
@@ -220,5 +221,6 @@ namespace RoomBooking.Common.Entities
         public int StatusBooking { get; set; }
         public string Footer { get; set; }
         public string Header { get; set; }
+        public string RefusalReason { get; set; }
     }
 }
