@@ -15,6 +15,7 @@ using RoomBooking.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
@@ -98,17 +99,18 @@ namespace RoomBooking.BLL.Services
                         List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;
                         bool checkRoom = await CheckRoom(lst, cnn, tran, errors, lstTimeBooking);
-                        if (checkRoom && !errors.Any()) {
+                        if (checkRoom && !errors.Any())
+                        {
                             var resBookingRoom = await _repository.InsertMulti(lst, tran, cnn);
-                            var resTimeBooking= await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
+                            var resTimeBooking = await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             tran.Commit();
-                            var res= (resBookingRoom==true&&resTimeBooking==true)?true:false;
+                            var res = (resBookingRoom == true && resTimeBooking == true) ? true : false;
                             result = new
                             {
 
                                 IsSuccess = res,
-                                Data= errors,
-                                Count= count
+                                Data = errors,
+                                Count = count
 
                             };
                         }
@@ -125,7 +127,7 @@ namespace RoomBooking.BLL.Services
 
                             };
                         }
-                       
+
 
                     }
                     catch { tran.Rollback(); }
@@ -150,7 +152,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="errors"></param>
         /// <returns></returns>
         /// PTTAM 04/06/2023
-        private async Task<bool> CheckRoom(List<BookingRoom> lst,MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors,List<TimeBooking> lstTimeBooking)
+        private async Task<bool> CheckRoom(List<BookingRoom> lst, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors, List<TimeBooking> lstTimeBooking)
         {
             // Thực hiện kiểm tra phòng đã được đặt chưa
             bool checkRoom = true;
@@ -181,7 +183,7 @@ namespace RoomBooking.BLL.Services
                     {
                         BookingRoomID = room.BookingRoomID,
                         TimeSlotID = itemTimeSlot.TimeSlotID
-                    }) ;
+                    });
                 }
 
             }
@@ -217,12 +219,12 @@ namespace RoomBooking.BLL.Services
         {
             bool checkRoom = true;
             List<BookingRoom> lstBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
-            lstBookingRoom = lstBookingRoom.Where(x => x.StatusBooking != (int) StatusBookingRoom.Cancel).ToList();
+            lstBookingRoom = lstBookingRoom.Where(x => x.StatusBooking != (int)StatusBookingRoom.Cancel).ToList();
             List<Room> listRoom = (List<Room>)await cnn.QueryAsync<Room>("SELECT * FROM Room;", transaction: tran);
             List<TimeSlot> lstTimeSlot = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;", transaction: tran);
             var data = lst.Where(x => x.BookingRoomID != Guid.Empty).ToList();
             string roomName = "";
-            int timeName =0;
+            int timeName = 0;
             foreach (BookingRoom room in data)
             {
                 // Tách chuỗi TimeSlotID
@@ -231,13 +233,14 @@ namespace RoomBooking.BLL.Services
                 foreach (var item in timeIDs)
                 {
                     var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    &&x.BookingRoomID!=room.BookingRoomID &&
+                    && x.BookingRoomID != room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
                     var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
                          && x.BookingRoomID != room.BookingRoomID &&
                     x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
 
-                    if (room.StartDate == room.EndDate) {
+                    if (room.StartDate == room.EndDate)
+                    {
                         if (itemRoomStartDate != null)
                         {
                             roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
@@ -275,7 +278,7 @@ namespace RoomBooking.BLL.Services
                             checkRoom = false;
                         }
                     }
-                   
+
 
                 }
 
@@ -297,8 +300,8 @@ namespace RoomBooking.BLL.Services
             bool checkTime = false;
             var parameters = new DynamicParameters();
             parameters.Add("@Id", BookingRoomID);
-            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM bookingroom b INNER JOIN timebooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN timeslot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters ,transaction: tran);
-            
+            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM bookingroom b INNER JOIN timebooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN timeslot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters, transaction: tran);
+
 
             return bookingRoom;
         }
@@ -311,12 +314,12 @@ namespace RoomBooking.BLL.Services
         /// <param name="tran"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        private static async Task<int> CheckRoomIsStatus( Guid BookingRoomID, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
+        private static async Task<int> CheckRoomIsStatus(Guid BookingRoomID, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@Id", BookingRoomID);
-            int lstBookingRoom =(await cnn.QueryFirstOrDefaultAsync<int>("SELECT StatusBooking FROM BookingRoom where BookingRoomID = @Id ;", parameters, transaction: tran));
-              
+            int lstBookingRoom = (await cnn.QueryFirstOrDefaultAsync<int>("SELECT StatusBooking FROM BookingRoom where BookingRoomID = @Id ;", parameters, transaction: tran));
+
             return lstBookingRoom;
         }
         /// <summary>
@@ -384,7 +387,7 @@ namespace RoomBooking.BLL.Services
                         EveningFreePeriod = eveningFreePeriod.ToString(),
                         Week = scheduleList[i].Week,
                         StartDate = date,
-                        EndDate= date
+                        EndDate = date
                     };
                     newScheduleList.Add(newSchedule);
                 }
@@ -498,7 +501,7 @@ namespace RoomBooking.BLL.Services
                     Room = item.Room,
                     DayOfWeek = item.DayOfWeek,
                     Times = int.Parse(ca.ToString()),
-                    TimeSlotName=$"Ca {ca}",
+                    TimeSlotName = $"Ca {ca}",
                     Week = item.Week,
                     StartDate = item.StartDate,
                     EndDate = item.EndDate
@@ -508,7 +511,7 @@ namespace RoomBooking.BLL.Services
             else
             {
                 int ca = (int)item.Times;
-                int j = ca ;
+                int j = ca;
                 for (int i = ca - 1; i <= item.Times; i++)
                 {
                     if (i == 5) { break; }
@@ -540,19 +543,19 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public async Task<object> GetPaging(PagingParam param)
         {
-            object result=null;
+            object result = null;
             int option = 0;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-             
-                    try
-                    {
-                   
+
+                try
+                {
+
                     ParamSchedulerBooking scheduler = await _repository.GetPaging(param, cnn);
-                    List<SchedulerBooking> bookingRooms= new();
-                    if (scheduler.rooms!= null && scheduler.rooms.Any())
+                    List<SchedulerBooking> bookingRooms = new();
+                    if (scheduler.rooms != null && scheduler.rooms.Any())
                     {
-                      
+
                         foreach (var booking in scheduler.bookings)
                         {
                             string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -585,7 +588,8 @@ namespace RoomBooking.BLL.Services
                             }
                         }
                         int count = scheduler.rooms.Count();
-                        if (count == 1) {
+                        if (count == 1)
+                        {
 
                             result = new
                             {
@@ -596,7 +600,7 @@ namespace RoomBooking.BLL.Services
                         }
                         else
                         {
-                            
+
                             result = new
                             {
                                 option = (int)OptionPagingScheduler.AnyRoom,
@@ -604,13 +608,13 @@ namespace RoomBooking.BLL.Services
                                 dataRoom = scheduler.rooms
                             };
                         }
-                       
-                     }
-                    }
-                    catch (Exception ex)
-                    {
 
                     }
+                }
+                catch (Exception ex)
+                {
+
+                }
 
 
             }
@@ -636,11 +640,11 @@ namespace RoomBooking.BLL.Services
                         var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
                         var parammeter = new DynamicParameters();
                         parammeter.Add("@ID", param.bookingRoomID);
-                        var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter, transaction:tran);
+                        var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter, transaction: tran);
 
                         //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
                         booking.StatusBooking = param.option;
-                        booking.RefusalReason=param.refusalReason;
+                        booking.RefusalReason = param.refusalReason;
                         //1.2. Update lại trạng thái đặt phòng trong bảng BookingRoom
                         var isUpdateBookingRequest = await _repository.Update(booking, booking.BookingRoomID, cnn, tran);
 
@@ -648,51 +652,15 @@ namespace RoomBooking.BLL.Services
                         {
 
                             bookingRoom = null;
-                            
+
                         }
                         else
                         {
                             bookingRoom = booking;
                             tran.Commit();
-                            // Gửi email thông báo thành công
-                            var emailFrom = new EmailData();
-                            var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn); 
-                            // lấy dữ liệu đổ vào email
-                            // lấy email theo user dữ liệu đặt phòng
-                            // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
-                            var status = "";
-                            if(param.option == (int)(StatusBookingRoom.Browse))
-                            {
-                                emailParam.Header = Resource.AdminBrowser;
-                                
-                            }
-                            else if(param.option == (int)(StatusBookingRoom.Miss))
-                            {
-                                emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do {emailParam.RefusalReason}. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
-                            }
-                            var userAdmin = _cache.Get<User>("userCache").FullName;
-                            emailParam.Footer = Resource.EmailFooter;
-                            emailFrom.EmailToId = emailParam.Email;
-                            emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                            emailFrom.EmailSubject = "Thông báo đặt phòng";
-                            emailFrom.EmailToName = emailParam.FullName;
-                            SendEmail(emailFrom);
-                            // gửi email cho người mở cửa
-                            if (param.option == (int)(StatusBookingRoom.Browse))
-                            {
-                                emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {booking.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
-                                // lấy dữ liệu đổ vào email
-                                // lấy email theo user dữ liệu đặt phòng
 
-                                emailParam.Footer = Resource.EmailFooter;
-                                emailFrom.EmailToId = booking.SupporterEmail;
-                                emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                emailFrom.EmailSubject = "Thông báo mở cửa phòng";
-                                emailFrom.EmailToName = booking.SupporterName;
-                                SendEmail(emailFrom);
-                            }
                         }
-                      
+
 
 
                     }
@@ -731,7 +699,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="bookings"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<object> InsertBookingRequest(BookingRoom booking,Guid userID)
+        public async Task<object> InsertBookingRequest(BookingRoom booking, Guid userID)
         {
             object result = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -744,29 +712,30 @@ namespace RoomBooking.BLL.Services
                         List<User> listUser = (List<User>)await cnn.QueryAsync<User>("SELECT * FROM User;", transaction: tran);
                         List<Role> listRole = (List<Role>)await cnn.QueryAsync<Role>("SELECT * FROM Role;", transaction: tran);
 
-                        var user = listUser.FirstOrDefault(x=>x.UserID==userID);
+                        var user = listUser.FirstOrDefault(x => x.UserID == userID);
                         var role = listRole.FirstOrDefault(x => x.RoleID == user.RoleID);
-                        if (role.RoleValue ==(int) RoleOption.Admin)
+                        if (role.RoleValue == (int)RoleOption.Admin)
                         {
                             booking.StatusBooking = (int?)StatusBookingRoom.Browse;
                         }
-                        else { 
-                        booking.StatusBooking = (int?)StatusBookingRoom.Pending;
+                        else
+                        {
+                            booking.StatusBooking = (int?)StatusBookingRoom.Pending;
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
-                       
+
                         bookings.Add(booking);
                         List<BookingError> errors = new List<BookingError>();
                         //2. Check phòng đã được sử dụng hay chưa
                         bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
-                        
-                      
+
+
                         //2.1. Nếu phòng chưa được sử dụng
                         if (checkRoom)
                         {
                             booking.BookingRoomID = Guid.NewGuid();
                             // Thực hiện insert
-                            var resBooking = await _repository.Insert(booking, cnn,tran);
+                            var resBooking = await _repository.Insert(booking, cnn, tran);
                             // thực hiện insert ca học
                             List<TimeBooking> lstTimeBooking = new();
                             // Tách chuỗi TimeSlotID
@@ -778,41 +747,22 @@ namespace RoomBooking.BLL.Services
                                 {
                                     BookingRoomID = booking.BookingRoomID,
                                     TimeSlotID = new Guid(item)
-                                }) ;
+                                });
 
                             }
                             var resTimeBooking = await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
-                            var res =( resBooking == true && resTimeBooking == true)?true: false ;
+                            var res = (resBooking == true && resTimeBooking == true) ? true : false;
 
                             if (res)
                             {
                                 result = new
                                 {
-                                    IsSucess= res,
-                                    Data= errors
+                                    IsSucess = res,
+                                    Data = errors,
+                                    BookingData = booking,
                                 };
                                 tran.Commit();
-                                // Gửi email thông báo thành công
-                                var emailFrom = new EmailData();
-                                var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn); ;
-                                // lấy dữ liệu đổ vào email
-                                // lấy email theo user dữ liệu đặt phòng
-                                emailParam.Header = Resource.EmailHeaderInsert;
-                                emailParam.Footer = Resource.EmailFooter;
-                                emailFrom.EmailToId = emailParam.Email;
-                                emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                emailFrom.EmailSubject = "Thông báo đặt phòng";
-                                emailFrom.EmailToName = emailParam.FullName;
-                                SendEmail(emailFrom);
-                                // gửi email cho admin
-                                var emailToAdmin = new EmailData();
-                                emailToAdmin.EmailToId = booking.AdminEmail;
-                                emailParam.Header = $"Giảng viên {emailParam.FullName} đã gửi yêu cầu đặt phòng đến bạn. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
-                                emailParam.Footer = Resource.EmailFooter;
-                                emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                emailToAdmin.EmailSubject = "Thông báo đặt phòng";
-                                emailToAdmin.EmailToName = emailParam.AdminName;
-                                SendEmail(emailToAdmin);
+
                             }
                         }
                         //2.2. Nếu phòng đã được sử dùng
@@ -836,7 +786,7 @@ namespace RoomBooking.BLL.Services
         }
 
         public async Task<object> UpdateBookingRequest(Guid BookingRoomID, BookingRoom booking)
-        { 
+        {
             object result = null;
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
@@ -848,7 +798,7 @@ namespace RoomBooking.BLL.Services
                     {
                         // Tách chuỗi TimeSlotID
                         string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                         List<BookingRoom> bookings = new List<BookingRoom>();
+                        List<BookingRoom> bookings = new List<BookingRoom>();
                         List<TimeSlot> listTime = new();
                         // 1. Thực hiện tách booking theo các ca khác nhau nếu người dùng thêm nhiều ca
                         foreach (var item in timeIDs)
@@ -866,7 +816,7 @@ namespace RoomBooking.BLL.Services
                             // Kiểm tra xem phòng đã được duyệt chưa
                             int status = await CheckRoomIsStatus(BookingRoomID, cnn, tran, errors);
                             // nếu đang chờ duyệt thì update luôn
-                            if(status == (int)StatusBookingRoom.Pending)
+                            if (status == (int)StatusBookingRoom.Pending)
                             {
                                 resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
                             }
@@ -877,10 +827,10 @@ namespace RoomBooking.BLL.Services
                                 // Thông báo email cho khách hàng
                                 resUpdate = await _repository.Update(booking, BookingRoomID, cnn, tran);
                             }
-                            if(resUpdate)
+                            if (resUpdate)
                             {
                                 // thực hiện xóa hết các ca đi
-                                var del = await _repository.DeleteRecord(BookingRoomID,"timebooking", cnn, tran);
+                                var del = await _repository.DeleteRecord(BookingRoomID, "timebooking", cnn, tran);
                                 // Thực hiện insert lại các ca
                                 // Tạo dữ liệu insert 
                                 var timeBookings = new List<TimeBooking>();
@@ -900,27 +850,6 @@ namespace RoomBooking.BLL.Services
                                         Data = errors
                                     };
                                     tran.Commit();
-                                    // Gửi email thông báo thành công
-                                    var emailFrom = new EmailData();
-                                    var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
-                                    // lấy dữ liệu đổ vào email
-                                    // lấy email theo user dữ liệu đặt phòng
-                                    emailParam.Header = Resource.EmailHeaderUpdate;
-                                    emailParam.Footer = Resource.EmailFooter;
-                                    emailFrom.EmailToId = emailParam.Email;
-                                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                    emailFrom.EmailSubject = "Thông báo đặt phòng";
-                                    emailFrom.EmailToName = emailParam.FullName;
-                                    SendEmail(emailFrom);
-                                    // gửi email cho admin
-                                    var emailToAdmin = new EmailData();
-                                    emailToAdmin.EmailToId = booking.AdminEmail;
-                                    emailParam.Header = $"Giảng viên {emailParam.FullName} đã cập nhật lại yêu cầu đặt phòng . Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
-                                    emailParam.Footer = Resource.EmailFooter;
-                                    emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
-                                    emailToAdmin.EmailSubject = "Thông báo đặt phòng";
-                                    emailToAdmin.EmailToName = emailParam.FullName;
-                                    SendEmail(emailFrom);
 
                                 }
                             }
@@ -952,25 +881,40 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
-        /// <summary>
+        /// <summary>ToString("dd/MM/YYYY"))
         /// sinh ra đoạn mã để trả về email
         /// </summary>
         /// <returns></returns>
         public string CreateFormHTML(ParamReport param)
         {
             string html = "";
+            string status = "";
+            switch (param.StatusBooking)
+            {
+                case (int)StatusBookingRoom.Pending:
+                    status = Resource.Pending; break;
+                case (int)StatusBookingRoom.Browse:
+                    status = Resource.Browse; break;
+                case (int)StatusBookingRoom.Miss:
+                    status = Resource.Miss; break;
+                case (int)StatusBookingRoom.Cancel:
+                    status = Resource.Cancel; break;
+                default:
+                    break;
+            }
             // đọc file template
             string relativePath = @"HTML\templateHTML.txt";
             string absolutePath = Path.Combine(@"", relativePath);
-             html = File.ReadAllText(absolutePath);
+            html = File.ReadAllText(absolutePath);
             html = html.Replace("{{param.Header}}", param.Header);
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
             html = html.Replace("{{param.BuildingName}}", param.BuildingName);
-            html = html.Replace("{{param.DateBooking}}", param.StartDate);
+            html = html.Replace("{{param.DateBooking}}", param.StartDate.ToString("dd/MM/yyyy"));
             html = html.Replace("{{param.DateMiss}}", param.DateMiss);
+            html = html.Replace("{{param.TimeSlotName}}", param.TimeSlotName);
             html = html.Replace("{{param.Capacity}}", param.Capacity.ToString() + " người");
-            html = html.Replace("{{param.StatusBooking}}", param.StatusBooking == 2 ? "Đã duyệt" : "Từ chối");
+            html = html.Replace("{{param.StatusBooking}}", status);
             html = html.Replace("{{param.Footer}}", param.Footer);
             return html;
         }
@@ -1108,8 +1052,8 @@ namespace RoomBooking.BLL.Services
                     try
                     {
                         List<BookingRoom> dataBookingRoom = (List<BookingRoom>)await cnn.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom;", transaction: tran);
-                        var booking= dataBookingRoom.FirstOrDefault(x=>x.BookingRoomID==BookingRoomID);
-                        if(booking!=null)
+                        var booking = dataBookingRoom.FirstOrDefault(x => x.BookingRoomID == BookingRoomID);
+                        if (booking != null)
                         {
                             booking.StatusBooking = (int)StatusBookingRoom.Cancel;
                         }
@@ -1128,6 +1072,215 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
+        /// <summary>
+        /// Gửi email chờ duyệt
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <param name="userID"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<bool> SendingEmailPending(BookingRoom booking, Guid userID)
+        {
+            bool result = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
 
+
+                try
+                {
+
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn); ;
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    emailParam.Header = Resource.EmailHeaderInsert;
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                    emailFrom.EmailToName = emailParam.FullName;
+                    SendEmail(emailFrom);
+                    // gửi email cho admin
+                    var emailToAdmin = new EmailData();
+                    emailToAdmin.EmailToId = booking.AdminEmail;
+                    emailParam.Header = $"Giảng viên {emailParam.FullName} đã gửi yêu cầu đặt phòng đến bạn. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
+                    emailParam.Footer = Resource.EmailFooter;
+
+                    emailToAdmin.EmailSubject = "Thông báo đặt phòng";
+                    emailToAdmin.EmailToName = emailParam.AdminName;
+                    emailParam.FullName = emailParam.AdminName;
+                    emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    SendEmail(emailToAdmin);
+
+
+                }
+                catch { result = false; }
+
+
+
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gửi email cập nhật phòng
+        /// </summary>
+        /// <param name="BookingRoomID"></param>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<bool> SendingEmailUpdate(Guid BookingRoomID, BookingRoom booking)
+        {
+            bool result = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+
+                try
+                {
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    emailParam.Header = Resource.EmailHeaderUpdate;
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                    SendEmail(emailFrom);
+                    // gửi email cho admin
+                    var emailToAdmin = new EmailData();
+                    emailToAdmin.EmailToId = booking.AdminEmail;
+                    emailParam.Header = $"Giảng viên {emailParam.FullName} đã cập nhật lại yêu cầu đặt phòng . Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của giảng viên {emailParam.FullName}:";
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailToAdmin.EmailSubject = "Thông báo đặt phòng";
+                    emailParam.FullName = emailParam.AdminName;
+                    emailToAdmin.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    SendEmail(emailToAdmin);
+
+
+                }
+                catch { result = false; }
+
+
+
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gửi email thông báo phê duyệt hoặc từ chối
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<bool> SendingEmailAproveOrReject(BookingRoomParam param)
+        {
+            bool result = true;
+
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                  try
+                    {
+                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                        var parammeter = new DynamicParameters();
+                        parammeter.Add("@ID", param.bookingRoomID);
+                        var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
+
+                        //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
+                        booking.StatusBooking = param.option;
+                        booking.RefusalReason = param.refusalReason;
+
+
+
+                        // Gửi email thông báo thành công
+                        var emailFrom = new EmailData();
+                        var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn);
+                        // lấy dữ liệu đổ vào email
+                        // lấy email theo user dữ liệu đặt phòng
+                        // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                        var status = "";
+                        if (param.option == (int)(StatusBookingRoom.Browse))
+                        {
+                            emailParam.Header = Resource.AdminBrowser;
+
+                        }
+                        else if (param.option == (int)(StatusBookingRoom.Miss))
+                        {
+                            emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do '{emailParam.RefusalReason.ToLower()}'. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+                        }
+                        var userAdmin = _cache.Get<User>("userCache").FullName;
+                        emailParam.Footer = Resource.EmailFooter;
+                        emailFrom.EmailToId = emailParam.Email;
+                        emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                        emailFrom.EmailSubject = "Thông báo đặt phòng";
+                        emailFrom.EmailToName = emailParam.FullName;
+                        SendEmail(emailFrom);
+                        // gửi email cho người mở cửa
+                        if (param.option == (int)(StatusBookingRoom.Browse))
+                        {
+                            emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {booking.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
+                            // lấy dữ liệu đổ vào email
+                            // lấy email theo user dữ liệu đặt phòng
+
+                            emailParam.Footer = Resource.EmailFooter;
+                            emailFrom.EmailToId = booking.SupporterEmail;
+                            emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                            emailFrom.EmailSubject = "Thông báo mở cửa phòng";
+                            emailFrom.EmailToName = booking.SupporterName;
+                            SendEmail(emailFrom);
+                        }
+
+
+
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        result = false;
+                    }
+
+
+                
+            }
+            return result;
+        }
+        public async Task<bool> SendingEmailCancel(Guid BookingRoomID)
+        {
+            bool result = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+
+                try
+                {
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(BookingRoomID, cnn); ;
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    emailParam.Header = Resource.EmailHeaderCancel;
+                    emailParam.Footer = Resource.EmailFooterCancel;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo hủy phòng";
+                    emailFrom.EmailToName = emailParam.FullName;
+                    SendEmail(emailFrom);
+
+
+                }
+                catch { result = false; }
+
+
+
+            }
+            return result;
+        }
     }
 }

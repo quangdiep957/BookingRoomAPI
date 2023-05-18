@@ -188,64 +188,64 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public override async Task<Object> GetEntityPaging(PagingParam param)
-        {
-            if (_sqlConnection.State != ConnectionState.Open)
-            {
-                _sqlConnection.Open();
-            }
-            var orConditions = new List<string>();
-            string whereClause = "";
+        //public override async Task<Object> GetEntityPaging(PagingParam param)
+        //{
+        //    if (_sqlConnection.State != ConnectionState.Open)
+        //    {
+        //        _sqlConnection.Open();
+        //    }
+        //    var orConditions = new List<string>();
+        //    string whereClause = "";
 
-            if (param.keyWord != null)
-            {
-                orConditions.Add($"r.RoomName LIKE '%{param.keyWord}%'");
-                orConditions.Add($"r.Capacity LIKE '%{param.keyWord}%'");
-                orConditions.Add($"e.EquipmentName LIKE '%{param.keyWord}%'");
-            }
+        //    if (param.keyWord != null)
+        //    {
+        //        orConditions.Add($"r.RoomName LIKE '%{param.keyWord}%'");
+        //        orConditions.Add($"r.Capacity LIKE '%{param.keyWord}%'");
+        //        orConditions.Add($"e.EquipmentName LIKE '%{param.keyWord}%'");
+        //    }
 
-            if (orConditions.Count > 0)
-            {
-                whereClause = $"({string.Join(" OR ", orConditions)})";
-            }
-            var parameters = new DynamicParameters();
-            parameters.Add("@v_Offset", (param.pageIndex - 1) * param.pageSize);
-            parameters.Add("@v_Limit", param.pageSize);
-            parameters.Add("@v_Sort", "r.ModifiedDate DESC");
-            parameters.Add("@v_Where", whereClause);
-            var sqlCommand = "Proc_RoomEquipment_GetPaging";
-            var data = await _sqlConnection.QueryAsync(sqlCommand, param: parameters, commandType: System.Data.CommandType.StoredProcedure);
-            int totalRecords = 0;
-            int totalPages = 0;
-            if (data != null)
-            {
-                totalRecords = data.Count();
-                totalPages = (int)Math.Ceiling((decimal)(totalRecords / param.pageSize));
-            }
-            int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
-            int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
+        //    if (orConditions.Count > 0)
+        //    {
+        //        whereClause = $"({string.Join(" OR ", orConditions)})";
+        //    }
+        //    var parameters = new DynamicParameters();
+        //    parameters.Add("@v_Offset", (param.pageIndex - 1) * param.pageSize);
+        //    parameters.Add("@v_Limit", param.pageSize);
+        //    parameters.Add("@v_Sort", "r.ModifiedDate DESC");
+        //    parameters.Add("@v_Where", whereClause);
+        //    var sqlCommand = "Proc_RoomEquipment_GetPaging";
+        //    var data = await _sqlConnection.QueryAsync(sqlCommand, param: parameters, commandType: System.Data.CommandType.StoredProcedure);
+        //    int totalRecords = 0;
+        //    int totalPages = 0;
+        //    if (data != null)
+        //    {
+        //        totalRecords = data.Count();
+        //        totalPages = (int)Math.Ceiling((decimal)(totalRecords / param.pageSize));
+        //    }
+        //    int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
+        //    int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
-            if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
-            {
-                endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
-            }
+        //    if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
+        //    {
+        //        endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
+        //    }
 
-            // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
-            if (startRecord > endRecord)
-            {
-                startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
-            }
-            CloseMyConnection();
-            return new
-            {
-                TotalPage = totalPages,
-                TotalRecord = totalRecords,
-                CurrentPage = param.pageIndex,
-                StartRecord = startRecord,
-                EndRecord = endRecord,
-                Data = data
-            };
-        }
+        //    // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
+        //    if (startRecord > endRecord)
+        //    {
+        //        startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
+        //    }
+        //    CloseMyConnection();
+        //    return new
+        //    {
+        //        TotalPage = totalPages,
+        //        TotalRecord = totalRecords,
+        //        CurrentPage = param.pageIndex,
+        //        StartRecord = startRecord,
+        //        EndRecord = endRecord,
+        //        Data = data
+        //    };
+        //}
 
     }
 }

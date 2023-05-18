@@ -89,7 +89,19 @@ namespace RoomBooking.API.Controllers
             }
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
-
+        /// <summary>
+        /// Thực hiện gửi email phê duyệt/ từ chối
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [HttpPost("sendingEmailAproveOrReject")]
+        public async Task<IActionResult> SendingEmailAproveOrReject(BookingRoomParam param)
+        {
+            var res = await _scheduleService.SendingEmailAproveOrReject(param);
+           
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
         /// <summary>
         /// Thực hiện phân trang chờ duyệt
         /// </summary>
@@ -143,7 +155,18 @@ namespace RoomBooking.API.Controllers
             }    
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
+        /// <summary>
+        /// Gửi email chờ duyệt
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost("sendEmailPending")]
+        public async Task<IActionResult> SendEmailPending(BookingRoom param)
+        {
+            var res = await _scheduleService.SendingEmailPending(param, param.UserID);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
 
+        }
         /// <summary>
         /// Thực hiện sửa yêu cầu đặt phòng
         /// </summary>
@@ -174,7 +197,24 @@ namespace RoomBooking.API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+        /// <summary>
+        /// Thực hiện sửa yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpPut("sendingEmailUpdate/{BookingID}")]
+        public async Task<IActionResult> SendingEmailUpdate(Guid BookingID, BookingRoom bookingRoom)
+        {
+            try
+            {
+                var res = await _scheduleService.SendingEmailUpdate(BookingID, bookingRoom);
+                return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         /// <summary>
         /// Thực hiện hủy yêu cầu đặt phòng
         /// </summary>
@@ -195,6 +235,17 @@ namespace RoomBooking.API.Controllers
         public async Task<IActionResult> cancelBookingRequestNomal(Guid id)
         {
             var res = await _scheduleService.CancelBookingRoomNomal(id);
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+        }
+        /// <summary>
+        /// Thực hiện gửi email hủy đặt phòng
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpPut("sendingEmailCancel/{id}")]
+        public async Task<IActionResult> SendingEmailCancel(Guid id)
+        {
+            var res = await _scheduleService.SendingEmailCancel(id);
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
         }
 

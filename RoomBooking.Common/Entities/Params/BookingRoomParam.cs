@@ -13,5 +13,6 @@ namespace RoomBooking.Common.Entities.Params
         public Guid bookingRoomID;
         public int option;
         public string refusalReason;
+        public string FullName;
     }
 }

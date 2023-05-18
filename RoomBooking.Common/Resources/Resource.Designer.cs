@@ -79,7 +79,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #4CAF50.
+        ///   Looks up a localized string similar to #3D75DE.
         /// </summary>
         public static string BrowseColor {
             get {
