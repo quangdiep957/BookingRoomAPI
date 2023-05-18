@@ -61,6 +61,15 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Quản trị viên đã phê duyệt yêu cầu đặt phòng của bạn. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:.
+        /// </summary>
+        public static string AdminBrowser {
+            get {
+                return ResourceManager.GetString("AdminBrowser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Đã duyệt.
         /// </summary>
         public static string Browse {
@@ -70,7 +79,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #4CAF50.
+        ///   Looks up a localized string similar to #3D75DE.
         /// </summary>
         public static string BrowseColor {
             get {
@@ -142,7 +151,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được cập nhật thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:.
+        ///   Looks up a localized string similar to Yêu cầu đặt phòng của bạn đã được chuyển cho quản trị viên phê duyệt. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:.
         /// </summary>
         public static string EmailHeaderInsert {
             get {
@@ -160,7 +169,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Chúng tôi xin thông báo rằng đơn đặt phòng của bạn đã được đặt thành công. Dưới đây là thông tin chi tiết về đơn đặt phòng của bạn:.
+        ///   Looks up a localized string similar to Yêu cầu đặt phòng của bạn đã cập nhật thành công và được chuyển cho quản trị viên phê duyệt. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:.
         /// </summary>
         public static string EmailHeaderUpdate {
             get {

@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Dapper;
+using MySqlConnector;
 using RoomBooking.BLL.Interfaces;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Exception;
@@ -29,11 +30,24 @@ namespace RoomBooking.BLL.Services
         {
             // Tạo Guid 
             room.RoomID = Guid.NewGuid();
-            // gán ID cho danh sach thiết bị
-            foreach (var item in room.RoomEquipment)
+            // Tách chuỗi id equipment
+           
+             string[] equipmentIDs = room.ListEquipmentID.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            List<RoomEquipment> equipmentRoomList = new List<RoomEquipment>();
+            // For từng dòng
+            foreach (var item in equipmentIDs)
             {
-                item.RoomID = room.RoomID;
-            }    
+                if (Guid.TryParse(item, out Guid equipmentID))
+                {
+                    equipmentRoomList.Add(new RoomEquipment
+                    {
+                        EquipmentID = equipmentID,
+                        RoomID = room.RoomID
+                    });
+                }
+            }
+     
+            
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
                 // Gọi đến hàm validate dữ liệu
@@ -48,23 +62,14 @@ namespace RoomBooking.BLL.Services
                         if (isValidCustom == true && errorList.Count <= 0)
                         {
                             var res = await _repository.Insert(room, cnn, tran);
-                            if (res == true)
+                            if (res)
                             {
-                             // Thực hiện thêm thiết bị phòng học và bảng RoomEquipment
-                             // Kiểm tra xem có danh sách thiết bị hay chưa
-                             if(room.RoomEquipment.Count > 0)
+                                var resMulti = await _repository.InsertMultiEntity(equipmentRoomList, tran, cnn);
+                                if (resMulti)
                                 {
-                                    var resMulti = await _repository.InsertMultiEntity(room.RoomEquipment, tran, cnn);
-                                    if (resMulti)
-                                    {
-                                        tran.Commit();
-                                    }    
+                                    tran.Commit();
                                 }
-                             else
-                                {
-                                    tran.Rollback();
-                                    throw new ValidateException(errors);
-                                }
+                                
 
                             }
                             else { tran.Rollback(); }
@@ -159,6 +164,53 @@ namespace RoomBooking.BLL.Services
                     cnn.Close();
                 }
             }
+        }
+
+        public override async Task<bool> DeleteService(Guid entityId)
+        {
+            bool isSuccess = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                try
+                {
+                    using (MySqlTransaction tran = cnn.BeginTransaction())
+                    {
+                        try
+                        {
+                            var roombookings = await cnn.QueryAsync<BookingRoom>("SELECT * From BookingRoom;", transaction: tran);
+                            var room = roombookings.FirstOrDefault(x => x.RoomID == entityId);
+                            if (room != null)
+                            {
+                                isSuccess = false;
+                            }
+                            else
+                            {
+                                var sql = "Delete From RoomEquipment WHERE RoomID=@RoomID";
+                                DynamicParameters param = new DynamicParameters();
+                                param.Add("@RoomID", entityId);
+                                var res = await cnn.ExecuteAsync(sql, param, transaction: tran);
+                                var result = await _repository.Delete(entityId, cnn, tran);
+                                if (result)
+                                {
+                                    tran.Commit();
+                                }
+                            }
+                            
+                        }
+                        catch (Exception)
+                        {
+                            isSuccess = false;
+                            tran.Rollback();
+                            throw;
+                        }
+                    }
+                }
+                finally
+                {
+                    cnn.Close();
+                }
+            }
+            return isSuccess;
         }
     }
 }

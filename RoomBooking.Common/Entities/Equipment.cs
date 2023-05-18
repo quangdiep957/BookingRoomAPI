@@ -59,7 +59,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
 
-        public Guid EquipmentTypeId { get; set; }
+        public Guid EquipmentTypeID { get; set; }
 
     }
 }
