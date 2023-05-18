@@ -115,36 +115,37 @@ namespace RoomBooking.DAL.Repositories
             return isSuccess;
         }
 
-        /// <summary>
-        /// Thực hiện xóa đối tượng theo khóa chính
-        /// </summary>
-        /// <param name="entityId">Khóa chính đối tượng</param>
-        /// <returns>Xóa thành công || Xóa thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
-        public override async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
-        {
-            bool isSucess = true;
-            try
-            {
-                var storeDelete = "Proc_Delete_Record";
-                var properties = typeof(RoomEquipment).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
-                DynamicParameters paramId = new DynamicParameters();
-                paramId.Add("@EntityId", entityId);
-                paramId.Add("@TableName", "roomequipment");
-                paramId.Add("@Property", properties.Name);
+        ///// <summary>
+        ///// Thực hiện xóa đối tượng theo khóa chính
+        ///// </summary>
+        ///// <param name="entityId">Khóa chính đối tượng</param>
+        ///// <returns>Xóa thành công || Xóa thất bại</returns>
+        /////  CretedBy: PTTAM (07/03/2023)
+        //public override async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
+        //{
+        //    bool isSucess = true;
+        //    try
+        //    {
+        //        var storeDelete = "Proc_Delete_Record";
 
-                var res = await cnn.ExecuteAsync(storeDelete, paramId, transaction, commandType: System.Data.CommandType.StoredProcedure);
+        //        var properties = typeof(RoomEquipment).GetProperties().FirstOrDefault(prop => Attribute.IsDefined(prop, typeof(KeyDelete)));
+        //        DynamicParameters paramId = new DynamicParameters();
+        //        paramId.Add("@EntityId", entityId);
+        //        paramId.Add("@TableName", "roomequipment");
+        //        paramId.Add("@Property", properties.Name);
 
-            }
-            catch (Exception)
-            {
+        //        var res = await cnn.ExecuteAsync(storeDelete, paramId, transaction, commandType: System.Data.CommandType.StoredProcedure);
 
-                isSucess = false;
-            }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        isSucess = false;
+        //    }
 
 
-            return isSucess;
-        }
+        //    return isSucess;
+        //}
 
         /// <summary>
         /// hàm xóa nhiều

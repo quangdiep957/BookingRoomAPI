@@ -28,20 +28,19 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Số lượng
         /// </summary>
-        [ForBinding]
-        [ForGetting]
+
         public int Quatily { get; set; }
 
         /// <summary>
         /// Tên vai trò
         /// </summary>
-        [ForGetting]
+      
         public string EquipmentName { get; set; }
 
         /// <summary>
         /// Trạng thái khi sửa
         /// </summary>
-        [ForGetting]
+      
         public UpdateMode State { get; set; }
     }
 }
