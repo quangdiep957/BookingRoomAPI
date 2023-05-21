@@ -108,49 +108,36 @@ namespace RoomBooking.BLL.Services
                     {
                         try
                         {
-                              ValidateError(room, cnn,tran);
-                            if (isValidCustom == true && errorList.Count <= 0)
+                            // Thực hiện xóa thiết bị phòng
+                            var sqlDelEquipment = "DELETE FROM RoomEquipment where RoomID = @RoomID";
+                            DynamicParameters param = new DynamicParameters();
+                            param.Add("@RoomID", id);
+                            var resDel= await cnn.ExecuteAsync(sqlDelEquipment, param, transaction: tran);
+                            // Thực hiện thêm lại thiết bị phòng
+                            string[] equipmentIDs = room.ListEquipmentID.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            List<RoomEquipment> equipmentRoomList = new List<RoomEquipment>();
+                            // For từng dòng
+                            foreach (var item in equipmentIDs)
                             {
-                                var res = await _repository.Update(room, id, cnn, tran);
-                                if (res)
+                                if (Guid.TryParse(item, out Guid equipmentID))
                                 {
-                                    // Thực hiện xóa các thiết bị theo ID 
-                                    // Kiểm tra xem có danh sách thiết bị hay chưa
-                                    if (room.RoomEquipment.Count > 0)
+                                    equipmentRoomList.Add(new RoomEquipment
                                     {
-                                        var del = await _repository.Delete(id, cnn, tran);
-                                    }
-                                    else
-                                    {
-                                        tran.Rollback();
-                                        // không có dữ liệu thiết bị
-                                        throw new ValidateException(errors);
-                                    }
-                                    // Thêm mới lại các thiết bị
-                                    foreach (var item in room.RoomEquipment)
-                                    {
-                                        item.RoomID = id; ;
-                                    }    
-                                    var resMulti = await _repository.InsertMultiEntity(room.RoomEquipment, tran, cnn);
-                                    if (resMulti)
-                                    {
-                                        tran.Commit();
-                                    }
-                                    else
-                                    {
-                                        tran.Rollback();
-                                    }
+                                        EquipmentID = equipmentID,
+                                        RoomID = room.RoomID
+                                    });
                                 }
-                                else
-                                {
-                                    tran.Rollback();
-                                }
-                                return res;
                             }
-                            else // Ngược lại throw ra lỗi
+                            var resMulti = await _repository.InsertMultiEntity(equipmentRoomList, tran, cnn);
+
+                            // Thực hiện update lại room
+                            var res = await _repository.Update(room, id, cnn, tran);
+                            if (res)
                             {
-                                throw new ValidateException(errors);
-                            }
+                                tran.Commit();
+                            }else { tran.Rollback(); }
+                            return res;
+
                         }
                         catch (Exception)
                         {
