@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using RoomBooking.BLL.Interfaces;
+using RoomBooking.BLL.Services;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using System.IdentityModel.Tokens.Jwt;
@@ -59,7 +60,19 @@ namespace RoomBooking.API.Controllers
             return StatusCode(200, res);
         }
 
-     
+        /// <summary>
+        /// Thực hiện đổi mật khẩu
+        /// </summary>
+        /// PTTAM 
+        [HttpPost("changepass")]
+        public async Task<IActionResult> ChangePass(User user)
+        {
+           
+            var res= await _service.ChangePass(user);
+
+            return StatusCode(200, res);
+        }
+
 
     }
 }
