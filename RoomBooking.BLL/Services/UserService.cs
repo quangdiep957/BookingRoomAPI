@@ -257,7 +257,7 @@ namespace RoomBooking.BLL.Services
         public async Task<bool> ChangePass(User user)
         {
             // mã hóa mật khẩu 
-            user.Password = HashPassword(user.Password);
+            //user.Password = HashPassword(user.Password);
             user.PasswordNew = HashPassword(user.PasswordNew);
             return await _repository.ChangePass(user);
         }

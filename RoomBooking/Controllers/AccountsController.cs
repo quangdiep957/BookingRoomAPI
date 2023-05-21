@@ -36,7 +36,7 @@ namespace RoomBooking.API.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Invalid username or password.");
+                return StatusCode(200, false);
             }
 
             var token =await _tokenService.GenerateToken(user);
