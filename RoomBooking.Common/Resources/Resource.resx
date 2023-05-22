@@ -213,4 +213,10 @@
   <data name="AdminBrowser" xml:space="preserve">
     <value>Quản trị viên đã phê duyệt yêu cầu đặt phòng của bạn. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:</value>
   </data>
+  <data name="OpenDoor" xml:space="preserve">
+    <value>Đã mở cửa</value>
+  </data>
+  <data name="OpenDoorColor" xml:space="preserve">
+    <value>#27BF09</value>
+  </data>
 </root>

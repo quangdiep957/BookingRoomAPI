@@ -58,7 +58,9 @@ namespace RoomBooking.Common.Enum
         // Từ chối
         Reject=3,
         //Hủy
-        Cancel=4
+        Cancel=4,
+        // Mở cửa
+        OpenDoor=5
     }
     public enum OptionPagingScheduler
     {
@@ -86,7 +88,9 @@ namespace RoomBooking.Common.Enum
         // từ chối
         Miss = 3,
         // hủy bỏ
-        Cancel=4
+        Cancel=4,
+        // Mở cửa
+        OpenDoor = 5
     }
     /// <summary>
     /// Enum giá trị vai trò người dùng

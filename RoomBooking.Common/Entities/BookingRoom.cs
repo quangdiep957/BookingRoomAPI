@@ -166,6 +166,8 @@ namespace RoomBooking.Common.Entities
                         return Resource.MissColor;
                     case (int?)StatusBookingRoom.Cancel:
                         return Resource.CancelColor;
+                    case (int?)StatusBookingRoom.OpenDoor:
+                        return Resource.OpenDoorColor;
                     default:
                         break;
                 }
@@ -187,6 +189,8 @@ namespace RoomBooking.Common.Entities
                         return Resource.Miss;
                     case (int?)StatusBookingRoom.Cancel:
                         return Resource.Cancel;
+                    case (int?)StatusBookingRoom.OpenDoor:
+                        return Resource.OpenDoor;
                     default:
                         break;
                 }
@@ -204,6 +208,7 @@ namespace RoomBooking.Common.Entities
     {
         public string FullName { get; set; }
         public string AdminName { get; set; }
+        public string SupporterName { get; set; }
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
