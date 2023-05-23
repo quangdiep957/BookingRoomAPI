@@ -322,6 +322,24 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Đã mở cửa.
+        /// </summary>
+        public static string OpenDoor {
+            get {
+                return ResourceManager.GetString("OpenDoor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #27BF09.
+        /// </summary>
+        public static string OpenDoorColor {
+            get {
+                return ResourceManager.GetString("OpenDoorColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chờ duyệt.
         /// </summary>
         public static string Pending {

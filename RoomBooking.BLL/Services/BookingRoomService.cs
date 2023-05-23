@@ -232,52 +232,73 @@ namespace RoomBooking.BLL.Services
                 // For từng dòng
                 foreach (var item in timeIDs)
                 {
-                    var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    && x.BookingRoomID != room.BookingRoomID &&
-                    x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-                    var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                         && x.BookingRoomID != room.BookingRoomID &&
-                    x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+                    DateTime currentDate = room.StartDate.Date;
+                    while (currentDate.Date <= room.EndDate.Date)
+                    {
+                        var itemRoom = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                                        && x.BookingRoomID != room.BookingRoomID &&
+                                        x.TimeSlots.Contains(item) && x.StartDate.Date == currentDate.Date);
 
-                    if (room.StartDate == room.EndDate)
-                    {
-                        if (itemRoomStartDate != null)
+                        // Thực hiện các xử lý tương ứng với itemRoom (nếu cần)
+                        if (itemRoom != null)
                         {
-                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
+                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoom.RoomID).RoomName;
                             timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
                             errors.Add(new BookingError
                             {
                                 Error = "Đã có dữ liệu",
-                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                                DescriptionError = $"{roomName} ca {timeName} ngày {currentDate.ToString("dd/MM/yyyy")} đã được đặt."
                             });
                             checkRoom = false;
                         }
+                        currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
                     }
-                    else
-                    {
-                        if (itemRoomStartDate != null)
-                        {
-                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
-                            timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                            errors.Add(new BookingError
-                            {
-                                Error = "Đã có dữ liệu",
-                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                            });
-                            checkRoom = false;
-                        }
-                        else if (itemRoomEndDate != null)
-                        {
-                            roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomEndDate.RoomID).RoomName;
-                            timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                            errors.Add(new BookingError
-                            {
-                                Error = "Đã có dữ liệu",
-                                DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                            });
-                            checkRoom = false;
-                        }
-                    }
+                    //var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                    //&& x.BookingRoomID != room.BookingRoomID &&
+                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+                    //var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
+                    //     && x.BookingRoomID != room.BookingRoomID &&
+                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
+
+                    //if (room.StartDate == room.EndDate)
+                    //{
+                    //    if (itemRoomStartDate != null)
+                    //    {
+                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
+                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                    //        errors.Add(new BookingError
+                    //        {
+                    //            Error = "Đã có dữ liệu",
+                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                    //        });
+                    //        checkRoom = false;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if (itemRoomStartDate != null)
+                    //    {
+                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
+                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                    //        errors.Add(new BookingError
+                    //        {
+                    //            Error = "Đã có dữ liệu",
+                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                    //        });
+                    //        checkRoom = false;
+                    //    }
+                    //    else if (itemRoomEndDate != null)
+                    //    {
+                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomEndDate.RoomID).RoomName;
+                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
+                    //        errors.Add(new BookingError
+                    //        {
+                    //            Error = "Đã có dữ liệu",
+                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
+                    //        });
+                    //        checkRoom = false;
+                    //    }
+                    //}
 
 
                 }
@@ -564,26 +585,33 @@ namespace RoomBooking.BLL.Services
                             {
                                 var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
                                 var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
-                                var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
-                                var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+                                //var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                //var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
 
-
-                                bookingRooms.Add(new SchedulerBooking
+                                DateTime currentDate = booking.StartDate.Date;
+                                while (currentDate.Date <= booking.EndDate.Date)
                                 {
-                                    BookingRoomID = booking.BookingRoomID,
-                                    AvartarColor = booking.AvartarColor,
-                                    RoomID = booking.RoomID,
-                                    RoomName = booking.RoomName,
-                                    FullName = booking.FullName,
-                                    Quantity = booking.Quantity,
-                                    RoomStatus = booking.RoomStatus,
-                                    EndDate = endDate,
-                                    StartDate = startDate,
-                                    Subject = booking.Subject,
-                                    Description = booking.Description,
-                                    TimeSlotName = "Ca " + itemTime.TimeSlotName,
-                                    StatusBooking = booking.StatusBooking,
-                                });
+                                    var startDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                    var endDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+                                    bookingRooms.Add(new SchedulerBooking
+                                    {
+                                        BookingRoomID = booking.BookingRoomID,
+                                        AvartarColor = booking.AvartarColor,
+                                        RoomID = booking.RoomID,
+                                        RoomName = booking.RoomName,
+                                        FullName = booking.FullName,
+                                        Quantity = booking.Quantity,
+                                        RoomStatus = booking.RoomStatus,
+                                        EndDate = endDate,
+                                        StartDate = startDate,
+                                        Subject = booking.Subject,
+                                        Description = booking.Description,
+                                        TimeSlotName = "Ca " + itemTime.TimeSlotName,
+                                        StatusBooking = booking.StatusBooking,
+                                    });
+                                    currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
+                                }
+
 
                             }
                         }
@@ -899,6 +927,8 @@ namespace RoomBooking.BLL.Services
                     status = Resource.Miss; break;
                 case (int)StatusBookingRoom.Cancel:
                     status = Resource.Cancel; break;
+                case (int)StatusBookingRoom.OpenDoor:
+                    status = Resource.OpenDoor; break;
                 default:
                     break;
             }
@@ -1184,69 +1214,77 @@ namespace RoomBooking.BLL.Services
 
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
-                  try
+                try
+                {
+                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                    var parammeter = new DynamicParameters();
+                    parammeter.Add("@ID", param.bookingRoomID);
+                    var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
+
+                    //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
+                    booking.StatusBooking = param.option;
+                    booking.RefusalReason = param.refusalReason;
+
+
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn);
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                    var status = "";
+                    if (param.option == (int)(StatusBookingRoom.Browse))
                     {
-                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
-                        var parammeter = new DynamicParameters();
-                        parammeter.Add("@ID", param.bookingRoomID);
-                        var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
+                        emailParam.Header = Resource.AdminBrowser;
 
-                        //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
-                        booking.StatusBooking = param.option;
-                        booking.RefusalReason = param.refusalReason;
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.OpenDoor))
+                    {
+                        emailParam.Header = $"Phụ trách phòng đã mở cửa {emailParam.RoomName}, vui lòng đến đúng giờ giảng dạy. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
 
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.Miss))
+                    {
+                        emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do '{emailParam.RefusalReason.ToLower()}'. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+                    }
 
-
-                        // Gửi email thông báo thành công
-                        var emailFrom = new EmailData();
-                        var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn);
+                    var userAdmin = _cache.Get<User>("userCache").FullName;
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                    emailFrom.EmailToName = emailParam.FullName;
+                    SendEmail(emailFrom);
+                    // gửi email cho người mở cửa
+                    if (param.option == (int)(StatusBookingRoom.Browse))
+                    {
+                        emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {emailParam.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
                         // lấy dữ liệu đổ vào email
                         // lấy email theo user dữ liệu đặt phòng
-                        // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
-                        var status = "";
-                        if (param.option == (int)(StatusBookingRoom.Browse))
-                        {
-                            emailParam.Header = Resource.AdminBrowser;
 
-                        }
-                        else if (param.option == (int)(StatusBookingRoom.Miss))
-                        {
-                            emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do '{emailParam.RefusalReason.ToLower()}'. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
-                        }
-                        var userAdmin = _cache.Get<User>("userCache").FullName;
                         emailParam.Footer = Resource.EmailFooter;
-                        emailFrom.EmailToId = emailParam.Email;
+                        emailFrom.EmailToId = booking.SupporterEmail;
+
+                        emailFrom.EmailSubject = "Thông báo mở cửa phòng";
+                        emailParam.FullName = emailParam.SupporterName;
+                        emailFrom.EmailToName = emailParam.SupporterName;
                         emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                        emailFrom.EmailSubject = "Thông báo đặt phòng";
-                        emailFrom.EmailToName = emailParam.FullName;
                         SendEmail(emailFrom);
-                        // gửi email cho người mở cửa
-                        if (param.option == (int)(StatusBookingRoom.Browse))
-                        {
-                            emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {booking.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
-                            // lấy dữ liệu đổ vào email
-                            // lấy email theo user dữ liệu đặt phòng
-
-                            emailParam.Footer = Resource.EmailFooter;
-                            emailFrom.EmailToId = booking.SupporterEmail;
-                            emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
-                            emailFrom.EmailSubject = "Thông báo mở cửa phòng";
-                            emailFrom.EmailToName = booking.SupporterName;
-                            SendEmail(emailFrom);
-                        }
-
-
-
-
-                    }
-                    catch (Exception ex)
-                    {
-
-                        result = false;
                     }
 
 
-                
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    result = false;
+                }
+
+
+
             }
             return result;
         }
