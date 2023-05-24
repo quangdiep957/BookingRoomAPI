@@ -225,7 +225,7 @@ namespace RoomBooking.BLL.Services
                 // Gán giá trị cho các thuộc tính của đối tượng
                 _emailSettings.EmailId = "bookingroomad@gmail.com";
                 _emailSettings.Name = "Support - Pro Code Guide";
-                _emailSettings.Password = "jeopyuiouqargvgs";
+                _emailSettings.Password = "rupnjiqcjggygrol";
                 _emailSettings.Host = "smtp.gmail.com";
                 _emailSettings.Port = 465;
                 _emailSettings.UseSSL = true;
