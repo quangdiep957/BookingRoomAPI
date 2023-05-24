@@ -321,7 +321,7 @@ namespace RoomBooking.BLL.Services
             bool checkTime = false;
             var parameters = new DynamicParameters();
             parameters.Add("@Id", BookingRoomID);
-            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM bookingroom b INNER JOIN timebooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN timeslot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters, transaction: tran);
+            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM BookingRoom b INNER JOIN TimeBooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN TimeSlot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters, transaction: tran);
 
 
             return bookingRoom;
@@ -665,7 +665,7 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
                         var parammeter = new DynamicParameters();
                         parammeter.Add("@ID", param.bookingRoomID);
                         var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter, transaction: tran);
@@ -858,7 +858,7 @@ namespace RoomBooking.BLL.Services
                             if (resUpdate)
                             {
                                 // thực hiện xóa hết các ca đi
-                                var del = await _repository.DeleteRecord(BookingRoomID, "timebooking", cnn, tran);
+                                var del = await _repository.DeleteRecord(BookingRoomID, "TimeBooking", cnn, tran);
                                 // Thực hiện insert lại các ca
                                 // Tạo dữ liệu insert 
                                 var timeBookings = new List<TimeBooking>();
@@ -1216,7 +1216,7 @@ namespace RoomBooking.BLL.Services
             {
                 try
                 {
-                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
                     var parammeter = new DynamicParameters();
                     parammeter.Add("@ID", param.bookingRoomID);
                     var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
