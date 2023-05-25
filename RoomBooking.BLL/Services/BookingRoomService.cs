@@ -933,7 +933,7 @@ namespace RoomBooking.BLL.Services
                     break;
             }
             // đọc file template
-            string relativePath = @"HTML\templateHTML.txt";
+            string relativePath = @"HTML/templateHTML.txt";
             string absolutePath = Path.Combine(@"", relativePath);
             html = File.ReadAllText(absolutePath);
             html = html.Replace("{{param.Header}}", param.Header);
