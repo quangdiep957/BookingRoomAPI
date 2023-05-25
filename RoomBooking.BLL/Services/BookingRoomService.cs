@@ -1288,6 +1288,95 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
+
+        /// <summary>
+        /// Gửi email thông báo phê duyệt hoặc từ chối
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> SendingEmailAproveOrRejectCustom(BookingRoomParam param)
+        {
+            string result = "...";
+            string res = "sent mail res";
+
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                try
+                {
+                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                    var parammeter = new DynamicParameters();
+                    parammeter.Add("@ID", param.bookingRoomID);
+                    var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
+
+                    //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
+                    booking.StatusBooking = param.option;
+                    booking.RefusalReason = param.refusalReason;
+
+
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn);
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                    var status = "";
+                    if (param.option == (int)(StatusBookingRoom.Browse))
+                    {
+                        emailParam.Header = Resource.AdminBrowser;
+
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.OpenDoor))
+                    {
+                        emailParam.Header = $"Phụ trách phòng đã mở cửa {emailParam.RoomName}, vui lòng đến đúng giờ giảng dạy. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.Miss))
+                    {
+                        emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do '{emailParam.RefusalReason.ToLower()}'. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+                    }
+
+                    var userAdmin = _cache.Get<User>("userCache").FullName;
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                    emailFrom.EmailToName = emailParam.FullName;
+                    res = await SendEmailString(emailFrom);
+                    // gửi email cho người mở cửa
+                    if (param.option == (int)(StatusBookingRoom.Browse))
+                    {
+                        emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {emailParam.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
+                        // lấy dữ liệu đổ vào email
+                        // lấy email theo user dữ liệu đặt phòng
+
+                        emailParam.Footer = Resource.EmailFooter;
+                        emailFrom.EmailToId = booking.SupporterEmail;
+
+                        emailFrom.EmailSubject = "Thông báo mở cửa phòng";
+                        emailParam.FullName = emailParam.SupporterName;
+                        emailFrom.EmailToName = emailParam.SupporterName;
+                        emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                        res = await SendEmailString(emailFrom);
+                    }
+
+
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    result = "2" + ex.Message;
+                }
+
+
+
+            }
+            return result + "sent mail" + res;
+        }
+
         public async Task<bool> SendingEmailCancel(Guid BookingRoomID)
         {
             bool result = true;
