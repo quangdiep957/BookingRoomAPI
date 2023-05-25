@@ -915,7 +915,7 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public string CreateFormHTML(ParamReport param)
         {
-            string html = "";
+            string html = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<style>\r\n     body {\r\n      font-family: Arial, Helvetica, sans-serif;\r\n    }\r\n    .lable {\r\n        font-size: 14px;\r\n        font-weight: 600;\r\n    }\r\n     table {\r\n      border-collapse: collapse;\r\n      width: 400px;\r\n\r\n    }\r\n    \r\n    th, td {\r\n      border: 1px solid black;\r\n      padding: 8px;\r\n      text-align: left;\r\n    }\r\n\r\n    th {\r\n      background-color: #f2f2f2;\r\n      width:200px\r\n    }\r\n    \r\n    tr:nth-child(even) {\r\n      background-color: #f9f9f9;\r\n    }\r\n</style></head>\r\n<body>\r\n    <p class=\"lable\">Chào {{param.FullName}},</p>\r\n    <p>{{param.Header}}</p>\r\n    <div>\r\n \r\n            <table>\r\n              <tr>\r\n                <th>Vị trí</th>\r\n                <td>{{param.BuildingName}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Phòng yêu cầu</th>\r\n                <td>{{param.RoomName}}</td>\r\n              </tr>\r\n            <tr>\r\n                <th>Ca đặt</th>\r\n                <td>{{param.TimeSlotName}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Ngày đặt phòng</th>\r\n                <td>{{param.DateBooking}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Sức chứa của phòng</th>\r\n                <td>{{param.Capacity}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Trạng thái</th>\r\n                <td>{{param.StatusBooking}}</td>\r\n              </tr>\r\n            </table>\r\n    </div>\r\n    <p>\r\n       {{param.Footer}}\r\n    </p>\r\n    <p>Chân thành cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.</p>\r\n    <p>Trân trọng.</p>\r\n</body>\r\n</html>\r\n";
             string status = "";
             switch (param.StatusBooking)
             {
@@ -933,9 +933,9 @@ namespace RoomBooking.BLL.Services
                     break;
             }
             // đọc file template
-            string relativePath = @"HTML/templateHTML.txt";
-            string absolutePath = Path.Combine(@"", relativePath);
-            html = File.ReadAllText(absolutePath);
+            //string relativePath = @"HTML/templateHTML.txt";
+            //string absolutePath = Path.Combine(@"", relativePath);
+            //html = File.ReadAllText(absolutePath);
             html = html.Replace("{{param.Header}}", param.Header);
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
