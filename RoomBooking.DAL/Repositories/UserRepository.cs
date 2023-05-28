@@ -112,10 +112,9 @@ namespace RoomBooking.DAL.Repositories
 
         public async Task<bool> ChangePass(User user)
         {
-            var query = "UPDATE user u SET u.Password = @PassWordNew WHERE u.UserID = @UserID AND u.Password = @PassWord";
+            var query = "UPDATE user u SET u.Password = @PassWordNew WHERE u.UserID = @UserID";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@UserID", user.UserID);
-            dynamicParameters.Add("@Password", user.Password);
             dynamicParameters.Add("@PasswordNew", user.PasswordNew);
             var a = await _sqlConnection.ExecuteAsync(query, dynamicParameters);
             if (a > 0) { return true; }

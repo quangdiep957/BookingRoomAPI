@@ -79,7 +79,7 @@ namespace RoomBooking.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #4CAF50.
+        ///   Looks up a localized string similar to #3D75DE.
         /// </summary>
         public static string BrowseColor {
             get {
@@ -318,6 +318,24 @@ namespace RoomBooking.Common.Resources {
         public static string NotEmprtyEmail {
             get {
                 return ResourceManager.GetString("NotEmprtyEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Đã mở cửa.
+        /// </summary>
+        public static string OpenDoor {
+            get {
+                return ResourceManager.GetString("OpenDoor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #27BF09.
+        /// </summary>
+        public static string OpenDoorColor {
+            get {
+                return ResourceManager.GetString("OpenDoorColor", resourceCulture);
             }
         }
         

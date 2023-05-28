@@ -103,13 +103,13 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [ForGetting]
         [DataLength(100)]
-        public string AdminName { get; set; }
+        public string? AdminName { get; set; }
 
 
         [ForBinding]
         [ForGetting]
         [DataLength(50)]
-        public string AdminEmail { get; set; }
+        public string? AdminEmail { get; set; }
 
 
 
@@ -122,29 +122,30 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [ForGetting]
         [DataLength(100)]
-        public string SupporterName { get; set; }
+        public string? SupporterName { get; set; }
 
 
         [ForBinding]
         [ForGetting]
         [DataLength(50)]
-        public string SupporterEmail { get; set; }
+        public string? SupporterEmail { get; set; }
 
         [ForBinding]
         [ForGetting]
-        public string AvartarAdmin { get; set; }
+        public string? AvartarAdmin { get; set; }
 
         [ForBinding]
         [ForGetting]
-        public string AvartarSupporter { get; set; }
+        public string? AvartarSupporter { get; set; }
 
         /// <summary>
         /// Danh sách thiết bị
         /// </summary>
-        public List<RoomEquipment> RoomEquipment { get; set; }
+        public List<RoomEquipment>? RoomEquipment { get; set; }
 
 
         [ForBinding]
+        [ForGetting]
         public string ListEquipmentID { get; set; }
 
         [ForBinding]

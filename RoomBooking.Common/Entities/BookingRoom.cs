@@ -1,10 +1,12 @@
-﻿using RoomBooking.Common.AttributeCustom;
+﻿using Newtonsoft.Json.Converters;
+using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Enum;
 using RoomBooking.Common.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
@@ -105,7 +107,8 @@ namespace RoomBooking.Common.Entities
 
         [ForGetting]
         [ForBinding]
-        public StatusBookingRoom? StatusBooking { get; set; } = StatusBookingRoom.Pending;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public int? StatusBooking { get; set; } = (int?)StatusBookingRoom.Pending;
 
         /// <summary>
         /// Tên ca 
@@ -155,14 +158,16 @@ namespace RoomBooking.Common.Entities
             {
                 switch (StatusBooking)
                 {
-                    case StatusBookingRoom.Pending:
+                    case (int?)StatusBookingRoom.Pending:
                         return Resource.PendingColor;
-                    case StatusBookingRoom.Browse:
+                    case (int?)StatusBookingRoom.Browse:
                         return Resource.BrowseColor;
-                    case StatusBookingRoom.Miss:
+                    case (int?)StatusBookingRoom.Miss:
                         return Resource.MissColor;
-                    case StatusBookingRoom.Cancel:
+                    case (int?)StatusBookingRoom.Cancel:
                         return Resource.CancelColor;
+                    case (int?)StatusBookingRoom.OpenDoor:
+                        return Resource.OpenDoorColor;
                     default:
                         break;
                 }
@@ -176,14 +181,16 @@ namespace RoomBooking.Common.Entities
             {
                 switch (StatusBooking)
                 {
-                    case StatusBookingRoom.Pending:
+                    case (int?)StatusBookingRoom.Pending:
                         return Resource.Pending;
-                    case StatusBookingRoom.Browse:
+                    case (int?)StatusBookingRoom.Browse:
                         return Resource.Browse;
-                    case StatusBookingRoom.Miss:
+                    case (int?)StatusBookingRoom.Miss:
                         return Resource.Miss;
-                    case StatusBookingRoom.Cancel:
+                    case (int?)StatusBookingRoom.Cancel:
                         return Resource.Cancel;
+                    case (int?)StatusBookingRoom.OpenDoor:
+                        return Resource.OpenDoor;
                     default:
                         break;
                 }
@@ -200,17 +207,19 @@ namespace RoomBooking.Common.Entities
     public class ParamReport
     {
         public string FullName { get; set; }
+        public string AdminName { get; set; }
+        public string SupporterName { get; set; }
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
         public Guid BookingRoomID { get; set; }
 
-        public string StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         public string RoomName { get; set; }
         public string EquipmentName { get; set; }
 
-        public string TimeSlotName { get; set; }
+        //public string TimeSlotName { get; set; }
 
 
         public string BuildingName { get; set; }
@@ -222,5 +231,6 @@ namespace RoomBooking.Common.Entities
         public string Footer { get; set; }
         public string Header { get; set; }
         public string RefusalReason { get; set; }
+        public string TimeSlotName { get; set; }
     }
 }

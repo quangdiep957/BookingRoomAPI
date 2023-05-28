@@ -47,6 +47,12 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="param"></param>
         /// <returns></returns>
         public Task<object> GetPagingRequest(PagingParam param);
+        /// <summary>
+        /// Gọi phân trang cho lịch sử đặt phong
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Task<object> GetPagingHistory(PagingParam param);
 
         /// <summary>
         /// Thực hiện gửi yêu cầu đặt phòng
@@ -56,6 +62,13 @@ namespace RoomBooking.BLL.Interfaces
         public Task<object> InsertBookingRequest(BookingRoom bookings,Guid userID);
 
         /// <summary>
+        /// Thực hiện gửi yêu email chờ duyệt
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<bool> SendingEmailPending(BookingRoom bookings, Guid userID);
+
+        /// <summary>
         /// Thực hiện sửa yêu cầu đặt phòng
         /// </summary>
         /// <param name="bookings"></param>
@@ -63,11 +76,21 @@ namespace RoomBooking.BLL.Interfaces
         public Task<object> UpdateBookingRequest(Guid BookingRoomID,BookingRoom bookings);
 
         /// <summary>
+        /// Thực hiện sửa yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<bool> SendingEmailUpdate(Guid BookingRoomID, BookingRoom bookings);
+
+        /// <summary>
         /// Thực hiện hủy yêu cầu đặt phòng
         /// </summary>
         /// <param name="bookings"></param>
         /// <returns></returns>
         public Task<object> CancelBookingRoom(Guid BookingRoomID);
+        public Task<bool> SendingEmailCancel(Guid BookingRoomID);
+        public Task<bool> SendingEmailAproveOrReject(BookingRoomParam param);
+        public Task<string> SendingEmailAproveOrRejectCustom(BookingRoomParam param);
 
         /// <summary>
         /// Xem báo cáo theo id
@@ -75,6 +98,13 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="entityId"></param>
         /// <returns></returns>
         public Task<ParamReport> PrintReport(Guid entityId);
+
+        /// <summary>
+        /// Thực hiện hủy yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookings"></param>
+        /// <returns></returns>
+        public Task<object> CancelBookingRoomNomal(Guid BookingRoomID);
 
 
     }
