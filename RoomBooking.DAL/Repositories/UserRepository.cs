@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Dapper.SqlMapper;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RoomBooking.DAL.Repositories
 {
@@ -86,6 +87,27 @@ namespace RoomBooking.DAL.Repositories
             await _sqlConnection.ExecuteAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
             string employeeNewCode = dynamicParameters.Get<String>("@UserNewCode");
             return employeeNewCode;
+        }
+        /// <summary>
+        /// Kiểm tra email google có trong db chưa
+        /// </summary>
+        /// <returns>Mã người dùng mới</returns>
+        ///  CretedBy: PTTAM (07/03/2023)
+        public async Task<bool> CheckEmail(string email)
+        {
+            var query = "select count(*) from user where email = @Email";
+            DynamicParameters dynamicParameters = new DynamicParameters();
+            dynamicParameters.Add("@Email", email);
+           int count = await _sqlConnection.ExecuteScalarAsync<int>(query, param: dynamicParameters);
+
+            if (count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<bool> ChangePass(User user)

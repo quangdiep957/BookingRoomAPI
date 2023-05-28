@@ -34,5 +34,12 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="user"></param>
         /// <returns></returns>
         public Task<bool> ChangePass(User user);
+
+        /// <summary>
+        /// kiểm tra email có chưa
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<bool> CheckEmail(string user);
     }
 }

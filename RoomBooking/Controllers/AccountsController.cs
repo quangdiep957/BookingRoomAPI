@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using Google.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,27 @@ namespace RoomBooking.API.Controllers
             var token =await _tokenService.GenerateToken(user);
             return StatusCode(200, token);
             //return Ok(new { token });
+        }
+        /// <summary>
+        /// login bằng google
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost("loginGoogle")]
+        public async Task<IActionResult> LoginGoogle([FromBody] User param)
+        {
+            var res = await _userService.LoginGoogle(param);
+            if(res != null)
+            {
+                var token = await _tokenService.GenerateToken(res);
+                return StatusCode(200, token);
+            }
+            else
+            {
+                return BadRequest(new { message = "loi xac thuc" });
+            }
+           
+
         }
 
         /// <summary>
