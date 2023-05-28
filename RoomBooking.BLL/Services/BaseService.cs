@@ -520,15 +520,16 @@ namespace RoomBooking.BLL.Services
         /// <param name="time"></param>
         /// <param name="sendAdmin"> gửi cho admin hay người dùng</param>
         /// <returns></returns>
-        public async Task SendNotify(string ID,string notify, DateTime time , bool? sendAdmin)
+        public async Task SendNotify(string ID, string notify, DateTime time, bool? sendAdmin)
         {
             var firebaseClient = new FirebaseClient("https://room-90f68-default-rtdb.firebaseio.com/");
-
+            var status = false;
             // Define the data to be added
             var data = new Dictionary<string, object>
             {
                 { "notify", notify },
-                { "time", time }
+                { "time", time },
+                {"status",status }
             };
 
             var node = sendAdmin == true ? "notifyAdmin" : "notifications";
