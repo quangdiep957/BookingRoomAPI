@@ -22,5 +22,7 @@ namespace RoomBooking.Common.Entities.Params
         public int? capacityMin;
         public int? capacityMax;
         public int? roleOption;
+        public DateTime? currentDate;
+     
     }
 }
