@@ -321,7 +321,7 @@ namespace RoomBooking.BLL.Services
             bool checkTime = false;
             var parameters = new DynamicParameters();
             parameters.Add("@Id", BookingRoomID);
-            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM bookingroom b INNER JOIN timebooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN timeslot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters, transaction: tran);
+            BookingRoom bookingRoom = (BookingRoom)await cnn.QueryFirstOrDefaultAsync<BookingRoom>("SELECT b.* ,t1.StartTime FROM BookingRoom b INNER JOIN TimeBooking t ON b.BookingRoomID = t.BookingRoomID INNER JOIN TimeSlot t1 ON t.TimeSlotID = t1.TimeSlotID WHERE b.BookingRoomID = @Id ORDER BY t1.TimeSlotName ASC limit 1;", parameters, transaction: tran);
 
 
             return bookingRoom;
@@ -665,7 +665,7 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
-                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                        var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
                         var parammeter = new DynamicParameters();
                         parammeter.Add("@ID", param.bookingRoomID);
                         var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter, transaction: tran);
@@ -858,7 +858,7 @@ namespace RoomBooking.BLL.Services
                             if (resUpdate)
                             {
                                 // thực hiện xóa hết các ca đi
-                                var del = await _repository.DeleteRecord(BookingRoomID, "timebooking", cnn, tran);
+                                var del = await _repository.DeleteRecord(BookingRoomID, "TimeBooking", cnn, tran);
                                 // Thực hiện insert lại các ca
                                 // Tạo dữ liệu insert 
                                 var timeBookings = new List<TimeBooking>();
@@ -915,7 +915,7 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public string CreateFormHTML(ParamReport param)
         {
-            string html = "";
+            string html = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<style>\r\n     body {\r\n      font-family: Arial, Helvetica, sans-serif;\r\n    }\r\n    .lable {\r\n        font-size: 14px;\r\n        font-weight: 600;\r\n    }\r\n     table {\r\n      border-collapse: collapse;\r\n      width: 400px;\r\n\r\n    }\r\n    \r\n    th, td {\r\n      border: 1px solid black;\r\n      padding: 8px;\r\n      text-align: left;\r\n    }\r\n\r\n    th {\r\n      background-color: #f2f2f2;\r\n      width:200px\r\n    }\r\n    \r\n    tr:nth-child(even) {\r\n      background-color: #f9f9f9;\r\n    }\r\n</style></head>\r\n<body>\r\n    <p class=\"lable\">Chào {{param.FullName}},</p>\r\n    <p>{{param.Header}}</p>\r\n    <div>\r\n \r\n            <table>\r\n              <tr>\r\n                <th>Vị trí</th>\r\n                <td>{{param.BuildingName}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Phòng yêu cầu</th>\r\n                <td>{{param.RoomName}}</td>\r\n              </tr>\r\n            <tr>\r\n                <th>Ca đặt</th>\r\n                <td>{{param.TimeSlotName}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Ngày đặt phòng</th>\r\n                <td>{{param.DateBooking}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Sức chứa của phòng</th>\r\n                <td>{{param.Capacity}}</td>\r\n              </tr>\r\n              <tr>\r\n                <th>Trạng thái</th>\r\n                <td>{{param.StatusBooking}}</td>\r\n              </tr>\r\n            </table>\r\n    </div>\r\n    <p>\r\n       {{param.Footer}}\r\n    </p>\r\n    <p>Chân thành cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.</p>\r\n    <p>Trân trọng.</p>\r\n</body>\r\n</html>\r\n";
             string status = "";
             switch (param.StatusBooking)
             {
@@ -933,9 +933,9 @@ namespace RoomBooking.BLL.Services
                     break;
             }
             // đọc file template
-            string relativePath = @"HTML\templateHTML.txt";
-            string absolutePath = Path.Combine(@"", relativePath);
-            html = File.ReadAllText(absolutePath);
+            //string relativePath = @"HTML/templateHTML.txt";
+            //string absolutePath = Path.Combine(@"", relativePath);
+            //html = File.ReadAllText(absolutePath);
             html = html.Replace("{{param.Header}}", param.Header);
             html = html.Replace("{{param.FullName}}", param.FullName);
             html = html.Replace("{{param.RoomName}}", param.RoomName);
@@ -1216,7 +1216,7 @@ namespace RoomBooking.BLL.Services
             {
                 try
                 {
-                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
                     var parammeter = new DynamicParameters();
                     parammeter.Add("@ID", param.bookingRoomID);
                     var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
@@ -1288,6 +1288,95 @@ namespace RoomBooking.BLL.Services
             }
             return result;
         }
+
+        /// <summary>
+        /// Gửi email thông báo phê duyệt hoặc từ chối
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> SendingEmailAproveOrRejectCustom(BookingRoomParam param)
+        {
+            string result = "...";
+            string res = "sent mail res";
+
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+                try
+                {
+                    var query = "SELECT b.*, r.SupporterID,r.SupporterEmail,r.SupporterName FROM BookingRoom b INNER JOIN Room r ON b.RoomID = r.RoomID where b.BookingRoomID = @ID";
+                    var parammeter = new DynamicParameters();
+                    parammeter.Add("@ID", param.bookingRoomID);
+                    var booking = await cnn.QueryFirstOrDefaultAsync<BookingRoom>(query, parammeter);
+
+                    //1.1. Gán lại trạng thái phòng theo yêu cầu gửi lên
+                    booking.StatusBooking = param.option;
+                    booking.RefusalReason = param.refusalReason;
+
+
+
+                    // Gửi email thông báo thành công
+                    var emailFrom = new EmailData();
+                    var emailParam = await _repository.GetParamReport(booking.BookingRoomID, cnn);
+                    // lấy dữ liệu đổ vào email
+                    // lấy email theo user dữ liệu đặt phòng
+                    // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                    var status = "";
+                    if (param.option == (int)(StatusBookingRoom.Browse))
+                    {
+                        emailParam.Header = Resource.AdminBrowser;
+
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.OpenDoor))
+                    {
+                        emailParam.Header = $"Phụ trách phòng đã mở cửa {emailParam.RoomName}, vui lòng đến đúng giờ giảng dạy. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+
+                    }
+                    else if (param.option == (int)(StatusBookingRoom.Miss))
+                    {
+                        emailParam.Header = $"Quản trị viên đã từ chối yêu cầu đặt phòng của bạn vì lý do '{emailParam.RefusalReason.ToLower()}'. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của bạn:";
+                    }
+
+                    var userAdmin = _cache.Get<User>("userCache").FullName;
+                    emailParam.Footer = Resource.EmailFooter;
+                    emailFrom.EmailToId = emailParam.Email;
+                    emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                    emailFrom.EmailSubject = "Thông báo đặt phòng";
+                    emailFrom.EmailToName = emailParam.FullName;
+                    res = await SendEmailString(emailFrom);
+                    // gửi email cho người mở cửa
+                    if (param.option == (int)(StatusBookingRoom.Browse))
+                    {
+                        emailParam.Header = $"Quản trị viên đã phê duyệt yêu cầu đặt phòng của {emailParam.FullName}, vui lòng mở cửa đúng giờ. Dưới đây là thông tin chi tiết về yêu cầu đặt phòng của {booking.FullName}:";
+                        // lấy dữ liệu đổ vào email
+                        // lấy email theo user dữ liệu đặt phòng
+
+                        emailParam.Footer = Resource.EmailFooter;
+                        emailFrom.EmailToId = booking.SupporterEmail;
+
+                        emailFrom.EmailSubject = "Thông báo mở cửa phòng";
+                        emailParam.FullName = emailParam.SupporterName;
+                        emailFrom.EmailToName = emailParam.SupporterName;
+                        emailFrom.EmailBody = $"{CreateFormHTML(emailParam)}";
+                        res = await SendEmailString(emailFrom);
+                    }
+
+
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    result = "2" + ex.Message;
+                }
+
+
+
+            }
+            return result + "sent mail" + res;
+        }
+
         public async Task<bool> SendingEmailCancel(Guid BookingRoomID)
         {
             bool result = true;

@@ -90,6 +90,7 @@ namespace RoomBooking.BLL.Interfaces
         public Task<object> CancelBookingRoom(Guid BookingRoomID);
         public Task<bool> SendingEmailCancel(Guid BookingRoomID);
         public Task<bool> SendingEmailAproveOrReject(BookingRoomParam param);
+        public Task<string> SendingEmailAproveOrRejectCustom(BookingRoomParam param);
 
         /// <summary>
         /// Xem báo cáo theo id

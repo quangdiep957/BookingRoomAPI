@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using RoomBooking.BLL.Interfaces;
@@ -28,6 +28,26 @@ namespace RoomBooking.API.Controllers
             _cache = cache;
 
 
+        }
+        /// <summary>
+        /// Thực hiện lấy danh sach lịch sử đặt phòng
+        /// </summary>
+        /// <param name="BookingID"></param>
+        /// <returns></returns>
+        [HttpGet("SendMailString")]
+        public async Task<IActionResult> SendMailString(BookingRoomParam param)
+        {
+            //var emailFrom = new EmailData();
+            //emailFrom.EmailToId = "nmquang21@gmail.com";
+            //emailFrom.EmailBody = $"hello";
+            //emailFrom.EmailSubject = "Thông báo đặt phòng";
+            //emailFrom.EmailToName = "BQDIEP";
+            //var res = await _scheduleService.SendEmailString(emailFrom);
+            //return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            var res = await _scheduleService.SendingEmailAproveOrRejectCustom(param);
+
+            return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            
         }
         [HttpPost("excel")]
         public async Task<IActionResult> ReadScheduleFile(IFormFile file)
