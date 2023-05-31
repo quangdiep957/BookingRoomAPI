@@ -16,8 +16,10 @@ namespace RoomBooking.DAL.Repositories
 {
     public class BookingRoomRepository : BaseRepository<BookingRoom>, IBookingRoomRepository
     {
-        public BookingRoomRepository(IConfiguration configuration) : base(configuration)
+        IRoomRepository _repoRoom;
+        public BookingRoomRepository(IConfiguration configuration, IRoomRepository repoRoom) : base(configuration)
         {
+            _repoRoom = repoRoom;
         }
         /// <summary>
         /// Thực hiện việc phân trang
@@ -30,7 +32,7 @@ namespace RoomBooking.DAL.Repositories
         /// Created by: PTTAM (07/03/2023)
         public async Task<ParamSchedulerBooking> GetPaging(PagingParam param, MySqlConnection cnn)
         {
-           
+
             var storeName = "Proc_GetSchedulerBooking"; // Tên của thủ thục
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@CapacityMin", param.capacityMin); //input: Số bản ghi/trang
@@ -41,23 +43,25 @@ namespace RoomBooking.DAL.Repositories
             dynamicParameters.Add("@UserID", param.userID); //input: Khóa chính thời gian
             dynamicParameters.Add("@PageIndex", param.pageIndex); //input: trang
             dynamicParameters.Add("@PageSize", param.pageSize); //input: số luwojgn bản ghi
+            dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
+            dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
+
 
             //2. Lấy dữ liệu
             var data = await cnn.QueryMultipleAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
-
             ParamSchedulerBooking result = new();
+            result.bookings = (List<SchedulerBooking>)await data.ReadAsync<SchedulerBooking>();
+            result.rooms = (List<Room>)await data.ReadAsync<Room>();
+            int totalRecords = dynamicParameters.Get<int>("@TotalRecord"); // Lấy ra tổng số bản ghi
+            int totalPages = dynamicParameters.Get<int>("@TotalPage"); // Lấy ra tổng số trang    
 
-            result.bookings= (List<SchedulerBooking>)await data.ReadAsync<SchedulerBooking>(); 
-            result.rooms= (List<Room>)await data.ReadAsync<Room>();
-            int totalRecords = 0;
-            int totalPages = (int)param.pageSize;
             int startRecord = (int)(param.pageSize * (param.pageIndex - 1) + 1); // Bản ghi bắt đầu của trang hiện tại
             int endRecord = (int)(param.pageSize * (param.pageIndex - 1) + param.pageSize); // Bản ghi kết thúc của trang hiện tại
 
-            //if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
-            //{
-            //    endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
-            //}
+            if (endRecord > totalRecords) // nếu bản ghi kết thúc > tổng số bản ghi
+            {
+                endRecord = totalRecords; // gán bản ghi kết thúc = tổng số bản ghi
+            }
 
             // nếu bản ghi bắt đầu của trang > bản ghi kết thúc
             if (startRecord > endRecord)
@@ -65,10 +69,10 @@ namespace RoomBooking.DAL.Repositories
                 startRecord = endRecord;// gán bản ghi bắt đầu = bản ghi kết thúc
             }
             result.CurrentPage = (int)(param.pageIndex == null ? param.pageIndex : 1);
-            result.TotalPage = result.rooms.Count();
+            result.TotalPage = totalPages;
             result.EndRecord = endRecord;
             result.StartRecord = startRecord;
-            result.TotalRecord = result.rooms.Count();
+            result.TotalRecord = totalRecords;
             return result;
 
         }
@@ -210,7 +214,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
         ///  CretedBy: PTTAM (07/03/2023)
-        public async Task<bool> DeleteRecord(Guid entityId, string tablename ,MySqlConnection cnn, MySqlTransaction transaction)
+        public async Task<bool> DeleteRecord(Guid entityId, string tablename, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSucess = true;
             try
@@ -298,10 +302,10 @@ namespace RoomBooking.DAL.Repositories
             var orConditions = new List<string>();
             string whereClause = $"u.UserID = '{param.userID}'";
             // Kiểm tra xem có lấy theo chi tiết theo BookingRoomID không
-            if(param != null && param.bookingRoomID != Guid.Empty)
+            if (param != null && param.bookingRoomID != Guid.Empty)
             {
                 whereClause = whereClause + $" AND b.BookingRoomID = '{param.bookingRoomID}'";
-            }    
+            }
 
             if (param.keyWord != null)
             {
@@ -392,7 +396,7 @@ namespace RoomBooking.DAL.Repositories
             var res = await _sqlConnection.QueryAsync<BookingRoom>("SELECT * FROM BookingRoom");
             booking = res.FirstOrDefault(x => x.BookingRoomID == entityId);
 
-            
+
 
             return booking;
         }
