@@ -18,6 +18,7 @@ namespace RoomBooking.DAL.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
+        
         public UserRepository(IConfiguration configuration) : base(configuration)
         {
 
@@ -95,7 +96,7 @@ namespace RoomBooking.DAL.Repositories
         ///  CretedBy: PTTAM (07/03/2023)
         public async Task<bool> CheckEmail(string email)
         {
-            var query = "select count(*) from user where email = @Email";
+            var query = "select count(*) from User where email = @Email";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@Email", email);
            int count = await _sqlConnection.ExecuteScalarAsync<int>(query, param: dynamicParameters);
@@ -112,7 +113,8 @@ namespace RoomBooking.DAL.Repositories
 
         public async Task<bool> ChangePass(User user)
         {
-            var query = "UPDATE user u SET u.Password = @PassWordNew WHERE u.UserID = @UserID";
+           
+            var query = "UPDATE User u SET u.Password = @PassWordNew WHERE u.UserID = @UserID";
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@UserID", user.UserID);
             dynamicParameters.Add("@PasswordNew", user.PasswordNew);
