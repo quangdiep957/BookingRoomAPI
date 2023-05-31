@@ -623,7 +623,13 @@ namespace RoomBooking.BLL.Services
                             {
                                 option = (int)OptionPagingScheduler.OneRoom,
                                 dataBooking = bookingRooms,
-                                dataRoom = scheduler.rooms
+                                dataRoom = scheduler.rooms,
+                                currentPage = (int)scheduler.CurrentPage,
+                                totalPage = (int)scheduler.TotalPages,
+                                endRecord = (int)scheduler.EndRecord,
+                                startRecord = (int)scheduler.StartRecord,
+                                totalRecord = (int)scheduler.TotalRecord,
+
                             };
                         }
                         else
@@ -633,7 +639,12 @@ namespace RoomBooking.BLL.Services
                             {
                                 option = (int)OptionPagingScheduler.AnyRoom,
                                 dataBooking = bookingRooms,
-                                dataRoom = scheduler.rooms
+                                dataRoom = scheduler.rooms,
+                                currentPage = scheduler.CurrentPage,
+                                totalPage = scheduler.TotalPages,
+                                endRecord = scheduler.EndRecord,
+                                startRecord = scheduler.StartRecord,
+                                totalRecord = scheduler.TotalRecord
                             };
                         }
 

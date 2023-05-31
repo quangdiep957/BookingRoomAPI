@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XAct;
 using XSystem.Security.Cryptography;
 using static Dapper.SqlMapper;
 
@@ -164,6 +165,48 @@ namespace RoomBooking.BLL.Services
             }
 
             return isValidCustom;
+        }
+        /// <summary>
+        /// login google
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<User> LoginGoogle(User user)
+        {
+            var users = new User();
+            bool resinsert = false;
+            // kiểm tra xem đã có dữ liệu trong db chưa
+            bool checkEmail = await _repository.CheckEmail(user.Email);
+            // nếu đã có thì login 
+            if(checkEmail == true)
+            {
+              var userLogin = await Authenticate(user.Email, user.Password);
+                if(userLogin != null)
+                {
+                    return userLogin;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                // thực hiện thêm vào db
+                //gán mặc định giá trị quyền là người dùng và phòng là điều độ
+                user.UserCode =await GetNewUserCode();
+                user.RoleID = "592b006d-6335-6101-edf6-092cdb0ab5e8".ToGuid();
+                user.DepartmentID = "6528b15d-6674-724f-79a4-4b24de418577".ToGuid();
+                resinsert = await InsertService(user);
+                if(resinsert == true)
+                {
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         /// <summary>
