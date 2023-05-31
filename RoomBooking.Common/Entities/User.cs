@@ -146,6 +146,7 @@ namespace RoomBooking.Common.Entities
         /// Loại vai trò
         /// </summary>
         public string? RoleName { get; set; }
+        public string? PasswordOld { get; set; }
 
     }
 }

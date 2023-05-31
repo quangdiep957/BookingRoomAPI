@@ -301,8 +301,19 @@ namespace RoomBooking.BLL.Services
         {
             // mã hóa mật khẩu 
             //user.Password = HashPassword(user.Password);
-            user.PasswordNew = HashPassword(user.PasswordNew);
-            return await _repository.ChangePass(user);
+            bool isSuccess = true;
+            var users = await _repository.GetAll();
+            var userPass = users.FirstOrDefault(x => x.UserID == user.UserID).Password;
+            if (userPass != HashPassword(user.PasswordOld))
+            {
+                isSuccess = false;
+            }
+            else {
+                user.PasswordNew = HashPassword(user.PasswordNew);
+                isSuccess = await _repository.ChangePass(user);
+            }
+                
+            return isSuccess;
         }
 
         /// <summary>
