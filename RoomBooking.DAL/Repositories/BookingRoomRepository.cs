@@ -16,10 +16,8 @@ namespace RoomBooking.DAL.Repositories
 {
     public class BookingRoomRepository : BaseRepository<BookingRoom>, IBookingRoomRepository
     {
-        IRoomRepository _repoRoom;
-        public BookingRoomRepository(IConfiguration configuration, IRoomRepository repoRoom) : base(configuration)
+        public BookingRoomRepository(IConfiguration configuration) : base(configuration)
         {
-            _repoRoom = repoRoom;
         }
         /// <summary>
         /// Thực hiện việc phân trang
