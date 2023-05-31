@@ -37,6 +37,12 @@ namespace RoomBooking.BLL.Interfaces
         /// Created by: PTTAM (02/04/2023)
         public Task<User> Authenticate(string username, string password);
         public Task<bool> ChangePass(User user);
+        /// <summary>
+        /// đăng nhập bằng google
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<User> LoginGoogle(User user);
 
     }
 }

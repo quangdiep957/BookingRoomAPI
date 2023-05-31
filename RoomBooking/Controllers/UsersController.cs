@@ -43,7 +43,6 @@ namespace RoomBooking.API.Controllers
             return StatusCode(200, res);
 
         }
-
         /// <summary>
         /// Thực hiện lấy mã người dùng mới
         /// </summary>
