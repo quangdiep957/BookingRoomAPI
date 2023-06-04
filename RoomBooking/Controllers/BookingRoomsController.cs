@@ -37,13 +37,6 @@ namespace RoomBooking.API.Controllers
         [HttpGet("SendMailString")]
         public async Task<IActionResult> SendMailString(BookingRoomParam param)
         {
-            //var emailFrom = new EmailData();
-            //emailFrom.EmailToId = "nmquang21@gmail.com";
-            //emailFrom.EmailBody = $"hello";
-            //emailFrom.EmailSubject = "Thông báo đặt phòng";
-            //emailFrom.EmailToName = "BQDIEP";
-            //var res = await _scheduleService.SendEmailString(emailFrom);
-            //return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
             var res = await _scheduleService.SendingEmailAproveOrRejectCustom(param);
 
             return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
@@ -166,8 +159,16 @@ namespace RoomBooking.API.Controllers
             var res = await _scheduleService.InsertBookingRequest(param, param.UserID);
             if(res != null)
             {
-                // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
-               var user = _cache.Get<User>("userCache").UserID.ToString();
+                var user = "";
+                // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập
+               if (_cache.Get<User>("userCache") != null && _cache.Get<User>("userCache").UserID != null)
+                {
+                     user = _cache.Get<User>("userCache").UserID.ToString();
+                }
+                else
+                {
+                    user = param.UserID.ToString();
+                }
                 if(user != null)
                  // gửi cho chính nó
                  await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now,false);

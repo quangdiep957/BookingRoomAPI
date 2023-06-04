@@ -522,7 +522,7 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public async Task SendNotify(string ID, string notify, DateTime time, bool? sendAdmin)
         {
-            var firebaseClient = new FirebaseClient("https://room-90f68-default-rtdb.firebaseio.com/");
+            var firebaseClient = new FirebaseClient("https://bookingroom-7b732-default-rtdb.firebaseio.com/");
             var status = false;
             // Define the data to be added
             var data = new Dictionary<string, object>
