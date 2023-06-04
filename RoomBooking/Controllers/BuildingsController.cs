@@ -16,7 +16,7 @@ namespace BuildingBooking.API.Controllers
         // /// </summary>
         // /// <param name="service">Thực hiện validate dữ liệu</param>
         // /// <param name="repository">Thực hiện các chức năng</param>
-        // /// Created by: PTTAM (30/8/2022)
+        // /// Created by: bqdiep (30/8/2022)
         public BuildingsController(IBuildingService service) : base(service)
         {
             _service = service;

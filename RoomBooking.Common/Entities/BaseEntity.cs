@@ -12,15 +12,15 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Người tạo
         /// </summary>
-        ///  Created by: PTTAM (30/08/2022)
+        ///  Created by: bqdiep (30/08/2022)
         [ForBinding]
 
-        public string CreatedBy { get; set; } = "pttam@gmail.com";
+        public string CreatedBy { get; set; } = "bqdiep@gmail.com";
 
         /// <summary>
         /// Ngày tạo
         /// </summary>
-        ///  Created by: PTTAM (30/08/2022)
+        ///  Created by: bqdiep (30/08/2022)
         [ForBinding]
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
@@ -28,15 +28,15 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Người sửa
         /// </summary>
-        ///  Created by: PTTAM (30/08/2022)
+        ///  Created by: bqdiep (30/08/2022)
         [ForBinding]
         ///  
-        public string ModifiedBy { get; set; } = "pttam@gmail.com";
+        public string ModifiedBy { get; set; } = "bqdiep@gmail.com";
 
         /// <summary>
         /// Ngày sửa
         /// </summary>
-        ///  Created by: PTTAM (30/08/2022)
+        ///  Created by: bqdiep (30/08/2022)
         [ForBinding]
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
     }

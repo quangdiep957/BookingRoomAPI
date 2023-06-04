@@ -21,7 +21,7 @@ namespace RoomBooking.API.Controllers
         /// </summary>
         /// <param name="service">Interface service</param>
         /// <param name="repository">Interface repository</param>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         public BasesController(IBaseService<Entity> service)
         {
             _service = service;
@@ -53,7 +53,7 @@ namespace RoomBooking.API.Controllers
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </returns>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpGet("getAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -70,7 +70,7 @@ namespace RoomBooking.API.Controllers
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </returns>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -86,7 +86,7 @@ namespace RoomBooking.API.Controllers
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </returns>
-        /// created by: PTTAM (08/03/2023)
+        /// created by: bqdiep (08/03/2023)
         [HttpPost("insert")]
         public async Task<IActionResult> Insert(Entity entity)
         {
@@ -105,7 +105,7 @@ namespace RoomBooking.API.Controllers
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </returns>
-        /// created by: PTTAM (08/03/2023)
+        /// created by: bqdiep (08/03/2023)
         [HttpPut("update/{id}")]
         public async Task<IActionResult> Update(Guid id, Entity entity)
         {
@@ -123,7 +123,7 @@ namespace RoomBooking.API.Controllers
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </returns>
-        /// created by: PTTAM (08/03/2023)
+        /// created by: bqdiep (08/03/2023)
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

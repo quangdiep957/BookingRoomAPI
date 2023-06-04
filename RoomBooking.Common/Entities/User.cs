@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin người dùng
     /// </summary>
-    /// Created by: PTTAM (07/03/2023)
+    /// Created by: bqdiep (07/03/2023)
     public class User : BaseEntity
     {
         /// <summary>
         /// Khóa chính người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PrimaryKey]
         [ForGetting]
@@ -27,7 +27,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã người dùng")]
         [ForGetting]
@@ -39,7 +39,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(100)]
         [PropertyNameDisplay(propName: "Tên người dùng")]
         [ForGetting]
@@ -51,7 +51,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Địa chỉ
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Địa chỉ")]
         [ForGetting]
@@ -62,7 +62,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Địa chỉ
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Mật khẩu")]
         [ForGetting]
@@ -76,7 +76,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Email
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(100)]
         [PropertyNameDisplay(propName: "Email")]
         [ForGetting]
@@ -88,7 +88,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại phòng ban
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã phòng ban")]
         [ForGetting]
@@ -101,7 +101,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại vai trò
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã vai trò")]
         [ForGetting]
@@ -115,7 +115,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Màu avartar người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [ForGetting]
         [ForBinding]
 
@@ -124,7 +124,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Màu avartar người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [ForGetting]
         [ForBinding]
 
@@ -134,7 +134,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên phòng ban
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         public string? DepartmentName { get; set; }
 
         /// <summary>

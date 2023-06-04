@@ -43,7 +43,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity"></param>
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// <exception cref="ValidateException"></exception>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public virtual async Task<bool> InsertService(Entity entity)
         {
          
@@ -93,7 +93,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <param name="entity">Đối tượng</param>
         /// <returns>Cập nhật thành công || Cập nhật thất bại</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public virtual async Task<bool> UpdateService(Guid entityId, Entity entity)
         {
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -143,7 +143,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entities">Danh sách các đối tượng</param>
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public async Task<bool> InsertMultiService(List<Entity> entities)
         {
             using (MySqlConnection cnn = _repository.GetOpenConnection())
@@ -194,7 +194,7 @@ namespace RoomBooking.BLL.Services
         /// <summary>
         /// Thực hiện nghiệp vụ khi lấy tất cả dữ liệu
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         public async Task<IEnumerable> GetAllService()
         {
             var res = await _repository.GetAll();
@@ -205,7 +205,7 @@ namespace RoomBooking.BLL.Services
         /// Thực hiện nghiệp vụ khi lấy đối tượng theo khóa chính
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         public async Task<Entity> GetByIdService(Guid entityId)
         {
         
@@ -297,7 +297,7 @@ namespace RoomBooking.BLL.Services
         /// Thực hiện nghiệp vụ khi xóa đối tượng theo khóa chính
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         public virtual async Task<bool> DeleteService(Guid entityId)
         {
             bool isSucess = true;
@@ -342,7 +342,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entity">Đối tượng cần validare</param>
         /// <param name="id">Khóa chính</param>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public void ValidateError(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
         {
             // thực hiện validate Dữ liệu
@@ -373,7 +373,7 @@ namespace RoomBooking.BLL.Services
         /// Kiểm tra các trường bắt buộc nhập không được trống
         /// </summary>
         /// <param name="entity">Đối tượng kiểm tra</param>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         private void CheckEmpty(Entity entity)
         {
             // lấy tất cả cá properties có attribute là NotEmpty
@@ -411,7 +411,7 @@ namespace RoomBooking.BLL.Services
         /// KIểm tra các trường unique có bị trùng hay không
         /// </summary>
         /// <param name="entity">Đối tượng kiểm tra </param>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         private async void CheckUnique(Entity entity,MySqlConnection cnn, MySqlTransaction tran)
         {
             // lấy attribute Unique để kiểm trường duy nhất
@@ -459,7 +459,7 @@ namespace RoomBooking.BLL.Services
         /// Kiểm tra độ dài tối đa cho phép của các trường
         /// </summary>
         /// <param name="entity">Đối tượng kiểm tra</param>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public void CheckLimitLength(Entity entity)
         {
             //  lấy tất cả cá properties có attribute là DataLength
@@ -497,7 +497,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entity">Đối tượng cần kiểm tra </param>
         /// <returns>true: Không có lỗi, false: Có lỗi</returns> 
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         protected virtual bool ValidateCustom(Entity entity)
         {
             return true;

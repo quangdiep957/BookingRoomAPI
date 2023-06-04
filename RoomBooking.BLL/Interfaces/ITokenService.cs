@@ -13,28 +13,28 @@ namespace RoomBooking.BLL.Interfaces
         /// Tạo token
         /// </summary>
         /// <param name="user"></param>
-        /// PTTAM 02/04/2023
+        /// bqdiep 02/04/2023
         public Task<Token> GenerateToken(User user);
 
         /// <summary>
         /// Validate token
         /// </summary>
         /// <param name="token"></param>
-        ///  PTTAM 02/04/2023
+        ///  bqdiep 02/04/2023
         public Task<bool> ValidateToken(string token);
 
         /// <summary>
         /// Xóa token
         /// </summary>
         /// <param name="token"></param>
-        /// PTTAM 02.04.2023
+        /// bqdiep 02.04.2023
         public Task InvalidateToken(string token);
 
         /// <summary>
         /// Xóa token
         /// </summary>
         /// <param name="token"></param>
-        /// PTTAM 02.04.2023
+        /// bqdiep 02.04.2023
 
     }
 }

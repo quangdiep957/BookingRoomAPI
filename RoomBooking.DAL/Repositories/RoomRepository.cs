@@ -28,7 +28,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="index">Vị trí của đối tượng</param>
         /// <param name="parameters">Parameter</param>
         /// <returns>Chuỗi paramerter</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public string GetAllBindingValue(RoomEquipment entity, int index, DynamicParameters parameters)
         {
             // lấy tất cả cá properties
@@ -65,7 +65,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entity">Đối tượng</param>
         /// <returns>Chuỗi chứa câu lệnh insert chứa tên các trường</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         protected string GetAllBindingName(RoomEquipment entity)
         {
             // lấy tất cả cá properties ForBinding
@@ -120,7 +120,7 @@ namespace RoomBooking.DAL.Repositories
         ///// </summary>
         ///// <param name="entityId">Khóa chính đối tượng</param>
         ///// <returns>Xóa thành công || Xóa thất bại</returns>
-        /////  CretedBy: PTTAM (07/03/2023)
+        /////  CretedBy: bqdiep (07/03/2023)
         //public override async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         //{
         //    bool isSucess = true;

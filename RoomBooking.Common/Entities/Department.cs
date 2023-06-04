@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin phòng ban
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class Department : BaseEntity
     {
         /// <summary>
         /// Khóa chính phòng ban
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [PropertyNameDisplay(propName: "Khóa chính phòng ban")]
         [DataLength(36)]
         [ForGetting]
@@ -27,7 +27,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã phòng ban
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã phòng ban")]
         [ForGetting]
@@ -39,7 +39,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên phòng ban
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên phòng ban")]
         [ForGetting]

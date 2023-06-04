@@ -32,7 +32,7 @@ namespace RoomBooking.BLL.Services
         /// Thực hiện nghiệp vụ khi lấy mã nhân viên mới
         /// </summary>
         /// <returns></returns>
-        ///  Created by: PTTAM(10/9/2022)
+        ///  Created by: bqdiep(10/9/2022)
         public async Task<string> GetNewUserCode()
         {
             var res = await _repository.GetNewUserCode();
@@ -47,7 +47,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="keyWord">Từ khóa</param>
         /// <param name="roleId">Khóa chính vai trò</param>
         /// <returns>Object chứa danh sách người dùng lọc được theo yêu cầu</returns>
-        ///  Created by: PTTAM(10/9/2022)
+        ///  Created by: bqdiep(10/9/2022)
         public async Task<object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
             var res = await _repository.GetPaging(pageSize, pageIndex, keyWord, roleId);
@@ -60,7 +60,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="entity"></param>
         /// <returns>Thêm mới thành công || Thêm mới thất bại</returns>
         /// <exception cref="ValidateException"></exception>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public async override Task<bool> InsertService(User entity)
         {
             //var users = await _repository.GetAll();
@@ -146,7 +146,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="entity">đối tượng nhân viên</param>
         /// <returns>true: nếu không có lỗi, false: có lỗi</returns>
-        /// Created by: PTTAM(10/9/2022)
+        /// Created by: bqdiep(10/9/2022)
         protected override bool ValidateCustom(User user)
         {
             
@@ -214,7 +214,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="username">tên đăng nhập</param>
         /// <param name="password">mật khẩu</param>
-        /// Created by: PTTAM
+        /// Created by: bqdiep
         public async Task<User> Authenticate(string username, string password)
         {
             var users = await _repository.GetAll();

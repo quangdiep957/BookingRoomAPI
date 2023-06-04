@@ -17,7 +17,7 @@ namespace RoomBooking.Common.Exception
         /// 400 - Lỗi do đầu vào
         /// 500 - Lỗi do hệ thống
         /// </summary>
-        /// created by: PTTAM (06/03/2023)
+        /// created by: bqdiep (06/03/2023)
         public int StatusCode { get; }
 
 

@@ -16,7 +16,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="pageIndex">Tổng số trang</param>
         /// <param name="keyWord">Dữ liệu chọn lọc để tìm kiếm</param>
         /// <returns>Object: chứa pageSize, pageIndex, data</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public Task<object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId);
 
 
@@ -25,7 +25,7 @@ namespace RoomBooking.BLL.Interfaces
         /// Thực hiên nghiệp vụ khi lấy mã nhân viên mới của người dùng
         /// </summary>
         /// <returns>Mã nhân viên mới</returns>
-        /// Created by:  PTTAM (07/03/2023)
+        /// Created by:  bqdiep (07/03/2023)
         public Task<string> GetNewUserCode();
 
         
@@ -34,7 +34,7 @@ namespace RoomBooking.BLL.Interfaces
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        /// Created by: PTTAM (02/04/2023)
+        /// Created by: bqdiep (02/04/2023)
         public Task<User> Authenticate(string username, string password);
         public Task<bool> ChangePass(User user);
         /// <summary>

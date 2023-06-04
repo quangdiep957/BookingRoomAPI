@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin phòng
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class Room : BaseEntity
     {
         /// <summary>
         /// Khóa chính phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [PropertyNameDisplay(propName: "Khóa chính phòng")]
         [DataLength(36)]
         [ForGetting]
@@ -27,7 +27,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã phòng")]
         [ForGetting]
@@ -39,7 +39,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên phòng")]
         [ForGetting]
@@ -51,7 +51,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Sức chứa
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Sức chứa")]
         [ForGetting]
@@ -63,7 +63,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã tòa nhà")]
         [ForGetting]
@@ -76,7 +76,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại loại phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã loại phòng")]
         [ForGetting]

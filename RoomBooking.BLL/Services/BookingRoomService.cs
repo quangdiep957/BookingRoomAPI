@@ -151,7 +151,7 @@ namespace RoomBooking.BLL.Services
         /// <param name="tran"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        /// PTTAM 04/06/2023
+        /// bqdiep 04/06/2023
         private async Task<bool> CheckRoom(List<BookingRoom> lst, MySqlConnection cnn, MySqlTransaction tran, List<BookingError> errors, List<TimeBooking> lstTimeBooking)
         {
             // Thực hiện kiểm tra phòng đã được đặt chưa
@@ -720,7 +720,7 @@ namespace RoomBooking.BLL.Services
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt
         /// </summary>
         /// <param name="param"></param>
-        /// PTTAM 04.01.2023
+        /// bqdiep 04.01.2023
         public async Task<object> GetPagingRequest(PagingParam param)
         {
             object res = null;
@@ -1049,7 +1049,7 @@ namespace RoomBooking.BLL.Services
         /// Xem báo cáo theo booking ID
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         public async Task<ParamReport> PrintReport(Guid id)
         {
             var res = new ParamReport();
@@ -1081,7 +1081,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="BookingRoomID"></param>
         /// <returns></returns>
-        /// PTTAM
+        /// bqdiep
         public async Task<object> CancelBookingRoomNomal(Guid BookingRoomID)
         {
             object result = null;

@@ -70,7 +70,7 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageSize">Số bản ghi/ 1 trang</param>
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpPost("pagingScheduler")]
         public async Task<IActionResult> FilterRoom([FromBody] PagingParam param)
         {
@@ -121,7 +121,7 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageSize">Số bản ghi/ 1 trang</param>
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpPost("pagingRequestBooking")]
         public async Task<IActionResult> RequestBooking([FromBody] PagingParam param)
         {
@@ -138,7 +138,7 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageSize">Số bản ghi/ 1 trang</param>
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpPost("pagingHistoryBooking")]
         public async Task<IActionResult> HistoryBooking([FromBody] PagingParam param)
         {

@@ -13,7 +13,7 @@ namespace RoomBooking.Common.Functions
         /// </summary>
         /// <param name="email"></param>
         /// <returns>true: hợp lệ false: không hợp lệ</returns>
-        ///  Created by: PTTAM (06/03/2023)
+        ///  Created by: bqdiep (06/03/2023)
         public static bool IsValidEmail(string email)
         {
             if (string.IsNullOrEmpty(email))

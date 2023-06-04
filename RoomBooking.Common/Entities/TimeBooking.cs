@@ -11,13 +11,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin tòa nhà
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class TimeBooking : BaseEntity
     {
         /// <summary>
         /// Khóa chính tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa chính tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [ForBinding]

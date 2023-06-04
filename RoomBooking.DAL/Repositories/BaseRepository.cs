@@ -31,7 +31,7 @@ namespace RoomBooking.DAL.Repositories
         /// <summary>
         /// Hàm tạo
         /// </summary> 
-        /// CretedBy: PTTAM (07/03/2023)
+        /// CretedBy: bqdiep (07/03/2023)
         public BaseRepository(IConfiguration configuration)
         {
 
@@ -44,7 +44,7 @@ namespace RoomBooking.DAL.Repositories
         /// <summary>
         /// Thực hiện lấy toàn bộ danh sách
         /// </summary>
-        /// CretedBy: PTTAM (07/03/2023)
+        /// CretedBy: bqdiep (07/03/2023)
         public virtual async Task<IEnumerable<Entity>> GetAll()
         {
            if(_sqlConnection.State!= ConnectionState.Open)
@@ -66,7 +66,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng cần lấy </returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public virtual async Task<Entity> GetById(Guid entityId)
         {
             if (_sqlConnection.State != ConnectionState.Open)
@@ -89,7 +89,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entity">Đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public virtual async Task<bool> Insert(Entity entity,MySqlConnection cnn, MySqlTransaction transaction)
         {
 
@@ -125,7 +125,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entity">Đối tượng cần cập nhật</param>
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Sửa thành công || Sửa thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public virtual async Task<bool> Update(Entity entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSuccess = true;
@@ -147,7 +147,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public virtual async Task<bool> Delete(Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSucess = true;
@@ -184,7 +184,7 @@ namespace RoomBooking.DAL.Repositories
         /// <summary>
         /// Thực hiên lấy tên các trường để truy vấn dữ liệu
         /// </summary>
-        ///Created by: PTTAM (30/8/2022)
+        ///Created by: bqdiep (30/8/2022)
         protected static string GetAllRequestValues<Entity>()
         {
             // lấy tất cả cá properties
@@ -248,7 +248,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="index">Vị trí của đối tượng</param>
         /// <param name="parameters">Parameter</param>
         /// <returns>Chuỗi paramerter</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         protected static string GetAllBindingValues(Entity entity, int index, DynamicParameters parameters)
         {
             // lấy tất cả cá properties
@@ -285,7 +285,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entity">Đối tượng</param>
         /// <returns>Chuỗi chứa câu lệnh insert chứa tên các trường</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         protected string GetAllBindingNames(Entity entity)
         {
             // lấy tất cả cá properties ForBinding
@@ -318,7 +318,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="listEntities">Danh sách các đối tượng</param>
         /// <returns>Thêm thành công || Thêm thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async virtual Task<bool> InsertMulti(List<Entity> listEntities, MySqlTransaction transaction,MySqlConnection cnn)
         {
             bool isSuccess = true;
@@ -345,7 +345,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityValue">Giá trị của trường</param>
         /// <param name="entityId">Khóa chính của trường</param>
         /// <returns>True: không trùng, false: trùng</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async Task<bool> CheckUnique(string entityName, object entityValue, MySqlConnection cnn, MySqlTransaction tran,Guid? entityId = null)
         {
             var storeName = "Proc_CheckUnique";

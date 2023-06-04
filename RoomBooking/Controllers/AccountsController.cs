@@ -28,7 +28,7 @@ namespace RoomBooking.API.Controllers
         /// Thực hiện đăng nhập
         /// </summary>
         /// <param name="model">username và password</param>
-        /// PTTAM
+        /// bqdiep
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthenticateRequest model)
@@ -69,7 +69,7 @@ namespace RoomBooking.API.Controllers
         /// <summary>
         /// Thực hiện đăng xuất
         /// </summary>
-        /// PTTAM 
+        /// bqdiep 
         //[Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
@@ -89,7 +89,7 @@ namespace RoomBooking.API.Controllers
         /// <summary>
         /// Thực hiện đổi mật khẩu
         /// </summary>
-        /// PTTAM 
+        /// bqdiep 
         [HttpPost("changepass")]
         public IActionResult ChangePass(User user)
         {

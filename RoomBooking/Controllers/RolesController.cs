@@ -15,7 +15,7 @@ namespace RoomBooking.API.Controllers
         // /// </summary>
         // /// <param name="service">Thực hiện validate dữ liệu</param>
         // /// <param name="repository">Thực hiện các chức năng</param>
-        // /// Created by: PTTAM (08/03/2023)
+        // /// Created by: bqdiep (08/03/2023)
         public RolesController(IRoleService service) : base(service)
         {
             _service = service;

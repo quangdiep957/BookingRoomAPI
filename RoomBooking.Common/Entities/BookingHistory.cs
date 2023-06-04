@@ -13,7 +13,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã người dùng")]
         [ForGetting]
@@ -23,7 +23,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Khóa ngoại người dùng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [PropertyNameDisplay(propName: "Mã người dùng")]
         [ForGetting]

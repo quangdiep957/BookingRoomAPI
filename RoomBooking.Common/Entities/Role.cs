@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin vai trò
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class Role : BaseEntity
     {
         /// <summary>
         /// Khóa chính vai trò
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã vai trò
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã vai trò")]
         [ForGetting]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên vai trò
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên vai trò")]
         [ForGetting]
@@ -55,7 +55,7 @@ namespace RoomBooking.Common.Entities
         /// 2 - Admin
         /// 3- Phụ trách phòng-
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [PropertyNameDisplay(propName: "Giá trị vai trò")]
         [ForGetting]
         [ForBinding]

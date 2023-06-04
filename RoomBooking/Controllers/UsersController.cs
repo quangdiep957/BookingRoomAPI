@@ -22,7 +22,7 @@ namespace RoomBooking.API.Controllers
         // /// </summary>
         // /// <param name="service">Thực hiện validate dữ liệu</param>
         // /// <param name="repository">Thực hiện các chức năng</param>
-        // /// Created by: PTTAM (08/03/2023)
+        // /// Created by: bqdiep (08/03/2023)
         public UsersController(IUserService service) : base(service)
         {
             _service = service;
@@ -33,7 +33,7 @@ namespace RoomBooking.API.Controllers
         /// <param name="pageSize">Số bản ghi/ 1 trang</param>
         /// <param name="pageIndex">Trang số bao nhiêu</param>
         /// <param name="keyWord">Điều kiện lọc dữ liệu</param>
-        /// Created by: PTTAM (08/03/2023)
+        /// Created by: bqdiep (08/03/2023)
         [HttpPost("pagingUser")]
         public async Task<IActionResult> FilterUser([FromBody]PagingParam param)
         {
@@ -62,7 +62,7 @@ namespace RoomBooking.API.Controllers
         /// <summary>
         /// Thực hiện đổi mật khẩu
         /// </summary>
-        /// PTTAM 
+        /// bqdiep 
         [HttpPost("changepass")]
         public async Task<IActionResult> ChangePass(User user)
         {

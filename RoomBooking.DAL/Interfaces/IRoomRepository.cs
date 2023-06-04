@@ -24,7 +24,7 @@ namespace RoomBooking.DAL.Interfaces
         /// Thực hiện validate khi xóa nhiều đối tượng theo khóa chính
         /// </summary>
         /// <param name="entityId">Khóa chính của đối tượng</param>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public Task<bool> DeleteMulti(List<Guid> entityId, MySqlConnection cnn, MySqlTransaction transaction);
 
 

@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin tòa nhà
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class Building : BaseEntity
     {
         /// <summary>
         /// Khóa chính tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã tòa nhà")]
         [ForGetting]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên tòa nhà
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên tòa nhà")]
         [ForGetting]

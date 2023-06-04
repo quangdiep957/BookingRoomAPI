@@ -15,7 +15,7 @@ namespace RoomBooking.BLL.Interfaces
         /// Import file excel phòng học 
         /// </summary>
         /// <param name="filePath"></param>
-        /// PTTAM 25.03.20223
+        /// bqdiep 25.03.20223
         public Task<Object> ReadExcelFile(string filePath);
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="RoomID"></param>
         /// <param name="BuildingID"></param>
         /// <param name="TimeSlotID"></param>
-        /// PTTAM 25/03/2023
+        /// bqdiep 25/03/2023
         public Task<object> GetPaging(PagingParam param);
         /// <summary>
         /// Xử lý yêu cầu duyệt phòng

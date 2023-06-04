@@ -27,7 +27,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="keyWord">Điều kiện lọc dữ liệu/param>
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public async Task<ParamSchedulerBooking> GetPaging(PagingParam param, MySqlConnection cnn)
         {
 
@@ -81,7 +81,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="index">Vị trí của đối tượng</param>
         /// <param name="parameters">Parameter</param>
         /// <returns>Chuỗi paramerter</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public string GetAllBindingValue(TimeBooking entity, int index, DynamicParameters parameters)
         {
             // lấy tất cả cá properties
@@ -118,7 +118,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entity">Đối tượng</param>
         /// <returns>Chuỗi chứa câu lệnh insert chứa tên các trường</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         protected string GetAllBindingName(TimeBooking entity)
         {
             // lấy tất cả cá properties ForBinding
@@ -143,7 +143,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async Task<bool> InsertMultiTimeBooking(List<TimeBooking> listRoom, MySqlTransaction transaction, MySqlConnection cnn)
         {
             bool isSuccess = true;
@@ -177,7 +177,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="listRoom">Danh sách người dùng</param>
         /// <returns></returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async override Task<bool> InsertMulti(List<BookingRoom> listRoom, MySqlTransaction transaction, MySqlConnection cnn)
         {
             bool isSuccess = true;
@@ -211,7 +211,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entityId">Khóa chính đối tượng</param>
         /// <returns>Xóa thành công || Xóa thất bại</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async Task<bool> DeleteRecord(Guid entityId, string tablename, MySqlConnection cnn, MySqlTransaction transaction)
         {
             bool isSucess = true;
@@ -242,7 +242,7 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt
         /// </summary>
         /// <param name="param"></param>
-        /// PTTAM 04.01.2023
+        /// bqdiep 04.01.2023
         public async Task<object> GetPagingRequest(PagingParam param, MySqlConnection cnn)
         {
             var storeName = "Proc_GetPagingRequestBooking"; // Tên của thủ thục
@@ -365,7 +365,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="keyWord">Điều kiện lọc dữ liệu/param>
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public async Task<ParamReport> GetParamReport(Guid id, MySqlConnection cnn)
         {
 
@@ -383,7 +383,7 @@ namespace RoomBooking.DAL.Repositories
         /// </summary>
         /// <param name="entityId">Khóa chính của đối tượng</param>
         /// <returns>Đối tượng cần lấy </returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public override async Task<BookingRoom> GetById(Guid entityId)
         {
             BookingRoom booking = new();

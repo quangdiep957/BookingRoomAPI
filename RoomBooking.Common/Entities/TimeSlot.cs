@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin thời gian
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class TimeSlot : BaseEntity
     {
         /// <summary>
         /// Khóa chính thời gian
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên thời gian
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên thời gian")]
         [ForGetting]

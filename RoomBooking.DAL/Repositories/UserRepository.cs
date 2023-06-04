@@ -32,7 +32,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="keyWord">Điều kiện lọc dữ liệu/param>
         /// <param name="roleId">Khóa chính của vai trò /param>
         /// <returns>Object chứa những thông tin cần thiết</returns>
-        /// Created by: PTTAM (07/03/2023)
+        /// Created by: bqdiep (07/03/2023)
         public async Task<Object> GetPaging(int pageSize, int pageIndex, string? keyWord, Guid? roleId)
         {
 
@@ -79,7 +79,7 @@ namespace RoomBooking.DAL.Repositories
         /// Thực hiện lấy mã người dùng mới
         /// </summary>
         /// <returns>Mã người dùng mới</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async Task<string> GetNewUserCode()
         {
             var storeName = "Proc_GetNewCode";
@@ -93,7 +93,7 @@ namespace RoomBooking.DAL.Repositories
         /// Kiểm tra email google có trong db chưa
         /// </summary>
         /// <returns>Mã người dùng mới</returns>
-        ///  CretedBy: PTTAM (07/03/2023)
+        ///  CretedBy: bqdiep (07/03/2023)
         public async Task<bool> CheckEmail(string email)
         {
             var query = "select count(*) from User where email = @Email";
@@ -133,7 +133,7 @@ namespace RoomBooking.DAL.Repositories
         /// <param name="entityId"></param>
         /// <param name="cnn"></param>
         /// <param name="transaction"></param>
-        /// PTTAM 04.05.2023
+        /// bqdiep 04.05.2023
         public override async Task<bool> Update(User entity, Guid entityId, MySqlConnection cnn, MySqlTransaction transaction)
         {
             var isSuccess = true;

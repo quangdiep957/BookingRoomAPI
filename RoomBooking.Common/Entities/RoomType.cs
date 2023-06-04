@@ -10,13 +10,13 @@ namespace RoomBooking.Common.Entities
     /// <summary>
     /// Thông tin loại phòng
     /// </summary>
-    ///  Created by: PTTAM (07/03/2023)
+    ///  Created by: bqdiep (07/03/2023)
     public class RoomType : BaseEntity
     {
         /// <summary>
         /// Khóa chính loại phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
@@ -28,7 +28,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Mã loại phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
         [PropertyNameDisplay(propName: "Mã loại phòng")]
         [ForGetting]
@@ -40,7 +40,7 @@ namespace RoomBooking.Common.Entities
         /// <summary>
         /// Tên loại phòng
         /// </summary>
-        ///  Created by: PTTAM (07/03/2023)
+        ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
         [PropertyNameDisplay(propName: "Tên loại phòng")]
         [ForGetting]
