@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ExcelDataReader;
+using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -759,7 +760,14 @@ namespace RoomBooking.BLL.Services
                         }
                         else
                         {
-                            booking.StatusBooking = (int?)StatusBookingRoom.Pending;
+                            if(role.RoleValue == 10)
+                            {
+                                booking.StatusBooking = 4;
+                            }
+                            else
+                            {
+                                booking.StatusBooking = (int?)StatusBookingRoom.Pending;
+                            }
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
 
@@ -919,6 +927,32 @@ namespace RoomBooking.BLL.Services
 
             }
             return result;
+        }
+        public async Task<bool> UpdateBookingPayment(Guid OrderId)
+        {
+            bool isSucess = true;
+            using (MySqlConnection cnn = _repository.GetOpenConnection())
+            {
+
+                    try
+                    {
+
+                        var storeDelete = "Proc_UpdatePayment";
+                        DynamicParameters paramId = new DynamicParameters();
+                        paramId.Add("$OrderId", OrderId);
+
+                        var res = await cnn.ExecuteAsync(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
+
+                    }
+                    catch (Exception)
+                    {
+
+                        isSucess = false;
+                    }
+            }
+
+
+            return isSucess;
         }
         /// <summary>ToString("dd/MM/YYYY"))
         /// sinh ra đoạn mã để trả về email

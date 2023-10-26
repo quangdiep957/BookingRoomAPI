@@ -218,6 +218,37 @@ namespace RoomBooking.API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Thực hiện sửa yêu cầu đặt phòng
+        /// </summary>
+        /// <param name="bookingRoom"></param>
+        /// <returns></returns>
+        [HttpPost("UpdateBookingPayment/{OrderId}")]
+        public async Task<IActionResult> UpdateBookingPayment(Guid OrderId)
+        {
+            try
+            {
+                var res = await _scheduleService.UpdateBookingPayment(OrderId);
+                if (res != null)
+                {
+                    // Nếu lưu thành công thì sẽ lấy userID đang đăng nhập 
+                    var cache = _cache.Get<User>("userCache");
+                    if (cache != null)
+                    {
+                        var user = _cache.Get<User>("userCache").UserID.ToString();
+                        if (user != null)
+                            await _scheduleService.SendNotify(user, Resource.Pending, DateTime.Now, false);
+                     //   await _scheduleService.SendNotify(bookingRoom.AdminID.ToString(), Resource.Pending, DateTime.Now, true);
+                    }
+                }
+                return StatusCode(Convert.ToInt32(HTTPStatusCode.SuccessResponse), res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         /// <summary>
         /// Thực hiện sửa yêu cầu đặt phòng
         /// </summary>
@@ -286,7 +317,7 @@ namespace RoomBooking.API.Controllers
         /// Xem báo cáo theo mã BookingID
         /// </summary>
         /// <param name="entities"></param>
-        [HttpGet("PrintReport")]
+        [HttpGet("PrintReport/{id}")]
         public async Task<IActionResult> PrintReport(Guid id)
         {
             var res = await _scheduleService.PrintReport(id);

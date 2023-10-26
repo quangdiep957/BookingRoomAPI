@@ -85,6 +85,18 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         public string Description { get; set; } = string.Empty;
         /// <summary>
+        /// Nội dung
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public Guid? OrderId { get; set; } = Guid.Empty;
+        /// <summary>
+        /// Nội dung
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public decimal? AmountUser { get; set; } 
+        /// <summary>
         /// Lý do từ chối
         /// </summary>
         [ForGetting]
@@ -232,5 +244,7 @@ namespace RoomBooking.Common.Entities
         public string Header { get; set; }
         public string RefusalReason { get; set; }
         public string TimeSlotName { get; set; }
+        public int Quantity { get; set; }
+        public string DepartmentName { get; set; }
     }
 }

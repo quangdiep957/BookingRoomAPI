@@ -18,5 +18,10 @@ namespace ReportBooking.Models
         public string EquipmentName { get; set; }
 
         public string TimeSlotName { get; set; }
+        public int Quantity { get; set; }
+        public int Capacity { get; set; }
+        public DateTime StartDate { get; set; }
+        public string AdminName { get; set; }
+        public string DepartmentName { get; set; }
     }
 }

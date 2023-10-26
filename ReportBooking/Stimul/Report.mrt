@@ -7,7 +7,7 @@
     <DataSources isList="true" count="1">
       <ParamReport Ref="2" type="DataTableSource" isKey="true">
         <Alias>ParamReport</Alias>
-        <Columns isList="true" count="7">
+        <Columns isList="true" count="12">
           <value>FullName,System.String</value>
           <value>PhoneNumber,System.String</value>
           <value>BookingRoomID,System.String</value>
@@ -15,6 +15,11 @@
           <value>RoomName,System.String</value>
           <value>EquipmentName,System.String</value>
           <value>TimeSlotName,System.String</value>
+          <value>StartDate,System.DateTime</value>
+          <value>Quantity,System.Int32</value>
+          <value>AdminName,System.String</value>
+          <value>Capacity,System.Int32</value>
+          <value>DepartmentName,System.String</value>
         </Columns>
         <Dictionary isRef="1" />
         <Key>77905dd7cf464aabb2d4019ffcd25a0b</Key>
@@ -40,6 +45,7 @@
           <Brush>Transparent</Brush>
           <ClientRectangle>0.4,6,0.6,0.2</ClientRectangle>
           <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
           <Font>Roboto,10,Bold| Italic| Underline</Font>
           <Margins>0,0,0,0</Margins>
           <Name>Text43</Name>
@@ -53,6 +59,7 @@
           <Brush>Transparent</Brush>
           <ClientRectangle>0.4,6.2,0.6,0.2</ClientRectangle>
           <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
           <Font>Roboto,10,Bold| Italic| Underline</Font>
           <Margins>0,0,0,0</Margins>
           <Name>Text44</Name>
@@ -66,6 +73,7 @@
           <Brush>Transparent</Brush>
           <ClientRectangle>1,6.2,6.7,0.3</ClientRectangle>
           <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
           <Font>Roboto,9,Italic</Font>
           <Margins>0,0,0,0</Margins>
           <Name>Text45</Name>
@@ -85,7 +93,8 @@
               <ClientRectangle>0,0,7.7,0.4</ClientRectangle>
               <ComponentStyle>HeadStyle</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,12,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,12,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text1</Name>
@@ -102,7 +111,8 @@
               <ClientRectangle>7.1,0,0.6,0.2</ClientRectangle>
               <ComponentStyle>headerItalic</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Italic</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Italic</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text2</Name>
               <Page isRef="3" />
@@ -116,7 +126,8 @@
               <ClientRectangle>0,0.5,7.7,0.2</ClientRectangle>
               <ComponentStyle>HeadStyle</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,12,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,12,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text3</Name>
@@ -129,10 +140,12 @@
             </Text3>
             <Text4 Ref="11" type="Text" isKey="true">
               <Brush>Transparent</Brush>
-              <ClientRectangle>0.5,0.8,7.2,0.2</ClientRectangle>
-              <ComponentStyle>header2</ComponentStyle>
+              <ClientRectangle>0,0.7,7.7,0.3</ClientRectangle>
+              <ComponentStyle>HeadStyle</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,12,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text4</Name>
               <Page isRef="3" />
@@ -147,7 +160,8 @@
               <ClientRectangle>0,1.1,1.5,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text6</Name>
               <Page isRef="3" />
@@ -161,7 +175,8 @@
               <ClientRectangle>0,1.5,1.5,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text8</Name>
               <Page isRef="3" />
@@ -175,7 +190,8 @@
               <ClientRectangle>0,1.3,1.5,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text7</Name>
               <Page isRef="3" />
@@ -189,7 +205,8 @@
               <ClientRectangle>0,1.7,1.5,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text9</Name>
               <Page isRef="3" />
@@ -203,7 +220,8 @@
               <ClientRectangle>0,1.9,1.5,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text10</Name>
               <Page isRef="3" />
@@ -217,7 +235,8 @@
               <ClientRectangle>1.5,1.1,2.4,0.2</ClientRectangle>
               <ComponentStyle>textBolean</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Bold</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text11</Name>
               <Page isRef="3" />
@@ -230,6 +249,7 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>1.5,1.3,2.4,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,10,Bold| Underline</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text12</Name>
@@ -244,7 +264,8 @@
               <ClientRectangle>1.5,1.5,2.4,0.2</ClientRectangle>
               <ComponentStyle>textBolean</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Bold</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text13</Name>
               <Page isRef="3" />
@@ -258,12 +279,13 @@
               <ClientRectangle>1.5,1.7,2.4,0.2</ClientRectangle>
               <ComponentStyle>textBolean</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Bold</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text14</Name>
               <Page isRef="3" />
               <Parent isRef="7" />
-              <Text>Công nghệ thông tin</Text>
+              <Text>{ParamReport.DepartmentName}</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
             </Text14>
@@ -272,7 +294,8 @@
               <ClientRectangle>1.5,1.9,0.7,0.2</ClientRectangle>
               <ComponentStyle>textBolean</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Bold</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text15</Name>
               <Page isRef="3" />
@@ -286,7 +309,8 @@
               <ClientRectangle>2.2,1.9,0.6,0.2</ClientRectangle>
               <ComponentStyle>label</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text16</Name>
               <Page isRef="3" />
@@ -300,7 +324,8 @@
               <ClientRectangle>2.8,1.9,1.1,0.2</ClientRectangle>
               <ComponentStyle>textBolean</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Bold</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text17</Name>
               <Page isRef="3" />
@@ -311,6 +336,7 @@
             </Text17>
           </Components>
           <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
           <Name>GroupHeaderBand1</Name>
           <Page isRef="3" />
           <Parent isRef="3" />
@@ -325,7 +351,8 @@
               <ClientRectangle>0,0,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text18</Name>
@@ -339,10 +366,11 @@
             <Text19 Ref="26" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>0.6,0,1,0.2</ClientRectangle>
+              <ClientRectangle>0.6,0,1.4,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text19</Name>
@@ -356,10 +384,11 @@
             <Text20 Ref="27" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>1.6,0,1,0.2</ClientRectangle>
+              <ClientRectangle>2,0,1,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text20</Name>
@@ -373,10 +402,11 @@
             <Text21 Ref="28" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>2.6,0,0.6,0.2</ClientRectangle>
+              <ClientRectangle>3,0,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text21</Name>
@@ -390,16 +420,17 @@
             <Text22 Ref="29" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.2,0,0.6,0.2</ClientRectangle>
+              <ClientRectangle>3.6,0,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text22</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>Số HĐ</Text>
+              <Text>Sức chứa</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
               <VertAlignment>Center</VertAlignment>
@@ -407,10 +438,11 @@
             <Text23 Ref="30" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.8,0,2.8,0.2</ClientRectangle>
+              <ClientRectangle>4.2,0,2.4,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text23</Name>
@@ -426,13 +458,14 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>6.6,0,1.1,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text24</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>Nơi nhận</Text>
+              <Text>Người duyệt</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
               <VertAlignment>Center</VertAlignment>
@@ -443,7 +476,8 @@
               <ClientRectangle>0,0.2,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text25</Name>
@@ -457,10 +491,11 @@
             <Text26 Ref="33" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>0.6,0.2,1,0.2</ClientRectangle>
+              <ClientRectangle>0.6,0.2,1.4,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text26</Name>
@@ -474,10 +509,11 @@
             <Text27 Ref="34" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>1.6,0.2,1,0.2</ClientRectangle>
+              <ClientRectangle>2,0.2,1,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text27</Name>
@@ -491,10 +527,11 @@
             <Text28 Ref="35" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>2.6,0.2,0.6,0.2</ClientRectangle>
+              <ClientRectangle>3,0.2,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text28</Name>
@@ -508,10 +545,11 @@
             <Text29 Ref="36" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.2,0.2,0.6,0.2</ClientRectangle>
+              <ClientRectangle>3.6,0.2,0.6,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text29</Name>
@@ -525,10 +563,11 @@
             <Text30 Ref="37" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.8,0.2,2.8,0.2</ClientRectangle>
+              <ClientRectangle>4.2,0.2,2.4,0.2</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text30</Name>
@@ -544,6 +583,7 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>6.6,0.2,1.1,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
@@ -561,7 +601,8 @@
               <ClientRectangle>0,0.4,0.6,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text32</Name>
@@ -575,27 +616,29 @@
             <Text33 Ref="40" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>0.6,0.4,1,0.5</ClientRectangle>
+              <ClientRectangle>0.6,0.4,1.4,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text33</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>{ParamReport.DateBooking}</Text>
+              <Text>{ParamReport.StartDate}</Text>
               <TextBrush>Black</TextBrush>
-              <Type>Expression</Type>
+              <Type>DataColumn</Type>
               <VertAlignment>Center</VertAlignment>
             </Text33>
             <Text34 Ref="41" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>1.6,0.4,1,0.5</ClientRectangle>
+              <ClientRectangle>2,0.4,1,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text34</Name>
@@ -609,16 +652,17 @@
             <Text35 Ref="42" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>2.6,0.4,0.6,0.5</ClientRectangle>
+              <ClientRectangle>3,0.4,0.6,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text35</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>Sĩ số</Text>
+              <Text>{ParamReport.Quantity}</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
               <VertAlignment>Center</VertAlignment>
@@ -626,16 +670,17 @@
             <Text36 Ref="43" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.2,0.4,0.6,0.5</ClientRectangle>
+              <ClientRectangle>3.6,0.4,0.6,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text36</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>Số HĐ</Text>
+              <Text>{ParamReport.Capacity}</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
               <VertAlignment>Center</VertAlignment>
@@ -643,10 +688,11 @@
             <Text37 Ref="44" type="Text" isKey="true">
               <Border>Top, Left, Bottom;Black;1;Solid;False;4;Black</Border>
               <Brush>Transparent</Brush>
-              <ClientRectangle>3.8,0.4,2.8,0.5</ClientRectangle>
+              <ClientRectangle>4.2,0.4,2.4,0.5</ClientRectangle>
               <ComponentStyle>titleTable</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,8,Bold</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text37</Name>
@@ -662,20 +708,22 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>6.6,0.4,1.1,0.5</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,8,Bold</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text38</Name>
               <Page isRef="3" />
               <Parent isRef="24" />
-              <Text>{ParamReport.RoomName}</Text>
+              <Text>{ParamReport.AdminName}</Text>
               <TextBrush>Black</TextBrush>
-              <Type>Expression</Type>
+              <Type>DataColumn</Type>
               <VertAlignment>Center</VertAlignment>
             </Text38>
           </Components>
           <Conditions isList="true" count="0" />
           <DataRelationName isNull="true" />
+          <Expressions isList="true" count="0" />
           <Filters isList="true" count="0" />
           <Name>DataBand1</Name>
           <Page isRef="3" />
@@ -691,7 +739,8 @@
               <ClientRectangle>5.9,0.1,1.8,0.2</ClientRectangle>
               <ComponentStyle>StyleDate</ComponentStyle>
               <Conditions isList="true" count="0" />
-              <Font>Roboto,10,Italic</Font>
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,10,Italic</Font>
               <Margins>0,0,0,0</Margins>
               <Name>Text5</Name>
               <Page isRef="3" />
@@ -705,6 +754,7 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>0.5,0.4,1.5,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,10,Bold| Italic</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
@@ -719,6 +769,7 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>5.9,0.4,1.8,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,10,Bold| Italic</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
@@ -733,13 +784,14 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>0.5,1.3,1.5,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,10,Bold| Italic</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
               <Name>Text41</Name>
               <Page isRef="3" />
               <Parent isRef="46" />
-              <Text>Bùi Quang Điệp</Text>
+              <Text>{ParamReport.AdminName}</Text>
               <TextBrush>Black</TextBrush>
               <Type>Expression</Type>
             </Text41>
@@ -747,6 +799,7 @@
               <Brush>Transparent</Brush>
               <ClientRectangle>5.9,1.3,1.8,0.2</ClientRectangle>
               <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
               <Font>Roboto,10,Bold| Italic</Font>
               <HorAlignment>Center</HorAlignment>
               <Margins>0,0,0,0</Margins>
@@ -759,12 +812,14 @@
             </Text42>
           </Components>
           <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
           <Name>GroupFooterBand1</Name>
           <Page isRef="3" />
           <Parent isRef="3" />
         </GroupFooterBand1>
       </Components>
       <Conditions isList="true" count="0" />
+      <Expressions isList="true" count="0" />
       <Guid>f9db6505f7744d789c877ec77768528d</Guid>
       <Margins>0.39,0.39,0.39,0.39</Margins>
       <Name>Page1</Name>
@@ -785,13 +840,13 @@
     <value>Stimulsoft.Report.Dll</value>
   </ReferencedAssemblies>
   <ReportAlias>Report</ReportAlias>
-  <ReportChanged>4/16/2023 5:47:55 PM</ReportChanged>
+  <ReportChanged>10/7/2023 12:38:24 PM</ReportChanged>
   <ReportCreated>4/13/2023 10:14:13 PM</ReportCreated>
-  <ReportFile>D:\Do An\RoomBooking\ReportBooking\Stimul\Report.mrt</ReportFile>
-  <ReportGuid>d0ca39d4219e4d75b674960985edb87b</ReportGuid>
+  <ReportFile>C:\Users\quang\OneDrive\Máy tính\BookingRoomAPI\ReportBooking\Stimul\Report.mrt</ReportFile>
+  <ReportGuid>39dc860c2bea4471b9a075f203838aba</ReportGuid>
   <ReportName>Report</ReportName>
   <ReportUnit>Inches</ReportUnit>
-  <ReportVersion>2019.3.1.0</ReportVersion>
+  <ReportVersion>2023.3.4.0</ReportVersion>
   <Script>using System;
 using System.Drawing;
 using System.Windows.Forms;

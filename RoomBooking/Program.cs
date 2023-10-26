@@ -1,3 +1,4 @@
+using Google.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
@@ -28,6 +29,7 @@ builder.Services.AddSwaggerGen();
 //Tr??c build
 //X? l� v? DI - Dependency Injection:
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
@@ -41,7 +43,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITimeBookingRepository, TimeBookingRepository>();
 builder.Services.AddScoped<IEquipmentTypeRepository, EquipmentTypeRepository>();
 builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();

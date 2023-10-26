@@ -74,6 +74,8 @@ namespace RoomBooking.BLL.Interfaces
         /// <param name="bookings"></param>
         /// <returns></returns>
         public Task<object> UpdateBookingRequest(Guid BookingRoomID,BookingRoom bookings);
+        public Task<bool> UpdateBookingPayment(Guid OrderId);
+
 
         /// <summary>
         /// Thực hiện sửa yêu cầu đặt phòng
