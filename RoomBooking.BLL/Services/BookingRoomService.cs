@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -248,60 +249,12 @@ namespace RoomBooking.BLL.Services
                             errors.Add(new BookingError
                             {
                                 Error = "Đã có dữ liệu",
-                                DescriptionError = $"{roomName} ca {timeName} ngày {currentDate.ToString("dd/MM/yyyy")} đã được đặt."
+                                DescriptionError = $"{roomName} tiết {timeName} ngày {currentDate.ToString("dd/MM/yyyy")} đã được đặt."
                             });
                             checkRoom = false;
                         }
                         currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
                     }
-                    //var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    //&& x.BookingRoomID != room.BookingRoomID &&
-                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-                    //var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    //     && x.BookingRoomID != room.BookingRoomID &&
-                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-
-                    //if (room.StartDate == room.EndDate)
-                    //{
-                    //    if (itemRoomStartDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    if (itemRoomStartDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //    else if (itemRoomEndDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomEndDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //}
-
-
                 }
 
             }
@@ -580,41 +533,45 @@ namespace RoomBooking.BLL.Services
 
                         foreach (var booking in scheduler.bookings)
                         {
-                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            // For từng dòng 
-                            foreach (var item in timeIDs)
+                            if(booking.TimeSlots != null)
                             {
-                                var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
-                                var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
-                                //var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
-                                //var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
-
-                                DateTime currentDate = booking.StartDate.Date;
-                                while (currentDate.Date <= booking.EndDate.Date)
+                                string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                // For từng dòng 
+                                foreach (var item in timeIDs)
                                 {
-                                    var startDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
-                                    var endDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
-                                    bookingRooms.Add(new SchedulerBooking
+                                    var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
+                                    var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
+                                    //var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                    //var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+
+                                    DateTime currentDate = booking.StartDate.Date;
+                                    while (currentDate.Date <= booking.EndDate.Date)
                                     {
-                                        BookingRoomID = booking.BookingRoomID,
-                                        AvartarColor = booking.AvartarColor,
-                                        RoomID = booking.RoomID,
-                                        RoomName = booking.RoomName,
-                                        FullName = booking.FullName,
-                                        Quantity = booking.Quantity,
-                                        RoomStatus = booking.RoomStatus,
-                                        EndDate = endDate,
-                                        StartDate = startDate,
-                                        Subject = booking.Subject,
-                                        Description = booking.Description,
-                                        TimeSlotName = "Ca " + itemTime.TimeSlotName,
-                                        StatusBooking = booking.StatusBooking,
-                                    });
-                                    currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
+                                        var startDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                        var endDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+                                        bookingRooms.Add(new SchedulerBooking
+                                        {
+                                            BookingRoomID = booking.BookingRoomID,
+                                            AvartarColor = booking.AvartarColor,
+                                            RoomID = booking.RoomID,
+                                            RoomName = booking.RoomName,
+                                            FullName = booking.FullName,
+                                            Quantity = booking.Quantity,
+                                            RoomStatus = booking.RoomStatus,
+                                            EndDate = endDate,
+                                            StartDate = startDate,
+                                            Subject = booking.Subject,
+                                            Description = booking.Description,
+                                            TimeSlotName = "Tiết " + itemTime.TimeSlotName,
+                                            StatusBooking = booking.StatusBooking,
+                                        });
+                                        currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
+                                    }
+
+
                                 }
-
-
-                            }
+                            }  
+                           
                         }
                         int count = scheduler.rooms.Count();
                         if (count == 1)
@@ -770,8 +727,73 @@ namespace RoomBooking.BLL.Services
                             }
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
+                        
+                        // Kiểm tra xem có đặt nhiều theo tuần , tháng không
+                        // trường hợp có
+                        if(booking.CheckMultiBooking != null && Int32.Parse(booking.CheckMultiBooking) != (int)BookingMulti.Day)
+                        {
+                            // lấy ra ngày (thứ mấy) theo ngày đặt lịch
+                            // Lấy tháng hiện tại và năm hiện tại
+                            int currentMonth = (booking.StartDate).Month;
+                            int currentYear = (booking.StartDate).Year;
+                            TimeZoneInfo vnTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                            DayOfWeek dayOfWeek = TimeZoneInfo.ConvertTime((booking.StartDate), vnTimeZone).DayOfWeek;
+                            int currentDay = TimeZoneInfo.ConvertTime((booking.StartDate), vnTimeZone).Day;
+                            // đọc chi tiết để xem lấy theo gì 
+                            switch (Int32.Parse(booking.CheckMultiBooking))
+                            {
+                                case (int)BookingMulti.Week:
+                                   
+                                    // Duyệt qua các ngày trong tháng
 
-                        bookings.Add(booking);
+                                    // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                                    for (int day = currentDay; day <= DateTime.DaysInMonth(currentYear, currentMonth); day++)
+                                    {
+                                        DateTime currentDate = new DateTime(currentYear, currentMonth, day);
+                                        DateTime nowVietnam = TimeZoneInfo.ConvertTime(currentDate, vnTimeZone);
+
+                                        // Kiểm tra xem ngày đó có trùng ngày đặt lịch không
+                                        // Nếu trùng thì nhân bản thêm bản ghi đặt phòng
+                                        if (nowVietnam.DayOfWeek == dayOfWeek && nowVietnam.Day >= currentDay)
+                                        {
+                                            BookingRoom bookingMulti = (BookingRoom)booking.Clone();
+                                            // tạo mới lại ID và ngày 
+                                            bookingMulti.BookingRoomID = Guid.NewGuid();
+                                            bookingMulti.StartDate = nowVietnam;
+                                            bookingMulti.EndDate = nowVietnam;
+                                            bookings.Add(bookingMulti);
+                                        }
+                                    }
+
+                                    break;
+                                case (int)BookingMulti.Months:
+                                    // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                                    for (int month = booking.StartDate.Month; month <= 12; month++)
+                                    {
+                                        DateTime currentDate = new DateTime(currentYear, month, currentDay);
+                                        DateTime nowVietnam = TimeZoneInfo.ConvertTime(currentDate, vnTimeZone);
+
+                                        // Kiểm tra xem ngày đó có trùng ngày đặt lịch không
+                                        // Nếu trùng thì nhân bản thêm bản ghi đặt phòng
+                                        if (nowVietnam.Day == currentDay && nowVietnam.Month >= booking.StartDate.Month)
+                                        {
+                                            BookingRoom bookingMulti = (BookingRoom)booking.Clone();
+                                            // tạo mới lại ID và ngày 
+                                            bookingMulti.BookingRoomID = Guid.NewGuid();
+                                            bookingMulti.StartDate = nowVietnam;
+                                            bookingMulti.EndDate = nowVietnam;
+                                            bookings.Add(bookingMulti);
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                               bookings.Add(booking);
+                        }
                         List<BookingError> errors = new List<BookingError>();
                         //2. Check phòng đã được sử dụng hay chưa
                         bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
@@ -780,23 +802,27 @@ namespace RoomBooking.BLL.Services
                         //2.1. Nếu phòng chưa được sử dụng
                         if (checkRoom)
                         {
-                            booking.BookingRoomID = Guid.NewGuid();
+                           // booking.BookingRoomID = Guid.NewGuid();
                             // Thực hiện insert
-                            var resBooking = await _repository.Insert(booking, cnn, tran);
+                            var resBooking = await _repository.InsertMulti(bookings, tran, cnn);
                             // thực hiện insert ca học
-                            List<TimeBooking> lstTimeBooking = new();
-                            // Tách chuỗi TimeSlotID
-                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            // For từng dòng 
-                            foreach (var item in timeIDs)
+                            List<TimeBooking> lstTimeBooking = new List<TimeBooking>();
+                            foreach (var item in bookings)
                             {
-                                lstTimeBooking.Add(new TimeBooking
+                                // Tách chuỗi TimeSlotID
+                                string[] timeIDs = item.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                // For từng dòng 
+                                foreach (var item1 in timeIDs)
                                 {
-                                    BookingRoomID = booking.BookingRoomID,
-                                    TimeSlotID = new Guid(item)
-                                });
+                                    lstTimeBooking.Add(new TimeBooking
+                                    {
+                                        BookingRoomID = item.BookingRoomID,
+                                        TimeSlotID = new Guid(item1)
+                                    });
 
-                            }
+                                }
+                            }    
+                           
                             var resTimeBooking = await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             var res = (resBooking == true && resTimeBooking == true) ? true : false;
 

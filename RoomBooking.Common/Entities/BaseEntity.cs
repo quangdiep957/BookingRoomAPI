@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class BaseEntity
+    public class BaseEntity : ICloneable
     {
         /// <summary>
         /// Người tạo
@@ -39,5 +39,10 @@ namespace RoomBooking.Common.Entities
         ///  Created by: bqdiep (30/08/2022)
         [ForBinding]
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }
