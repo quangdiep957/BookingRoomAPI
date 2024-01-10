@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using System;
@@ -16,7 +17,14 @@ namespace RoomBooking.BLL.Interfaces
         /// </summary>
         /// <param name="filePath"></param>
         /// bqdiep 25.03.20223
-        public Task<Object> ReadExcelFile(string filePath);
+        public Task<Object> ReadExcelFile(string filePath, Guid userID);
+
+        /// <summary>
+        /// Import file excel phòng học 
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// bqdiep 25.03.20223
+        public byte[] DownLoadFile();
 
         /// <summary>
         /// Thực hiện phân trang danh sách phòng chưa sử dụng | đang sử dụng

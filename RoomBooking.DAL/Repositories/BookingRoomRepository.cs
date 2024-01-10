@@ -237,6 +237,25 @@ namespace RoomBooking.DAL.Repositories
             return isSucess;
         }
 
+        public async Task<ListImport> GetImportExcel (MySqlConnection cnn)
+        {
+            var storeName = "GetImportExcel"; // Tên của thủ thục
+            DynamicParameters dynamicParameters = new DynamicParameters();
+
+            var data = await cnn.QueryMultipleAsync(storeName, param: dynamicParameters, commandType: CommandType.StoredProcedure);
+            // Read the first result set
+            var listImport = new ListImport
+            {
+                classImport = (List<Class>)await data.ReadAsync<Class>(),
+                subjectImport = (List<Subject>)await data.ReadAsync<Subject>(),
+                buildingImport = (List<Building>)await data.ReadAsync<Building>(),
+                roomImport = (List<Room>)await data.ReadAsync<Room>()
+            };
+            var result = await Task.FromResult(listImport);
+
+            return result;
+        }
+
 
         /// <summary>
         /// Thực hiện lấy danh sách yêu cầu đặt phòng chờ duyệt

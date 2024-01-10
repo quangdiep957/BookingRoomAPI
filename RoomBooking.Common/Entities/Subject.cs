@@ -21,6 +21,7 @@ namespace RoomBooking.Common.Entities
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
+        [ForGetImportID]
         [ForBinding]
         public Guid SubjectID { get; set; }
 
@@ -45,6 +46,7 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         [NotEmpty]
+        [ForGetImportName]
 
         public string SubjectName { get; set; } = string.Empty;
         [DataLength(36)]

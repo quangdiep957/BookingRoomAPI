@@ -61,6 +61,7 @@ namespace RoomBooking.DAL.Interfaces
         /// <param name="cnn"></param>
         /// <returns></returns>
         public Task<ParamReport> GetParamReport(Guid id ,MySqlConnection cnn);
+        public Task<ListImport> GetImportExcel(MySqlConnection cnn);
     }
 
 }

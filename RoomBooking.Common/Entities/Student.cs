@@ -137,16 +137,6 @@ namespace RoomBooking.Common.Entities
         ///  Created by: bqdiep (07/03/2023)
         public string? DepartmentName { get; set; }
 
-        /// <summary>
-        /// Loại vai trò
-        /// </summary>
-        public int? RoleOption { get; set; }
-
-        /// <summary>
-        /// Loại vai trò
-        /// </summary>
-        public string? RoleName { get; set; }
-        public string? PasswordOld { get; set; }
 
     }
 }

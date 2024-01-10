@@ -26,7 +26,7 @@ namespace RoomBooking.BLL.Services
     {
         IStudentRepository _repository;
         IRoleRepository _roleRepo;
-        public StudentService(IStudentRepository repository,IRoleRepository roleRepository) : base(repository)
+        public StudentService(IStudentRepository repository, IRoleRepository roleRepository) : base(repository)
         {
             _repository = repository;
             _roleRepo = roleRepository;
@@ -36,7 +36,7 @@ namespace RoomBooking.BLL.Services
         {
             var isSucess = false;
             var dataStudent = JsonSerializer.Deserialize<List<StudentCheckDto>>(param.Param);
-            List <StudentCheckDto> students = new List<StudentCheckDto>();
+            List<StudentCheckDto> students = new List<StudentCheckDto>();
             if (dataStudent != null)
             {
                 // Lấy thông tin giờ học
@@ -69,7 +69,7 @@ namespace RoomBooking.BLL.Services
                                     if (dateStartCheck < timeNowVietNam && dateEndCheck < timeNowVietNam)
                                     {
                                         tran.Rollback();
-                                        return new { mess = "Vượt quá thời gian" };
+                                        return new { mess = "Vượt quá thời gian", Status = 5 };
                                     }
                                     else
                                     {
@@ -77,11 +77,15 @@ namespace RoomBooking.BLL.Services
                                     }
                                 }
                             }
-                            var res = await _repository.CheckAttendanceApp(students, tran,cnn);
+                            var res = await _repository.CheckAttendanceApp(students, tran, cnn);
                             if (!res)
                             {
                                 isSucess = false;
 
+                            }
+                            else
+                            {
+                                isSucess = true;
                             }
                             tran.Commit();
                         }
@@ -100,6 +104,7 @@ namespace RoomBooking.BLL.Services
                     _repository.CloseMyConnection();
                 }
             }
+            if (isSucess == true) { return dataStudent; }
             return isSucess;
         }
 
@@ -110,27 +115,27 @@ namespace RoomBooking.BLL.Services
         /// <returns></returns>
         public Task<Student> CheckFaceID(string StudentCode)
         {
-            
+
             var res = new Student();
-             return Task.FromResult(res);
+            return Task.FromResult(res);
         }
 
         public async Task<object> GetListCheck(CheckStudentParam param)
         {
             var list = new List<CheckStudentDto>();
-             list = (List<CheckStudentDto>)await _repository.GetListCheck(param);
+            list = (List<CheckStudentDto>)await _repository.GetListCheck(param);
 
             // lấy ra 2 danh sách class và môn học
 
             List<object> listClass = list
                 .GroupBy(x => x.ClassID)
-                .Select(group => group.First())  
+                .Select(group => group.First())
                 .Cast<object>()
                 .ToList();
 
             List<object> listSubject = list
                 .GroupBy(x => x.SubjectID)
-                .Select(group => group.First())  
+                .Select(group => group.First())
                 .Cast<object>()
                 .ToList();
 
@@ -173,7 +178,7 @@ namespace RoomBooking.BLL.Services
         /// Created by: bqdiep(10/9/2022)
         protected override bool ValidateCustom(Student Student)
         {
-            
+
             if (!CommonFunction.IsValidEmail(Student.Email))
             {
                 isValidCustom = false;
@@ -190,6 +195,6 @@ namespace RoomBooking.BLL.Services
 
             return isValidCustom;
         }
-        
+
     }
 }

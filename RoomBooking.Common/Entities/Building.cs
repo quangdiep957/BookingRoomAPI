@@ -23,6 +23,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
+        [ForGetImportID]
         public Guid BuildingID { get; set; } 
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [ForBinding]
         [NotEmpty]
+        [ForGetImportName]
 
         public string BuildingName { get; set; } = string.Empty;
 

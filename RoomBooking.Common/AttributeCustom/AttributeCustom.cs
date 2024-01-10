@@ -27,6 +27,24 @@ namespace RoomBooking.Common.AttributeCustom
     {
 
     }
+    /// <summary>
+    /// Attribute dùng để lấy các trường dữ liệu 
+    /// </summary>
+    ///  created by: bqdiep (08/03/2023)
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ForGetImportID : Attribute
+    {
+
+    }
+    /// <summary>
+    /// Attribute dùng để lấy các trường dữ liệu 
+    /// </summary>
+    ///  created by: bqdiep (08/03/2023)
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ForGetImportName : Attribute
+    {
+
+    }
 
     /// <summary>
     /// Attribute dùng để lấy các trường dữ liệu 

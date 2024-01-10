@@ -42,8 +42,7 @@ namespace RoomBooking.DAL.Repositories
             DynamicParameters dynamicParameters = new DynamicParameters();
             dynamicParameters.Add("@PageSize", pageSize); //input: Số bản ghi/trang
             dynamicParameters.Add("@PageIndex", pageIndex);//input: Trang hiện tại
-            dynamicParameters.Add("@StudentFilter", keyWord); //input: Từ khóa
-            dynamicParameters.Add("@RoleId", roleId); //input: Khóa chính vai trò
+            dynamicParameters.Add("@FilterName", keyWord); //input: Từ khóa
             dynamicParameters.Add("@TotalRecord", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số bản ghi
             dynamicParameters.Add("@TotalPage", DbType.Int32, direction: ParameterDirection.Output); // output: tổng số trang
             //2. Lấy dữ liệu

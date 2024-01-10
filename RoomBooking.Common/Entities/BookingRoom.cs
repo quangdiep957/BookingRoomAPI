@@ -270,5 +270,4 @@ namespace RoomBooking.Common.Entities
         public int Quantity { get; set; }
         public string DepartmentName { get; set; }
     }
-
 }
