@@ -8,48 +8,57 @@ using System.Threading.Tasks;
 namespace RoomBooking.Common.Entities
 {
     /// <summary>
-    /// Thông tin tòa nhà
+    /// Thông tin phòng ban
     /// </summary>
     ///  Created by: bqdiep (07/03/2023)
-    public class Building : BaseEntity
+    public class Subject : BaseEntity
     {
         /// <summary>
-        /// Khóa chính tòa nhà
+        /// Khóa chính phòng ban
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
+        [PropertyNameDisplay(propName: "Khóa chính phòng ban")]
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
-        [ForBinding]
-        [NotEmpty]
-        [Unique]
         [ForGetImportID]
-        public Guid BuildingID { get; set; } 
+        [ForBinding]
+        public Guid SubjectID { get; set; }
 
         /// <summary>
-        /// Mã tòa nhà
+        /// Mã phòng ban
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
-        [PropertyNameDisplay(propName: "Mã tòa nhà")]
+        [PropertyNameDisplay(propName: "Mã phòng ban")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
-
-        public string BuildingCode { get; set; } = string.Empty;
+        [Unique]
+        public string SubjectCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tên tòa nhà
+        /// Tên phòng ban
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
-        [PropertyNameDisplay(propName: "Tên tòa nhà")]
+        [PropertyNameDisplay(propName: "Tên phòng ban")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
         [ForGetImportName]
 
-        public string BuildingName { get; set; } = string.Empty;
-
+        public string SubjectName { get; set; } = string.Empty;
+        [DataLength(36)]
+        [ForGetting]
+        [ForBinding]
+        [NotEmpty]
+        public Guid DepartmentID { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public int Credits { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public int LessonSummary { get; set; }
     }
 }

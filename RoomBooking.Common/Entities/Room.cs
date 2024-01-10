@@ -22,6 +22,7 @@ namespace RoomBooking.Common.Entities
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
+        [ForGetImportID]
         public Guid RoomID { get; set; }
 
         /// <summary>
@@ -34,6 +35,7 @@ namespace RoomBooking.Common.Entities
         [ForBinding]
         [NotEmpty]
         [Unique]
+        [ForGetImportName]
         public string RoomCode { get; set; } = string.Empty;
 
         /// <summary>

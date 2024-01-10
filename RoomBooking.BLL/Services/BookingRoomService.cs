@@ -1,13 +1,16 @@
 ﻿using Dapper;
 using ExcelDataReader;
 using Google.Cloud.Firestore;
+using Google.Type;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MySqlConnector;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using RoomBooking.BLL.Interfaces;
+using RoomBooking.Common.AttributeCustom;
 using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
@@ -20,12 +23,16 @@ using System.Diagnostics;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using XAct;
 using XAct.Domain.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using DateTime = System.DateTime;
+using DayOfWeek = System.DayOfWeek;
 
 namespace RoomBooking.BLL.Services
 {
@@ -48,7 +55,7 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>Object</returns>
-        public async Task<Object> ReadExcelFile(string filePath)
+        public async Task<Object> ReadExcelFile(string filePath, Guid userID)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             List<BookingRoom> scheduleItems = new List<BookingRoom>();
@@ -70,22 +77,27 @@ namespace RoomBooking.BLL.Services
 
                     foreach (DataRow row in dataTable.Rows)
                     {
+                        var idSubject = Guid.Empty;
+                        var idClass = Guid.Empty;
+                        var idRoom = Guid.Empty;
                         scheduleItems.Add(new BookingRoom
                         {
+                            UserID = userID,
                             Building = row["Tòa nhà"].ToString(),
                             Room = row["Phòng học"].ToString(),
                             DayOfWeek = row["Thứ"].ToString(),
                             Time = row["Thời gian"].ToString(),
-                            MorningFreePeriod = row["Tiết trống sáng"].ToString(),
-                            AfternoonFreePeriod = row["Tiết trống chiều"].ToString(),
-                            EveningFreePeriod = row["Tiết trống tối"].ToString(),
+                            MorningFreePeriod = row["Tiết sáng"].ToString(),
+                            AfternoonFreePeriod = row["Tiết chiều"].ToString(),
+                            EveningFreePeriod = row["Tiết tối"].ToString(),
+                            SubjectID = Guid.TryParse(row["ID môn học"].ToString(), out idSubject) == true ? idSubject : idSubject,
+                            ClassID = Guid.TryParse(row["ID lớp học"].ToString(), out idClass) == true ? idClass : idClass,
+                            RoomID = Guid.TryParse(row["ID Phòng học"].ToString(), out idRoom) == true ? idRoom : idRoom,
                             Week = row["Tuần"].ToString(),
                         });
                     }
                 }
             }
-            // Thực hiện convert lại dữ liệu
-            List<BookingRoom> lst = ConvertScheduleList(scheduleItems);
 
 
             Object result = new();
@@ -96,6 +108,8 @@ namespace RoomBooking.BLL.Services
                 {
                     try
                     {
+                        // Thực hiện convert lại dữ liệu
+                        List<BookingRoom> lst = await ConvertScheduleListAsync(scheduleItems, cnn, tran);
                         List<BookingError> errors = new List<BookingError>();
                         List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;
@@ -171,20 +185,23 @@ namespace RoomBooking.BLL.Services
                 }
                 else
                 {
-                    var itemTimeSlot = slotTime.Where(x => x.TimeSlotName == room.Times).FirstOrDefault();
                     room.BookingRoomID = Guid.NewGuid();
                     room.RoomID = itemRoom.RoomID;
-                    room.Subject = "Lịch học tuần " + room.Week;
-                    room.UserID = Guid.Empty;
                     room.YearPlan = room.StartDate.Year;
                     room.DayOfWeek = room.DayOfWeek == "1" ? "CN" : room.DayOfWeek;
-                    room.TimeSlots = itemTimeSlot.TimeSlotID.ToString();
                     room.StatusBooking = (int?)StatusBookingRoom.Browse;
-                    lstTimeBooking.Add(new TimeBooking
+                    // Tách chuỗi TimeSlotID
+                    string[] timeIDs = room.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    // For từng dòng 
+                    foreach (var item1 in timeIDs)
                     {
-                        BookingRoomID = room.BookingRoomID,
-                        TimeSlotID = itemTimeSlot.TimeSlotID
-                    });
+                        lstTimeBooking.Add(new TimeBooking
+                        {
+                            BookingRoomID = room.BookingRoomID,
+                            TimeSlotID = new Guid(item1)
+                        });
+
+                    }
                 }
 
             }
@@ -248,60 +265,12 @@ namespace RoomBooking.BLL.Services
                             errors.Add(new BookingError
                             {
                                 Error = "Đã có dữ liệu",
-                                DescriptionError = $"{roomName} ca {timeName} ngày {currentDate.ToString("dd/MM/yyyy")} đã được đặt."
+                                DescriptionError = $"{roomName} tiết {timeName} ngày {currentDate.ToString("dd/MM/yyyy")} đã được đặt."
                             });
                             checkRoom = false;
                         }
                         currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
                     }
-                    //var itemRoomStartDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    //&& x.BookingRoomID != room.BookingRoomID &&
-                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-                    //var itemRoomEndDate = lstBookingRoom.FirstOrDefault(x => x.RoomID == room.RoomID
-                    //     && x.BookingRoomID != room.BookingRoomID &&
-                    //x.TimeSlots.Contains(item) && x.StartDate.ToString("yyyy/MM/dd") == room.StartDate.ToString("yyyy/MM/dd"));
-
-                    //if (room.StartDate == room.EndDate)
-                    //{
-                    //    if (itemRoomStartDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    if (itemRoomStartDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomStartDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //    else if (itemRoomEndDate != null)
-                    //    {
-                    //        roomName = listRoom.FirstOrDefault(x => x.RoomID == itemRoomEndDate.RoomID).RoomName;
-                    //        timeName = lstTimeSlot.FirstOrDefault(x => item == x.TimeSlotID.ToString()).TimeSlotName;
-                    //        errors.Add(new BookingError
-                    //        {
-                    //            Error = "Đã có dữ liệu",
-                    //            DescriptionError = $"{roomName} ca {timeName} ngày {room.StartDate.ToString("dd/MM/yyyy")} đã được đặt."
-                    //        });
-                    //        checkRoom = false;
-                    //    }
-                    //}
-
-
                 }
 
             }
@@ -349,9 +318,12 @@ namespace RoomBooking.BLL.Services
         /// </summary>
         /// <param name="scheduleList"></param>
         /// <returns></returns>
-        private List<BookingRoom> ConvertScheduleList(List<BookingRoom> scheduleList)
+        private async Task<List<BookingRoom>> ConvertScheduleListAsync(List<BookingRoom> scheduleList, MySqlConnection cnn , MySqlTransaction trans)
         {
             var newScheduleList = new List<BookingRoom>();
+            List<TimeSlot> timeSlots = new List<TimeSlot>();
+                // lấy danh sách tiết học
+                timeSlots = (List<TimeSlot>)await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot;" ,transaction: trans);  
 
             for (int i = 0; i < scheduleList.Count; i++)
             {
@@ -380,98 +352,12 @@ namespace RoomBooking.BLL.Services
                 }
                 var weekDays = scheduleList[i].DayOfWeek.Split(',').Select(x => int.Parse(x));
                 var dates = new List<DateTime>();
-                foreach (var weekday in weekDays)
-                {
-                    // Tính ngày bắt đầu và kết thúc của tuần
-                    var weekStart = DateTime.ParseExact(scheduleList[i].Time.Split('-')[0], "dd/MM", null);
-                    var weekEnd = DateTime.ParseExact(scheduleList[i].Time.Split('-')[1], "dd/MM/yyyy", null);
 
-                    // Tìm ngày trong tuần tương ứng với ngày thứ weekday
-                    var diff = weekday - 1 - (int)weekStart.DayOfWeek;
-                    var date = weekStart.AddDays(diff);
-                    dates.Add(date);
-                }
-
-                // Thêm mục mới vào danh sách
-                foreach (var date in dates)
-                {
-                    int day = int.Parse(date.DayOfWeek.ToString("d")) + 1;
-                    string dayOfWeek = day.ToString();
-
-                    var newSchedule = new BookingRoom
-                    {
-                        Building = buildingCode,
-                        Room = buildingName,
-                        DayOfWeek = dayOfWeek,
-                        Time = date.ToString(),
-                        MorningFreePeriod = morningFreePeriod.ToString(),
-                        AfternoonFreePeriod = afternoonFreePeriod.ToString(),
-                        EveningFreePeriod = eveningFreePeriod.ToString(),
-                        Week = scheduleList[i].Week,
-                        StartDate = date,
-                        EndDate = date
-                    };
-                    newScheduleList.Add(newSchedule);
-                }
-            }
-
-            // Tạo một danh sách rỗng để chứa các mục được chuyển đổi
-            List<BookingRoom> convertedList = new List<BookingRoom>();
-            // Vòng lặp qua từng mục trong danh sách ban đầu
-            foreach (BookingRoom item in newScheduleList)
-            {
-                convertedList.Add(new BookingRoom
-                {
-                    Building = item.Building,
-                    Room = item.Room,
-                    DayOfWeek = item.DayOfWeek,
-                    SlotTime = item.MorningFreePeriod,
-                    Week = item.Week,
-                    Times = 1,
-                    StartDate = item.StartDate,
-                    EndDate = item.EndDate,
-                });
-                convertedList.Add(new BookingRoom
-                {
-                    Building = item.Building,
-                    Room = item.Room,
-                    DayOfWeek = item.DayOfWeek,
-                    SlotTime = item.AfternoonFreePeriod,
-                    Week = item.Week,
-                    Times = 3,
-                    StartDate = item.StartDate,
-                    EndDate = item.EndDate,
-
-
-                });
-                convertedList.Add(new BookingRoom
-                {
-                    Building = item.Building,
-                    Room = item.Room,
-                    DayOfWeek = item.DayOfWeek,
-                    SlotTime = item.EveningFreePeriod,
-                    Week = item.Week,
-                    Times = 5,
-                    StartDate = item.StartDate,
-                    EndDate = item.EndDate,
-
-                });
-
+                // lấy id của các tiết học adđ vào 
+                newScheduleList.AddRange(ConverDataToTimeSlot(scheduleList[i], timeSlots));
 
             }
-            List<BookingRoom> list = new();
-            foreach (var item in convertedList)
-            {
-                string[] periods = item.SlotTime.Split(',');
-                if (periods.Length < 4)
-                {
-                    list.AddRange(ConverDataToTimeSlot(item, periods, (int)item.Times));
-                }
-
-            }
-
-
-            return list;
+            return newScheduleList;
 
 
         }
@@ -483,77 +369,65 @@ namespace RoomBooking.BLL.Services
         /// <param name="lstPeriods"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        private List<BookingRoom> ConverDataToTimeSlot(BookingRoom item, string[] lstPeriods, int slot)
+        private List<BookingRoom> ConverDataToTimeSlot(BookingRoom item, List<TimeSlot> timeslot)
         {
             List<BookingRoom> convertedList = new List<BookingRoom>();
-            if (lstPeriods.Length > 1)
+            // cắt chuỗi tiết học 
+            // lấy ra bản ghi theo tiết sáng chiều tối 
+            item.StartDate = DateTime.Parse(item.Time);
+            item.EndDate = DateTime.Parse(item.Time);
+            item.DateRequest = DateTime.Parse(item.Time);
+            if (!string.IsNullOrEmpty(item.MorningFreePeriod))
             {
-
-
-                int ca = 0;
-                if (item.Times == 5)
-                {
-                    ca = (int)item.Times;
-
-                }
-                else
-                {
-                    if (item.SlotTime.StartsWith("1,"))
-                    {
-                        ca = 2;
-                    }
-                    else if (item.SlotTime.StartsWith("4"))
-                    {
-                        ca = 1;
-                    }
-                    else if (item.SlotTime.StartsWith("7"))
-                    {
-                        ca = 4;
-                    }
-                    else if (item.SlotTime.StartsWith("10"))
-                    {
-                        ca = 3;
-                    }
-
-                }
-
-                convertedList.Add(new BookingRoom
-                {
-                    Building = item.Building,
-                    Room = item.Room,
-                    DayOfWeek = item.DayOfWeek,
-                    Times = int.Parse(ca.ToString()),
-                    TimeSlotName = $"Ca {ca}",
-                    Week = item.Week,
-                    StartDate = item.StartDate,
-                    EndDate = item.EndDate
-                });
-
+                var itemMorning = item.Clone<BookingRoom>();
+                itemMorning.Subject = "Lịch học sáng tuần " + itemMorning.Week;
+                itemMorning.EveningFreePeriod = "";
+                itemMorning.AfternoonFreePeriod = "";
+                AddIdTimeSlot(itemMorning, timeslot, itemMorning.MorningFreePeriod);
+                convertedList.Add(itemMorning);
             }
-            else
+            if (!string.IsNullOrEmpty(item.EveningFreePeriod))
             {
-                int ca = (int)item.Times;
-                int j = ca;
-                for (int i = ca - 1; i <= item.Times; i++)
-                {
-                    if (i == 5) { break; }
-                    convertedList.Add(new BookingRoom
-                    {
-                        Building = item.Building,
-                        Room = item.Room,
-                        DayOfWeek = item.DayOfWeek,
-                        Times = j,
-                        TimeSlotName = $"Ca {j}",
-                        Week = item.Week,
-                        StartDate = item.StartDate,
-                        EndDate = item.EndDate,
-                    });
-                    j++;
-                }
-
+                var itemEvening = item.Clone<BookingRoom>();
+                itemEvening.Subject = "Lịch học chiều tuần " + itemEvening.Week;
+                itemEvening.MorningFreePeriod = "";
+                itemEvening.AfternoonFreePeriod = "";
+                AddIdTimeSlot(itemEvening, timeslot, itemEvening.EveningFreePeriod);
+                convertedList.Add(itemEvening);
+            }
+            if (!string.IsNullOrEmpty(item.AfternoonFreePeriod))
+            {
+                var itemAfternoon = item.Clone<BookingRoom>();
+                itemAfternoon.Subject = "Lịch học tối tuần " + itemAfternoon.Week;
+                itemAfternoon.MorningFreePeriod = "";
+                itemAfternoon.EveningFreePeriod = "";
+                AddIdTimeSlot(itemAfternoon, timeslot, itemAfternoon.AfternoonFreePeriod);
+                convertedList.Add(itemAfternoon);
             }
             return convertedList;
         }
+
+        private static void AddIdTimeSlot(BookingRoom item, List<TimeSlot> timeslot, string tims)
+        {
+            // lấy thêm trường ID theo mã
+            string[] substrings =tims.Split(',');
+            var listTimeIDs = "";
+            for(int i = 0; i< substrings.Count(); i++)
+            {
+                var time = timeslot.FirstOrDefault(x => x.TimeSlotName == int.Parse(substrings[i]));
+                if(i < substrings.Count() - 1)
+                {
+                    listTimeIDs = listTimeIDs + time.TimeSlotID + ",";
+                }
+                else
+                {
+                    listTimeIDs = listTimeIDs + time.TimeSlotID ;
+                }
+            }
+            item.TimeSlots = listTimeIDs;
+        }
+
+
 
         /// <summary>
         /// Phân trang 
@@ -580,41 +454,45 @@ namespace RoomBooking.BLL.Services
 
                         foreach (var booking in scheduler.bookings)
                         {
-                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            // For từng dòng 
-                            foreach (var item in timeIDs)
+                            if (booking.TimeSlots != null)
                             {
-                                var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
-                                var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
-                                //var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
-                                //var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
-
-                                DateTime currentDate = booking.StartDate.Date;
-                                while (currentDate.Date <= booking.EndDate.Date)
+                                string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                // For từng dòng 
+                                foreach (var item in timeIDs)
                                 {
-                                    var startDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
-                                    var endDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
-                                    bookingRooms.Add(new SchedulerBooking
+                                    var time = await cnn.QueryAsync<TimeSlot>("SELECT * FROM TimeSlot");
+                                    var itemTime = time.FirstOrDefault(x => x.TimeSlotID.ToString() == item);
+                                    //var startDate = DateTime.Parse(booking.StartDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                    //var endDate = DateTime.Parse(booking.EndDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+
+                                    DateTime currentDate = booking.StartDate.Date;
+                                    while (currentDate.Date <= booking.EndDate.Date)
                                     {
-                                        BookingRoomID = booking.BookingRoomID,
-                                        AvartarColor = booking.AvartarColor,
-                                        RoomID = booking.RoomID,
-                                        RoomName = booking.RoomName,
-                                        FullName = booking.FullName,
-                                        Quantity = booking.Quantity,
-                                        RoomStatus = booking.RoomStatus,
-                                        EndDate = endDate,
-                                        StartDate = startDate,
-                                        Subject = booking.Subject,
-                                        Description = booking.Description,
-                                        TimeSlotName = "Ca " + itemTime.TimeSlotName,
-                                        StatusBooking = booking.StatusBooking,
-                                    });
-                                    currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
+                                        var startDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.StartTime);
+                                        var endDate = DateTime.Parse(currentDate.ToString("yyyy-MM-dd") + " " + itemTime.EndTime);
+                                        bookingRooms.Add(new SchedulerBooking
+                                        {
+                                            BookingRoomID = booking.BookingRoomID,
+                                            AvartarColor = booking.AvartarColor,
+                                            RoomID = booking.RoomID,
+                                            RoomName = booking.RoomName,
+                                            FullName = booking.FullName,
+                                            Quantity = booking.Quantity,
+                                            RoomStatus = booking.RoomStatus,
+                                            EndDate = endDate,
+                                            StartDate = startDate,
+                                            Subject = booking.Subject,
+                                            Description = booking.Description,
+                                            TimeSlotName = "Tiết " + itemTime.TimeSlotName,
+                                            StatusBooking = booking.StatusBooking,
+                                        });
+                                        currentDate = currentDate.AddDays(1); // Tăng ngày lên 1 để chuyển sang ngày tiếp theo
+                                    }
+
+
                                 }
-
-
                             }
+
                         }
                         int count = scheduler.rooms.Count();
                         if (count == 1)
@@ -760,7 +638,7 @@ namespace RoomBooking.BLL.Services
                         }
                         else
                         {
-                            if(role.RoleValue == 10)
+                            if (role.RoleValue == 10)
                             {
                                 booking.StatusBooking = 4;
                             }
@@ -771,7 +649,72 @@ namespace RoomBooking.BLL.Services
                         }
                         List<BookingRoom> bookings = new List<BookingRoom>();
 
-                        bookings.Add(booking);
+                        // Kiểm tra xem có đặt nhiều theo tuần , tháng không
+                        // trường hợp có
+                        if (booking.CheckMultiBooking != null && Int32.Parse(booking.CheckMultiBooking) != (int)BookingMulti.Day)
+                        {
+                            // lấy ra ngày (thứ mấy) theo ngày đặt lịch
+                            // Lấy tháng hiện tại và năm hiện tại
+                            int currentMonth = (booking.StartDate).Month;
+                            int currentYear = (booking.StartDate).Year;
+                            TimeZoneInfo vnTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                            DayOfWeek dayOfWeek = TimeZoneInfo.ConvertTime((booking.StartDate), vnTimeZone).DayOfWeek;
+                            int currentDay = TimeZoneInfo.ConvertTime((booking.StartDate), vnTimeZone).Day;
+                            // đọc chi tiết để xem lấy theo gì 
+                            switch (Int32.Parse(booking.CheckMultiBooking))
+                            {
+                                case (int)BookingMulti.Week:
+
+                                    // Duyệt qua các ngày trong tháng
+
+                                    // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                                    for (int day = currentDay; day <= DateTime.DaysInMonth(currentYear, currentMonth); day++)
+                                    {
+                                        DateTime currentDate = new DateTime(currentYear, currentMonth, day);
+                                        DateTime nowVietnam = TimeZoneInfo.ConvertTime(currentDate, vnTimeZone);
+
+                                        // Kiểm tra xem ngày đó có trùng ngày đặt lịch không
+                                        // Nếu trùng thì nhân bản thêm bản ghi đặt phòng
+                                        if (nowVietnam.DayOfWeek == dayOfWeek && nowVietnam.Day >= currentDay)
+                                        {
+                                            BookingRoom bookingMulti = booking.Clone<BookingRoom>();
+                                            // tạo mới lại ID và ngày 
+                                            bookingMulti.BookingRoomID = Guid.NewGuid();
+                                            bookingMulti.StartDate = nowVietnam;
+                                            bookingMulti.EndDate = nowVietnam;
+                                            bookings.Add(bookingMulti);
+                                        }
+                                    }
+
+                                    break;
+                                case (int)BookingMulti.Months:
+                                    // Lấy thời gian hiện tại theo múi giờ Việt Nam
+                                    for (int month = booking.StartDate.Month; month <= 12; month++)
+                                    {
+                                        DateTime currentDate = new DateTime(currentYear, month, currentDay);
+                                        DateTime nowVietnam = TimeZoneInfo.ConvertTime(currentDate, vnTimeZone);
+
+                                        // Kiểm tra xem ngày đó có trùng ngày đặt lịch không
+                                        // Nếu trùng thì nhân bản thêm bản ghi đặt phòng
+                                        if (nowVietnam.Day == currentDay && nowVietnam.Month >= booking.StartDate.Month)
+                                        {
+                                            BookingRoom bookingMulti = booking.Clone<BookingRoom>(); ;
+                                            // tạo mới lại ID và ngày 
+                                            bookingMulti.BookingRoomID = Guid.NewGuid();
+                                            bookingMulti.StartDate = nowVietnam;
+                                            bookingMulti.EndDate = nowVietnam;
+                                            bookings.Add(bookingMulti);
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            bookings.Add(booking);
+                        }
                         List<BookingError> errors = new List<BookingError>();
                         //2. Check phòng đã được sử dụng hay chưa
                         bool checkRoom = await CheckRoomIsUsed(bookings, cnn, tran, errors);
@@ -780,23 +723,27 @@ namespace RoomBooking.BLL.Services
                         //2.1. Nếu phòng chưa được sử dụng
                         if (checkRoom)
                         {
-                            booking.BookingRoomID = Guid.NewGuid();
+                            // booking.BookingRoomID = Guid.NewGuid();
                             // Thực hiện insert
-                            var resBooking = await _repository.Insert(booking, cnn, tran);
+                            var resBooking = await _repository.InsertMulti(bookings, tran, cnn);
                             // thực hiện insert ca học
-                            List<TimeBooking> lstTimeBooking = new();
-                            // Tách chuỗi TimeSlotID
-                            string[] timeIDs = booking.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            // For từng dòng 
-                            foreach (var item in timeIDs)
+                            List<TimeBooking> lstTimeBooking = new List<TimeBooking>();
+                            foreach (var item in bookings)
                             {
-                                lstTimeBooking.Add(new TimeBooking
+                                // Tách chuỗi TimeSlotID
+                                string[] timeIDs = item.TimeSlots.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                // For từng dòng 
+                                foreach (var item1 in timeIDs)
                                 {
-                                    BookingRoomID = booking.BookingRoomID,
-                                    TimeSlotID = new Guid(item)
-                                });
+                                    lstTimeBooking.Add(new TimeBooking
+                                    {
+                                        BookingRoomID = item.BookingRoomID,
+                                        TimeSlotID = new Guid(item1)
+                                    });
 
+                                }
                             }
+
                             var resTimeBooking = await _repoTimeBooking.InsertMulti(lstTimeBooking, tran, cnn);
                             var res = (resBooking == true && resTimeBooking == true) ? true : false;
 
@@ -934,21 +881,21 @@ namespace RoomBooking.BLL.Services
             using (MySqlConnection cnn = _repository.GetOpenConnection())
             {
 
-                    try
-                    {
+                try
+                {
 
-                        var storeDelete = "Proc_UpdatePayment";
-                        DynamicParameters paramId = new DynamicParameters();
-                        paramId.Add("$OrderId", OrderId);
+                    var storeDelete = "Proc_UpdatePayment";
+                    DynamicParameters paramId = new DynamicParameters();
+                    paramId.Add("$OrderId", OrderId);
 
-                        var res = await cnn.ExecuteAsync(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
+                    var res = await cnn.ExecuteAsync(storeDelete, paramId, commandType: System.Data.CommandType.StoredProcedure);
 
-                    }
-                    catch (Exception)
-                    {
+                }
+                catch (Exception)
+                {
 
-                        isSucess = false;
-                    }
+                    isSucess = false;
+                }
             }
 
 
@@ -1453,6 +1400,86 @@ namespace RoomBooking.BLL.Services
 
             }
             return result;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="sheetName"></param>
+        /// <param name="data"></param>
+        static void AddDataToCategory<T>(ExcelWorksheet sheet, List<T> data, string columnName, string columnId)
+        {
+            int row = 2;
+            foreach (var entity in data)
+            {
+                var properties = entity.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    // Kiểm tra xem thuộc tính có chứa Attribute "ExcelColumn" hay không
+                    var excelColumnAttribute = property.GetCustomAttribute<ForGetImportID>();
+                    var cellValue = property.GetValue(entity);
+                    if (excelColumnAttribute != null)
+                    {
+                        sheet.Cells[$"{columnName}{row}"].Value = cellValue;
+                    }
+                    var excelColumnAttributeName = property.GetCustomAttribute<ForGetImportName>();
+                    if (excelColumnAttributeName != null)
+                    {
+                        sheet.Cells[$"{columnId}{row}"].Value = cellValue;
+                    }
+                }
+                row++;
+            }
+        }
+        /// <summary>
+        /// Lấy ra thông tin file và đổ dữ liệu danh mục
+        /// </summary>
+        /// <returns></returns>
+        public byte[] DownLoadFile()
+        {
+            Object result = new
+            {
+                data = ""
+            };
+            // Lấy đường dẫn thư mục hiện tại của ứng dụng
+            string currentDirectory = Directory.GetCurrentDirectory();
+
+            // Đường dẫn tương đối đến file Excel trong thư mục của dự án
+            string excelFileName = "Template\\Import.xlsx";
+            string excelFilePath = Path.Combine(currentDirectory, excelFileName);
+
+            // Kiểm tra xem file có tồn tại hay không
+            if (!File.Exists(excelFilePath))
+            {
+                return null;
+            }
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            // Sử dụng ExcelDataReader để đọc dữ liệu từ file Excel
+            using (var package = new ExcelPackage(new FileInfo(excelFilePath)))
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                // Lấy sheet từ ExcelPackage
+                var sheet = package.Workbook.Worksheets["Danhmuc"] ?? package.Workbook.Worksheets.Add("Danhmuc");
+
+                using (MySqlConnection cnn = _repository.GetOpenConnection())
+                {
+                    var data = _repository.GetImportExcel(cnn);
+                    // Thêm dữ liệu vào sheet
+                    AddDataToCategory(sheet, data.Result.buildingImport, "A", "B");
+                    AddDataToCategory(sheet, data.Result.roomImport, "C", "D");
+                    AddDataToCategory(sheet, data.Result.subjectImport, "E", "F");
+                    AddDataToCategory(sheet, data.Result.classImport, "G", "H");
+                }
+
+
+                // Lưu workbook vào MemoryStream
+                var memoryStream = new MemoryStream();
+                package.SaveAs(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                return memoryStream.ToArray();
+            }
+
         }
     }
 }

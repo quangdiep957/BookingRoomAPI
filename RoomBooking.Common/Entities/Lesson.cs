@@ -8,48 +8,50 @@ using System.Threading.Tasks;
 namespace RoomBooking.Common.Entities
 {
     /// <summary>
-    /// Thông tin tòa nhà
+    /// Thông tin lớp
     /// </summary>
     ///  Created by: bqdiep (07/03/2023)
-    public class Building : BaseEntity
+    public class Lesson : BaseEntity
     {
         /// <summary>
-        /// Khóa chính tòa nhà
+        /// Khóa chính lớp
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
+        [PropertyNameDisplay(propName: "Khóa chính lớp")]
         [DataLength(36)]
         [ForGetting]
         [PrimaryKey]
         [ForBinding]
-        [NotEmpty]
-        [Unique]
-        [ForGetImportID]
-        public Guid BuildingID { get; set; } 
+        public Guid LessonID { get; set; }
 
         /// <summary>
-        /// Mã tòa nhà
+        /// Mã lớp
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
         [DataLength(20)]
-        [PropertyNameDisplay(propName: "Mã tòa nhà")]
+        [PropertyNameDisplay(propName: "Mã lớp")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
-
-        public string BuildingCode { get; set; } = string.Empty;
+        [Unique]
+        public int LessonCode { get; set; }
 
         /// <summary>
-        /// Tên tòa nhà
+        /// Tên lớp
         /// </summary>
         ///  Created by: bqdiep (07/03/2023)
         [DataLength(255)]
-        [PropertyNameDisplay(propName: "Tên tòa nhà")]
+        [PropertyNameDisplay(propName: "Tên lớp")]
         [ForGetting]
         [ForBinding]
         [NotEmpty]
-        [ForGetImportName]
 
-        public string BuildingName { get; set; } = string.Empty;
-
+        public string LessonName { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public TimeSpan StartTime { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public TimeSpan EndTime { get; set; }
     }
 }

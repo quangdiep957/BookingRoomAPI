@@ -104,4 +104,16 @@ namespace RoomBooking.Common.Enum
         // Người phụ trách phòng
         Supporter = 3
     }
+    /// <summary>
+    /// Enum giá trị đặt phòng theo gì ?
+    /// </summary>
+    public enum BookingMulti
+    {
+        // theo ngày
+        Day = 1,
+        // theo tuần
+        Week = 2,
+        // theo tháng
+        Months = 3,
+    }
 }

@@ -7,6 +7,7 @@ using RoomBooking.Common.Entities;
 using RoomBooking.Common.Entities.Params;
 using RoomBooking.Common.Enum;
 using RoomBooking.Common.Resources;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using static Dapper.SqlMapper;
@@ -43,7 +44,7 @@ namespace RoomBooking.API.Controllers
             
         }
         [HttpPost("excel")]
-        public async Task<IActionResult> ReadScheduleFile(IFormFile file)
+        public async Task<IActionResult> ReadScheduleFile(IFormFile file, [FromForm] Guid userID)
         {
             try
             {
@@ -54,9 +55,34 @@ namespace RoomBooking.API.Controllers
                     file.CopyTo(stream);
                 }
 
-                var scheduleItems = await _scheduleService.ReadExcelFile(filePath);
+                var scheduleItems = await _scheduleService.ReadExcelFile(filePath, userID);
 
                 return Ok(scheduleItems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Thực hiện tải file nhập khẩu
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPost("downloadfile")]
+        public async Task<IActionResult> DownLoadFile()
+        {
+            try
+            {
+
+                var scheduleItems = _scheduleService.DownLoadFile();
+                if(scheduleItems == null)
+                {
+                    return StatusCode(404);
+                }
+                // Trả về file Excel như là một phản hồi HTTP
+                return File(scheduleItems, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TemplateImport.xlsx");
             }
             catch (Exception ex)
             {
