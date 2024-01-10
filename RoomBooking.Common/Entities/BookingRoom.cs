@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RoomBooking.Common.Entities
 {
-    public class BookingRoom : BaseEntity
+    public class BookingRoom : BaseEntity 
     {
         /// <summary>
         /// Khóa chính đặt phòng
@@ -162,7 +162,30 @@ namespace RoomBooking.Common.Entities
         public Guid? SupporterID { get; set; }
 
         public string? SupporterName { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public Guid? ClassID { get; set; }
+        [ForGetting]
+        [ForBinding]
+        public Guid? SubjectID { get; set; }
 
+
+
+        /// <summary>
+        /// Tiết học
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public string? Lesson { get; set; }
+
+        /// <summary>
+        /// Tiết học
+        /// </summary>
+        [ForGetting]
+        [ForBinding]
+        public Guid LessonID { get; set; }
+
+        public string? CheckMultiBooking { get; set; }
         public string? BookingStatusColor
         {
 
