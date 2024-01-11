@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReportBooking\ReportBooking.csproj" />
     <ProjectReference Include="..\RoomBooking.BLL\RoomBooking.BLL.csproj" />
     <ProjectReference Include="..\RoomBooking.Common\RoomBooking.Common.csproj" />
     <ProjectReference Include="..\RoomBooking.DAL\RoomBooking.DAL.csproj" />
