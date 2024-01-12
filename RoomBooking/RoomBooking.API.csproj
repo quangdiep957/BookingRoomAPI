@@ -1,9 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
+	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,18 +15,15 @@
     <PackageReference Include="MailKit" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.14" />
-    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.8.0-preview.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReportBooking\ReportBooking.csproj" />
     <ProjectReference Include="..\RoomBooking.BLL\RoomBooking.BLL.csproj" />
     <ProjectReference Include="..\RoomBooking.Common\RoomBooking.Common.csproj" />
     <ProjectReference Include="..\RoomBooking.DAL\RoomBooking.DAL.csproj" />
   </ItemGroup>
 <ItemGroup>
-  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
 </ItemGroup>	
 	
 </Project>
