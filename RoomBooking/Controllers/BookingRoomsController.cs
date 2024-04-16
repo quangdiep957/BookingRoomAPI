@@ -376,6 +376,43 @@ namespace RoomBooking.API.Controllers
         }
 
 
+        /// <summary>
+        /// Xem báo cáo theo mã BookingID
+        /// </summary>
+        /// <param name="entities"></param>
+        [HttpPost("GetDemo")]
+        public async Task<IActionResult> GetDemo(demo res)
+        {
+            // kiểm tra nếu đã có dữ liệu thì gọi API in báo cáo
+            if (res != null)
+            {
+                // Khởi tạo một đối tượng HttpClient
+                HttpClient client = new HttpClient();
+                var json = JsonSerializer.Serialize(res);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Gửi yêu cầu Post đến API
+                HttpResponseMessage response = await client.PostAsync("https://bill.payoo.vn/tra-tien-thanh-toan-hoa-don-dien-evn/danh-sach-hoa-don", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string htmlContent = await response.Content.ReadAsStringAsync();
+
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    return new FileStreamResult(stream, "application/pdf");
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+        }
+
     }
 
 }

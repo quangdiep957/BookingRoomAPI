@@ -109,7 +109,7 @@ namespace RoomBooking.BLL.Services
                     try
                     {
                         // Thực hiện convert lại dữ liệu
-                        List<BookingRoom> lst = await ConvertScheduleListAsync(scheduleItems, cnn, tran);
+                            List<BookingRoom> lst = await ConvertScheduleListAsync(scheduleItems, cnn, tran);
                         List<BookingError> errors = new List<BookingError>();
                         List<TimeBooking> lstTimeBooking = new();
                         int count = lst.Count;

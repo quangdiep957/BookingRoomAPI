@@ -25,4 +25,12 @@ namespace RoomBooking.Common.Entities.Params
         public DateTime? currentDate;
      
     }
+
+    public class demo
+    {
+        public string searchId { get; set; }
+
+        public string capcha { get; set; }
+        public string sessionKey { get; set; }
+    }
 }
